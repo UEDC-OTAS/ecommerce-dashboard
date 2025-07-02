@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import getAllProducts from "../../api/inventoryApi/GetAllProducts";
 
-const ProductTable = () => {
-  const [products, setProducts] = useState([]);
+const ProductTable = ({ products }) => {
   const [activeTab, setActiveTab] = useState("All");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
@@ -19,16 +18,6 @@ const ProductTable = () => {
 
   // Sample data - in real app this would come from API
 
-  const getProducts = async () => {
-    const response = await getAllProducts();
-    console.log(response);
-    setProducts(response.data);
-  };
-
-  useEffect(() => {
-    getProducts();
-  }, []);
-
   const totalPages = Math.ceil(products.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
@@ -43,7 +32,7 @@ const ProductTable = () => {
   };
 
   return (
-    <div className="w-full mx-auto py-6 bg-white">
+    <div className="w-full mx-auto pt-6">
       {/* Tabs */}
       <div className="flex flex-wrap gap-1 mb-6 border-b border-gray-200">
         {tabs.map((tab) => (
@@ -62,7 +51,7 @@ const ProductTable = () => {
       </div>
 
       {/* Table */}
-      <div className="overflow-x-auto bg-white rounded-lg shadow overflow-y-auto h-[calc(100vh-300px)]">
+      <div className="overflow-x-auto bg-white rounded-lg shadow overflow-y-auto h-[calc(100vh-290px)]">
         <table className="w-full table-auto">
           <thead
             className="bg-gray-50 border-b border-gray-200"

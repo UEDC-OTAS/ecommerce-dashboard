@@ -1,0 +1,474 @@
+import { useState, useEffect } from "react";
+import Modal from "../utli/Modal";
+import { ChevronDown } from "lucide-react";
+import addProduct from "../../api/inventoryApi/AddProduct";
+
+const AddStockModal = ({ isOpen, onClose, onSubmit }) => {
+  const [formData, setFormData] = useState({
+    stockName: "",
+    stockCode: "",
+    stockCategory: "",
+    quantity: "",
+    price: "",
+    images: [], // Add this line
+  });
+
+  const [errors, setErrors] = useState({});
+
+  const [dragActive, setDragActive] = useState(false);
+
+  const categories = [
+    "Electronics",
+    "Home Appliances",
+    "Clothing",
+    "Books",
+    "Sports",
+    "Automotive",
+    "Health & Beauty",
+    "Toys & Games",
+  ];
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+
+    // Clear error when user starts typing
+    if (errors[name]) {
+      setErrors((prev) => ({
+        ...prev,
+        [name]: "",
+      }));
+    }
+  };
+
+  const handleImageUpload = (files) => {
+    const validFiles = Array.from(files).filter((file) => {
+      const isValidType = file.type.startsWith("image/");
+      const isValidSize = file.size <= 5 * 1024 * 1024; // 5MB limit
+      return isValidType && isValidSize;
+    });
+
+    if (validFiles.length > 0) {
+      const newImages = validFiles.map((file) => ({
+        file,
+        id: Date.now() + Math.random(),
+        preview: URL.createObjectURL(file),
+        name: file.name,
+        size: file.size,
+      }));
+
+      setFormData((prev) => ({
+        ...prev,
+        images: [...prev.images, ...newImages].slice(0, 5), // Max 5 images
+      }));
+    }
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      handleImageUpload(e.dataTransfer.files);
+    }
+  };
+
+  const handleDrag = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.type === "dragenter" || e.type === "dragover") {
+      setDragActive(true);
+    } else if (e.type === "dragleave") {
+      setDragActive(false);
+    }
+  };
+
+  const removeImage = (imageId) => {
+    setFormData((prev) => ({
+      ...prev,
+      images: prev.images.filter((img) => img.id !== imageId),
+    }));
+  };
+
+  const validateForm = () => {
+    const newErrors = {};
+
+    if (!formData.stockName.trim()) {
+      newErrors.stockName = "Stock name is required";
+    }
+
+    if (!formData.stockCode.trim()) {
+      newErrors.stockCode = "Stock code is required";
+    }
+
+    if (!formData.stockCategory) {
+      newErrors.stockCategory = "Please select a category";
+    }
+
+    if (!formData.quantity.trim()) {
+      newErrors.quantity = "Quantity is required";
+    } else if (
+      isNaN(formData.quantity) ||
+      Number.parseInt(formData.quantity) < 0
+    ) {
+      newErrors.quantity = "Please enter a valid quantity";
+    }
+
+    if (!formData.price.trim()) {
+      newErrors.price = "Price is required";
+    } else if (isNaN(formData.price) || Number.parseFloat(formData.price) < 0) {
+      newErrors.price = "Please enter a valid price";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    if (validateForm()) {
+      handleAddStock(formData);
+    }
+  };
+
+  const handleAddStock = async (stockData) => {
+    console.log("Adding new stock:", stockData);
+    const data = new FormData();
+    data.append("name", stockData.stockName);
+    data.append("code", stockData.stockCode);
+    data.append("category", stockData.stockCategory);
+    data.append("stock", stockData.quantity);
+    data.append("price", stockData.price);
+    data.append("stockImagesUrl", stockData.images[0].file);
+    const res = await addProduct(data);
+    if (res.code === 201) {
+      handleClose();
+    }
+  };
+
+  const handleClose = () => {
+    // Clean up image previews
+    formData.images.forEach((img) => {
+      if (img.preview) {
+        URL.revokeObjectURL(img.preview);
+      }
+    });
+
+    setFormData({
+      stockName: "",
+      stockCode: "",
+      stockCategory: "",
+      quantity: "",
+      price: "",
+      images: [], // Add this line
+    });
+    setErrors({});
+    onClose();
+  };
+
+  useEffect(() => {
+    // Cleanup function to revoke object URLs when component unmounts
+    return () => {
+      formData.images.forEach((img) => {
+        if (img.preview) {
+          URL.revokeObjectURL(img.preview);
+        }
+      });
+    };
+  }, []);
+
+  return (
+    <Modal
+      isOpen={isOpen}
+      onClose={handleClose}
+      title="Add New Stock"
+      size="md"
+    >
+      <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Stock Name */}
+        <div>
+          <label
+            htmlFor="stockName"
+            className="block text-sm font-medium text-gray-700 mb-2"
+          >
+            Stock Name
+          </label>
+          <input
+            type="text"
+            id="stockName"
+            name="stockName"
+            value={formData.stockName}
+            onChange={handleInputChange}
+            placeholder="Enter Stock Name"
+            className={`
+              w-full px-3 py-2 border rounded-lg text-sm
+              focus:outline-none focus:ring-2 focus:ring-orange-100 focus:border-orange-300
+              transition-colors
+              ${
+                errors.stockName
+                  ? "border-red-300 bg-red-50"
+                  : "border-gray-300"
+              }
+            `}
+          />
+          {errors.stockName && (
+            <p className="mt-1 text-sm text-red-600">{errors.stockName}</p>
+          )}
+        </div>
+
+        {/* Stock Code */}
+        <div>
+          <label
+            htmlFor="stockCode"
+            className="block text-sm font-medium text-gray-700 mb-2"
+          >
+            Stock Code
+          </label>
+          <input
+            type="text"
+            id="stockCode"
+            name="stockCode"
+            value={formData.stockCode}
+            onChange={handleInputChange}
+            placeholder="Enter Stock Code"
+            className={`
+              w-full px-3 py-2 border rounded-lg text-sm
+              focus:outline-none focus:ring-2 focus:ring-orange-100 focus:border-orange-300
+              transition-colors
+              ${
+                errors.stockCode
+                  ? "border-red-300 bg-red-50"
+                  : "border-gray-300"
+              }
+            `}
+          />
+          {errors.stockCode && (
+            <p className="mt-1 text-sm text-red-600">{errors.stockCode}</p>
+          )}
+        </div>
+
+        {/* Stock Category */}
+        <div>
+          <label
+            htmlFor="stockCategory"
+            className="block text-sm font-medium text-gray-700 mb-2"
+          >
+            Stock Category
+          </label>
+          <div className="relative">
+            <select
+              id="stockCategory"
+              name="stockCategory"
+              value={formData.stockCategory}
+              onChange={handleInputChange}
+              className={`
+                w-full px-3 py-2 border rounded-lg text-sm appearance-none
+                focus:outline-none focus:ring-2 focus:ring-orange-100 focus:border-orange-300
+                transition-colors
+                ${
+                  errors.stockCategory
+                    ? "border-red-300 bg-red-50"
+                    : "border-gray-300"
+                }
+                ${!formData.stockCategory ? "text-gray-500" : "text-gray-900"}
+              `}
+            >
+              <option value="">Select Stock Category</option>
+              {categories.map((category) => (
+                <option key={category} value={category}>
+                  {category}
+                </option>
+              ))}
+            </select>
+            <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+          </div>
+          {errors.stockCategory && (
+            <p className="mt-1 text-sm text-red-600">{errors.stockCategory}</p>
+          )}
+        </div>
+
+        {/* Image Upload */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Product Images
+          </label>
+
+          {/* Upload Area */}
+          {formData.images.length === 0 && (
+            <div
+              className={`
+                  relative border-2 border-dashed rounded-lg p-6 text-center transition-colors
+                  ${
+                    dragActive
+                      ? "border-orange-400 bg-orange-50"
+                      : "border-gray-300 hover:border-gray-400"
+                  }
+                `}
+              onDragEnter={handleDrag}
+              onDragLeave={handleDrag}
+              onDragOver={handleDrag}
+              onDrop={handleDrop}
+            >
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => handleImageUpload(e.target.files)}
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+              />
+
+              <div className="space-y-2">
+                <div className="mx-auto w-12 h-12 text-gray-400">
+                  <svg fill="none" stroke="currentColor" viewBox="0 0 48 48">
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
+                    />
+                  </svg>
+                </div>
+                <div className="text-sm text-gray-600">
+                  <span className="font-medium text-orange-600">
+                    Click to upload
+                  </span>{" "}
+                  or drag and drop
+                </div>
+                <p className="text-xs text-gray-500">
+                  PNG, JPG, GIF up to 5MB (Max 5 images)
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* Image Previews */}
+          {formData.images.length > 0 && (
+            <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 gap-4">
+              {formData.images.map((image) => (
+                <div key={image.id} className="relative group">
+                  <div className="aspect-square rounded-lg overflow-hidden bg-gray-100">
+                    <img
+                      src={image.preview || "/placeholder.svg"}
+                      alt={image.name}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+
+                  {/* Remove Button */}
+                  <button
+                    type="button"
+                    onClick={() => removeImage(image.id)}
+                    className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-xs hover:bg-red-600 transition-colors"
+                  >
+                    ×
+                  </button>
+
+                  {/* Image Info */}
+                  <div className="mt-1 text-xs text-gray-500 truncate">
+                    {image.name}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Quantity and Price Row */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {/* Quantity */}
+          <div>
+            <label
+              htmlFor="quantity"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
+              Quantity
+            </label>
+            <input
+              type="number"
+              id="quantity"
+              name="quantity"
+              value={formData.quantity}
+              onChange={handleInputChange}
+              placeholder="Enter Stock Quantity"
+              min="0"
+              className={`
+                w-full px-3 py-2 border rounded-lg text-sm
+                focus:outline-none focus:ring-2 focus:ring-orange-100 focus:border-orange-300
+                transition-colors
+                ${
+                  errors.quantity
+                    ? "border-red-300 bg-red-50"
+                    : "border-gray-300"
+                }
+              `}
+            />
+            {errors.quantity && (
+              <p className="mt-1 text-sm text-red-600">{errors.quantity}</p>
+            )}
+          </div>
+
+          {/* Price */}
+          <div>
+            <label
+              htmlFor="price"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
+              Price
+            </label>
+            <div className="relative">
+              <input
+                type="number"
+                id="price"
+                name="price"
+                value={formData.price}
+                onChange={handleInputChange}
+                placeholder="Enter Stock Price"
+                min="0"
+                step="0.01"
+                className={`
+                  w-full px-3 py-2 pr-12 border rounded-lg text-sm
+                  focus:outline-none focus:ring-2 focus:ring-orange-100 focus:border-orange-300
+                  transition-colors
+                  ${
+                    errors.price
+                      ? "border-red-300 bg-red-50"
+                      : "border-gray-300"
+                  }
+                `}
+              />
+              <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-sm text-gray-500">
+                MMK
+              </span>
+            </div>
+            {errors.price && (
+              <p className="mt-1 text-sm text-red-600">{errors.price}</p>
+            )}
+          </div>
+        </div>
+
+        {/* Action Buttons */}
+        <div className="flex flex-col sm:flex-row gap-3 pt-4">
+          <button
+            type="button"
+            onClick={handleClose}
+            className="flex-1 px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-200 transition-colors"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            className="flex-1 px-4 py-2 text-sm font-medium text-white bg-orange-500 border border-orange-500 rounded-lg hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-200 transition-colors"
+          >
+            Add Stock
+          </button>
+        </div>
+      </form>
+    </Modal>
+  );
+};
+
+export default AddStockModal;

@@ -1,7 +1,25 @@
+import { useEffect, useState } from "react";
 import SearchBar from "../utli/SearchBar";
 import ProductTable from "./productTable";
+import AddProductModal from "./AddProductModal";
+import addProduct from "../../api/inventoryApi/AddProduct";
+import getAllProducts from "../../api/inventoryApi/GetAllProducts";
 
 function Inventory() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [products, setProducts] = useState([]);
+  const [success, setSuccess] = useState(false);
+
+  const getProducts = async () => {
+    const response = await getAllProducts();
+    // console.log(response);
+    setProducts(response.data.reverse());
+  };
+
+  useEffect(() => {
+    getProducts();
+  }, []);
+
   return (
     <div className="w-full px-4">
       <div className="flex items-center justify-between ">
@@ -10,7 +28,7 @@ function Inventory() {
           <div className="w-[400px]">
             <SearchBar placeholder="Search Product with name or Product Code" />
           </div>
-          <button className="button">
+          <button className="button" onClick={() => setIsModalOpen(true)}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               height="24px"
@@ -24,7 +42,17 @@ function Inventory() {
           </button>
         </div>
       </div>
-      <ProductTable />
+      <ProductTable products={products} />
+
+      {/* Add Stock Modal */}
+      <AddProductModal
+        isOpen={isModalOpen}
+        onClose={() => {
+          setIsModalOpen(false);
+          getProducts();
+        }}
+        success={success}
+      />
     </div>
   );
 }
