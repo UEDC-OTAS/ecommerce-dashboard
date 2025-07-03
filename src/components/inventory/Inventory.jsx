@@ -2,13 +2,11 @@ import { useEffect, useState } from "react";
 import SearchBar from "../utli/SearchBar";
 import ProductTable from "./productTable";
 import AddProductModal from "./AddProductModal";
-import addProduct from "../../api/inventoryApi/AddProduct";
 import getAllProducts from "../../api/inventoryApi/GetAllProducts";
 
 function Inventory() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [products, setProducts] = useState([]);
-  const [success, setSuccess] = useState(false);
 
   const getProducts = async () => {
     const response = await getAllProducts();
@@ -51,7 +49,6 @@ function Inventory() {
           setIsModalOpen(false);
           getProducts();
         }}
-        success={success}
       />
     </div>
   );

@@ -1,26 +1,18 @@
 import { useState } from "react";
 
-const ProductTable = ({ products }) => {
+const OrderTable = ({ orders }) => {
   const [activeTab, setActiveTab] = useState("All");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
 
-  const tabs = [
-    "All",
-    "Rice Cookers",
-    "Kitchen Tool",
-    "Speakers",
-    "Washing Machine",
-    "Toilet & Bathroom tools",
-    "Other Categories",
-  ];
+  const tabs = ["All", "Pending Orders", "Confirm Orders", "Cancelled Orders"];
 
   // Sample data - in real app this would come from API
 
-  const totalPages = Math.ceil(products.length / itemsPerPage);
+  const totalPages = Math.ceil(orders.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  const currentProducts = products.slice(startIndex, endIndex);
+  const currentOrders = orders.slice(startIndex, endIndex);
 
   const handleEdit = (id) => {
     console.log("Edit product:", id);
@@ -61,19 +53,16 @@ const ProductTable = ({ products }) => {
                 No
               </th>
               <th className="px-4 py-4 text-left text-xs font-medium text-black uppercase tracking-wider">
-                Product Name
-              </th>
-              <th className="px-4 py-4 text-left text-xs font-medium text-black uppercase tracking-wider">
-                Code
+                Customer
               </th>
               <th className="px-4 py-4 text-left text-xs font-medium text-black uppercase tracking-wider">
                 Quantity
               </th>
               <th className="px-4 py-4 text-left text-xs font-medium text-black uppercase tracking-wider">
-                Price
+                Total
               </th>
               <th className="px-4 py-4 text-left text-xs font-medium text-black uppercase tracking-wider">
-                Status
+                Delivery Type
               </th>
               <th className="px-4 py-4 text-left text-xs font-medium text-black uppercase tracking-wider">
                 Actions
@@ -81,40 +70,31 @@ const ProductTable = ({ products }) => {
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {currentProducts.map((product, index) => (
-              <tr key={product._id}>
+            {currentOrders.map((order, index) => (
+              <tr key={order.orderId}>
                 <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
                   {index + 1}
                 </td>
                 <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {product.name}
+                  {order.snapshotData.customerName}
                 </td>
                 <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {product.code}
+                  {order.snapshotData.quantity}
                 </td>
                 <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {product.stock}
+                  {(
+                    order.snapshotData.quantity *
+                    order.snapshotData.productPrice
+                  ).toLocaleString()}{" "}
+                  MMK
                 </td>
                 <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
-                  <span>{product.price.toLocaleString()} MMK</span>
-                </td>
-                <td className="px-4 py-4 whitespace-nowrap">
-                  <span className="inline-flex text-xs font-semibold ">
-                    {product.stock > 10 ? (
-                      <span className="bg-green-100 text-green-800 rounded-full px-2 py-1">
-                        In Stock
-                      </span>
-                    ) : (
-                      <span className="bg-red-100 text-red-800 rounded-full px-2 py-1">
-                        Out of Stock
-                      </span>
-                    )}
-                  </span>
+                  <span>{order.snapshotData.deliveryType}</span>
                 </td>
                 <td className="px-4 py-4 whitespace-nowrap text-sm font-medium">
                   <div className="flex space-x-2">
                     <button
-                      onClick={() => handleEdit(product.id)}
+                      onClick={() => handleEdit(order.orderId)}
                       className="bg-primary hover:bg-primary/80 text-white p-3 rounded-lg transition-colors"
                       title="Edit"
                     >
@@ -129,7 +109,7 @@ const ProductTable = ({ products }) => {
                       </svg>
                     </button>
                     <button
-                      onClick={() => handleDelete(product.id)}
+                      onClick={() => handleDelete(order.orderId)}
                       className="border border-gray-200 hover:bg-gray-200 text-delete p-3 rounded-lg transition-colors"
                       title="Delete"
                     >
@@ -173,8 +153,8 @@ const ProductTable = ({ products }) => {
 
         <div className="flex items-center space-x-4">
           <span className="text-sm text-gray-700">
-            {startIndex + 1} - {Math.min(endIndex, products.length)} of{" "}
-            {products.length} Orders
+            {startIndex + 1} - {Math.min(endIndex, orders.length)} of{" "}
+            {orders.length} Orders
           </span>
 
           <div className="flex items-center space-x-2">
@@ -224,4 +204,4 @@ const ProductTable = ({ products }) => {
   );
 };
 
-export default ProductTable;
+export default OrderTable;
