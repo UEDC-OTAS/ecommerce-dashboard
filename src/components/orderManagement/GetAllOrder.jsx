@@ -2,14 +2,22 @@ import { useEffect, useState } from "react";
 import getAllOrders from "../../api/orderApi/getAllOrders";
 import SearchBar from "../utli/SearchBar";
 import OrderTable from "./OrderTable";
+import OrderInfo from "./OrderInfo";
 
 function GetAllOrder() {
   const [orders, setOrders] = useState([]);
+  const [selectedOrder, setSelectedOrder] = useState(null);
 
   const getOrders = async () => {
     const response = await getAllOrders();
     console.log(response);
     setOrders(response.data);
+  };
+
+  const passOrder = (orderId) => {
+    const order = orders.find((order) => order.orderId === orderId);
+    setSelectedOrder(order);
+    console.log("order", order);
   };
 
   useEffect(() => {
@@ -26,8 +34,14 @@ function GetAllOrder() {
         </div>
       </div>
 
-      <div className="w-2/3">
-        <OrderTable orders={orders} />
+      <div className="flex">
+        <div className="w-2/3">
+          <OrderTable orders={orders} passOrder={passOrder} />
+        </div>
+
+        <div className="w-1/3">
+          {selectedOrder && <OrderInfo selectedOrder={selectedOrder} />}
+        </div>
       </div>
     </div>
   );

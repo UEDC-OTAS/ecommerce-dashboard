@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-const OrderTable = ({ orders }) => {
+const OrderTable = ({ orders, passOrder }) => {
   const [activeTab, setActiveTab] = useState("All");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
@@ -62,7 +62,7 @@ const OrderTable = ({ orders }) => {
                 Total
               </th>
               <th className="px-4 py-4 text-left text-xs font-medium text-black uppercase tracking-wider">
-                Delivery Type
+                Payment Type
               </th>
               <th className="px-4 py-4 text-left text-xs font-medium text-black uppercase tracking-wider">
                 Actions
@@ -71,7 +71,7 @@ const OrderTable = ({ orders }) => {
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
             {currentOrders.map((order, index) => (
-              <tr key={order.orderId}>
+              <tr key={order.orderId} onClick={() => passOrder(order.orderId)}>
                 <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
                   {index + 1}
                 </td>
@@ -89,7 +89,7 @@ const OrderTable = ({ orders }) => {
                   MMK
                 </td>
                 <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
-                  <span>{order.snapshotData.deliveryType}</span>
+                  <span>{order.snapshotData.paymentType}</span>
                 </td>
                 <td className="px-4 py-4 whitespace-nowrap text-sm font-medium">
                   <div className="flex space-x-2">
