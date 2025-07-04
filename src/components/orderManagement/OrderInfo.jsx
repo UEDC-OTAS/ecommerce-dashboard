@@ -28,7 +28,7 @@ function OrderInfo({ selectedOrder, refreshOrders }) {
     }
   };
   return (
-    <div className="mt-10 mx-5 h-[calc(100vh-170px)] overflow-y-auto">
+    <div className="mt-10 mx-5 h-[calc(100vh-190px)] overflow-y-auto">
       <div className="flex items-center justify-between">
         <h1 className="header">Order Info</h1>
         <div className="flex flex-col items-end">
@@ -63,20 +63,25 @@ function OrderInfo({ selectedOrder, refreshOrders }) {
         </div>
       )}
 
-      <div style={{ position: "sticky", bottom: 0 }} className="py-2 bg-white">
-        <button
-          className="button"
-          onClick={() => {
-            confirmOrder(
-              selectedOrder.orderId,
-              selectedOrder.snapshotData.psid
-            );
-            chgStatus(selectedOrder.orderId);
-          }}
+      {selectedOrder.deliveryStatus === "pending" && (
+        <div
+          style={{ position: "sticky", bottom: 0 }}
+          className="pt-2 bg-white"
         >
-          Confirm Order
-        </button>
-      </div>
+          <button
+            className="button"
+            onClick={() => {
+              confirmOrder(
+                selectedOrder.orderId,
+                selectedOrder.snapshotData.psid
+              );
+              chgStatus(selectedOrder.orderId);
+            }}
+          >
+            Confirm Order
+          </button>
+        </div>
+      )}
     </div>
   );
 }
