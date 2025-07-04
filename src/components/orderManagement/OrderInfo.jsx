@@ -1,6 +1,7 @@
 import axios from "axios";
+import chgOrderStatus from "../../api/orderApi/chgOrderStatus";
 
-function OrderInfo({ selectedOrder }) {
+function OrderInfo({ selectedOrder, refreshOrders }) {
   //   console.log(selectedOrder);
   const confirmOrder = async (orderId, psid) => {
     const data = {
@@ -8,7 +9,7 @@ function OrderInfo({ selectedOrder }) {
       order_id: orderId,
       message_text: "ဝယ်ယူမှုအောင်မြင်ပါသည်",
     };
-    console.log(data);
+    console.log("order", data);
 
     axios.post(
       "https://hook.us1.make.com/1dl8u4cfm8mzefq9zkevxsmshhqpl4yg",
@@ -20,7 +21,11 @@ function OrderInfo({ selectedOrder }) {
     const data = {
       deliveryStatus: "confirmed",
     };
-    axios.patch(`https://api.piperbloom.com/api/v1/order/${orderId}`, data);
+    const res = await chgOrderStatus({ orderId, data });
+    console.log(res);
+    if (res.code === 200) {
+      refreshOrders();
+    }
   };
   return (
     <div className="mt-10 mx-5 h-[calc(100vh-170px)] overflow-y-auto">

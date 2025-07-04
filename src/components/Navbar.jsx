@@ -8,6 +8,7 @@ import {
   MdOutlineDoorBack,
 } from "react-icons/md";
 import { CiDeliveryTruck } from "react-icons/ci";
+import { NavLink } from "react-router-dom";
 
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -29,15 +30,29 @@ const Navbar = () => {
 
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center space-x-2">
-              <button className="bg-primary text-white px-6 py-3 rounded-lg text-sm font-medium hover:bg-orange-600 transition-colors">
+              <NavLink
+                to="/"
+                className={({ isActive }) =>
+                  isActive
+                    ? "bg-primary text-white px-6 py-3 rounded-lg text-sm font-medium hover:bg-orange-600 transition-colors"
+                    : "text-gray-600 px-6 py-3 rounded-lg text-sm font-medium hover:bg-gray-100 transition-colors"
+                }
+              >
                 <MdShelves className="w-4 h-4 inline mr-2" /> Inventory
-              </button>
-              <button className="text-gray-600 px-6 py-3 rounded-lg text-sm font-medium hover:bg-gray-100 transition-colors">
+              </NavLink>
+              <NavLink
+                to="/orders"
+                className={({ isActive }) =>
+                  isActive
+                    ? "bg-primary text-white px-6 py-3 rounded-lg text-sm font-medium hover:bg-orange-600 transition-colors"
+                    : "text-gray-600 px-6 py-3 rounded-lg text-sm font-medium hover:bg-gray-100 transition-colors"
+                }
+              >
                 <MdOutlineShoppingCart className="w-4 h-4 inline mr-2" /> Order
-              </button>
-              <button className="text-gray-600 px-6 py-3 rounded-lg text-sm font-medium hover:bg-gray-100 transition-colors">
+              </NavLink>
+              {/* <NavLink to="/delivery" className="text-gray-600 px-6 py-3 rounded-lg text-sm font-medium hover:bg-gray-100 transition-colors">
                 <CiDeliveryTruck className="w-4 h-4 inline mr-2" /> Delivery
-              </button>
+              </NavLink> */}
             </div>
           </div>
 
@@ -81,15 +96,15 @@ const Navbar = () => {
           <div className="md:hidden">
             <div className="px-2 pt-2 pb-3 space-y-1 border-t border-gray-200">
               {/* Mobile Navigation Links */}
-              <button className="bg-orange-500 text-white block px-3 py-2 rounded text-sm font-medium w-full text-left">
+              <NavLink className="bg-orange-500 text-white block px-3 py-2 rounded text-sm font-medium w-full text-left">
                 📦 Inventory
-              </button>
-              <button className="text-gray-600 block px-3 py-2 rounded text-sm font-medium w-full text-left hover:bg-gray-100">
+              </NavLink>
+              <NavLink className="text-gray-600 block px-3 py-2 rounded text-sm font-medium w-full text-left hover:bg-gray-100">
                 📋 Order
-              </button>
-              <button className="text-gray-600 block px-3 py-2 rounded text-sm font-medium w-full text-left hover:bg-gray-100">
+              </NavLink>
+              <NavLink className="text-gray-600 block px-3 py-2 rounded text-sm font-medium w-full text-left hover:bg-gray-100">
                 🚚 Delivery
-              </button>
+              </NavLink>
 
               {/* Mobile User Section */}
               <div className="border-t border-gray-200 pt-3 mt-3">

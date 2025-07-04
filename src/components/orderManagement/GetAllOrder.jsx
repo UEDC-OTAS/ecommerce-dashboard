@@ -11,7 +11,7 @@ function GetAllOrder() {
   const getOrders = async () => {
     const response = await getAllOrders();
     console.log(response);
-    setOrders(response.data);
+    setOrders(response.data.reverse());
   };
 
   const passOrder = (orderId) => {
@@ -40,7 +40,12 @@ function GetAllOrder() {
         </div>
 
         <div className="w-1/3">
-          {selectedOrder && <OrderInfo selectedOrder={selectedOrder} />}
+          {selectedOrder && (
+            <OrderInfo
+              selectedOrder={selectedOrder}
+              refreshOrders={getOrders}
+            />
+          )}
         </div>
       </div>
     </div>
