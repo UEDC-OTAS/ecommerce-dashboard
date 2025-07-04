@@ -36,7 +36,11 @@ function GetAllOrder() {
 
       <div className="flex">
         <div className="w-2/3">
-          <OrderTable orders={orders} passOrder={passOrder} />
+          <OrderTable
+            orders={orders}
+            passOrder={passOrder}
+            handlePrintPDF={handlePrintPDF}
+          />
         </div>
 
         <div className="w-1/3">

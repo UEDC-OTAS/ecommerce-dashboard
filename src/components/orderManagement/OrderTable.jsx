@@ -1,9 +1,12 @@
 import { useState } from "react";
+import { generatePDF } from "./PdfGenerator";
+import { Printer, Download } from "lucide-react";
 
 const OrderTable = ({ orders, passOrder }) => {
   const [activeTab, setActiveTab] = useState("All");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [isGenerating, setIsGenerating] = useState(null);
 
   const tabs = ["All", "Pending Orders", "Confirm Orders", "Cancelled Orders"];
 
@@ -20,6 +23,18 @@ const OrderTable = ({ orders, passOrder }) => {
 
   const handleDelete = (id) => {
     console.log("Delete product:", id);
+  };
+
+  const handlePrintPDF = async (order) => {
+    setIsGenerating(order.orderId);
+    try {
+      await generatePDF(order);
+    } catch (error) {
+      console.error("PDF generation failed:", error);
+      alert("Failed to generate PDF. Please try again.");
+    } finally {
+      setIsGenerating(null);
+    }
   };
 
   return (
@@ -115,6 +130,24 @@ const OrderTable = ({ orders, passOrder }) => {
                       </svg>
                     </button>
                     <button
+                      onClick={() => handlePrintPDF(order)}
+                      disabled={isGenerating === order.orderId}
+                      size="sm"
+                      className="flex items-center gap-1"
+                    >
+                      {isGenerating === order.orderId ? (
+                        <>
+                          <Download className="w-4 h-4" />
+                          <span className="myanmar-text">Waiting...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Printer className="w-4 h-4" />
+                          <span className="myanmar-text">Print</span>
+                        </>
+                      )}
+                    </button>
+                    {/* <button
                       onClick={() => handleDelete(order.orderId)}
                       className="border border-gray-200 hover:bg-gray-200 text-delete p-3 rounded-lg transition-colors"
                       title="Delete"
@@ -132,7 +165,7 @@ const OrderTable = ({ orders, passOrder }) => {
                           d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
                         />
                       </svg>
-                    </button>
+                    </button> */}
                   </div>
                 </td>
               </tr>
