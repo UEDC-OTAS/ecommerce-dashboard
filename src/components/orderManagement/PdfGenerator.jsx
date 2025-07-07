@@ -72,9 +72,7 @@ function formatAddress(address) {
 // Create voucher HTML with inline styles for better PDF rendering
 function createVoucherHTML(orderData) {
   const { snapshotData } = orderData;
-  const addressLines = formatAddress(
-    "No23/125, marga Street, kamayut 10 yards, Myan kan tar housing Yangon City, Yangon Region, Myanmar"
-  );
+  const addressLines = formatAddress(snapshotData.address);
 
   return `
     <div style="

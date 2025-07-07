@@ -2,7 +2,7 @@ import axios from "axios";
 import chgOrderStatus from "../../api/orderApi/chgOrderStatus";
 
 function OrderInfo({ selectedOrder, refreshOrders }) {
-  //   console.log(selectedOrder);
+  console.log(selectedOrder);
   const confirmOrder = async (orderId, psid) => {
     const data = {
       subscriber_id: psid,
@@ -63,7 +63,7 @@ function OrderInfo({ selectedOrder, refreshOrders }) {
         </div>
       )}
 
-      {selectedOrder.deliveryStatus === "pending" && (
+      {selectedOrder.deliveryStatus !== "confirm" && (
         <div
           style={{ position: "sticky", bottom: 0 }}
           className="pt-2 bg-white"
