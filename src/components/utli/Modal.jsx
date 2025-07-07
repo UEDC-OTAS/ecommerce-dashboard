@@ -6,7 +6,7 @@ const Modal = ({
   onClose,
   title,
   children,
-  size = "md",
+  size = "xl",
   showCloseButton = true,
   closeOnBackdropClick = true,
   closeOnEscape = true,
@@ -68,7 +68,7 @@ const Modal = ({
       <div className="flex min-h-full items-center justify-center p-4">
         <div
           className={`
-            relative w-full ${sizeClasses[size]} 
+            relative 
             bg-white rounded-lg shadow-xl 
             transform transition-all duration-300 
             animate-in fade-in-0 zoom-in-95

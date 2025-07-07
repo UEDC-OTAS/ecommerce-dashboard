@@ -3,6 +3,7 @@ import { generatePDF } from "./PdfGenerator";
 import { Printer, Download } from "lucide-react";
 
 const OrderTable = ({ orders, passOrder }) => {
+  console.log(orders);
   const [activeTab, setActiveTab] = useState("All");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);

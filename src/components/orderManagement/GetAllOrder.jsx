@@ -39,7 +39,7 @@ function GetAllOrder() {
           <OrderTable
             orders={orders}
             passOrder={passOrder}
-            handlePrintPDF={handlePrintPDF}
+            // handlePrintPDF={handlePrintPDF}
           />
         </div>
 
