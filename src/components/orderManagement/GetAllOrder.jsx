@@ -35,7 +35,11 @@ function GetAllOrder() {
       </div>
 
       <div className="flex">
-        <div className="w-2/3">
+        <div
+          className={`transition-all duration-300 ${
+            selectedOrder ? "w-2/3" : "w-full"
+          }`}
+        >
           <OrderTable
             orders={orders}
             passOrder={passOrder}
@@ -43,7 +47,11 @@ function GetAllOrder() {
           />
         </div>
 
-        <div className="w-1/3">
+        <div
+          className={`transition-all duration-300 ${
+            selectedOrder ? "w-1/3" : "w-0"
+          }`}
+        >
           {selectedOrder && (
             <OrderInfo
               selectedOrder={selectedOrder}
