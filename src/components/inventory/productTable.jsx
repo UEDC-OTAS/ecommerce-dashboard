@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 const ProductTable = ({ products }) => {
-  console.log(products[0].category);
+  // console.log(products[0].category);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [selectedCategory, setSelectedCategory] = useState("All");
