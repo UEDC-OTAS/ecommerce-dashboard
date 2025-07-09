@@ -24,7 +24,7 @@ function GetAllOrder() {
     getOrders();
   }, []);
   return (
-    <div className="">
+    <div className="px-4">
       <div className="flex items-center justify-between ">
         <h1 className="header">Orders</h1>
         <div className="flex items-center gap-10">

@@ -3,15 +3,30 @@ import SearchBar from "../utli/SearchBar";
 import ProductTable from "./productTable";
 import AddProductModal from "./AddProductModal";
 import getAllProducts from "../../api/inventoryApi/GetAllProducts";
+import ProductDetail from "./ProductDetail";
+import QuantityModal from "./QuantityModal";
 
 function Inventory() {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [quantityModalOpen, setIsQuantityModalOpen] = useState(false);
   const [products, setProducts] = useState([]);
+  const [selectedProduct, setSelectedProduct] = useState(null);
 
   const getProducts = async () => {
     const response = await getAllProducts();
     // console.log(response);
     setProducts(response.data.reverse());
+  };
+
+  const getProductDetail = async (product) => {
+    setSelectedProduct(product);
+    setIsDetailModalOpen(true);
+  };
+
+  const getQuantityModal = async (product) => {
+    setSelectedProduct(product);
+    setIsQuantityModalOpen(true);
   };
 
   useEffect(() => {
@@ -40,13 +55,37 @@ function Inventory() {
           </button>
         </div>
       </div>
-      <ProductTable products={products} />
+      <ProductTable
+        products={products}
+        sentproductDetail={getProductDetail}
+        sentQuantityModal={getQuantityModal}
+      />
 
       {/* Add Stock Modal */}
       <AddProductModal
         isOpen={isModalOpen}
         onClose={() => {
           setIsModalOpen(false);
+          getProducts();
+        }}
+      />
+
+      {/* Product Detail Modal */}
+      <ProductDetail
+        isOpen={isDetailModalOpen}
+        product={selectedProduct}
+        onClose={() => {
+          setIsDetailModalOpen(false);
+          getProducts();
+        }}
+      />
+
+      {/* Quantity Modal */}
+      <QuantityModal
+        isOpen={quantityModalOpen}
+        product={selectedProduct}
+        onClose={() => {
+          setIsQuantityModalOpen(false);
           getProducts();
         }}
       />

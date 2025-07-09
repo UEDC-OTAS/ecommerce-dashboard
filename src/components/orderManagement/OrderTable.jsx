@@ -3,15 +3,13 @@ import { generatePDF } from "./PdfGenerator";
 import { Printer, Download } from "lucide-react";
 
 const OrderTable = ({ orders, passOrder }) => {
-  console.log(orders);
+  // console.log("orders", orders);
   const [activeTab, setActiveTab] = useState("All");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [isGenerating, setIsGenerating] = useState(null);
 
   const tabs = ["All", "Pending Orders", "Confirm Orders", "Cancelled Orders"];
-
-  // Sample data - in real app this would come from API
 
   const totalPages = Math.ceil(orders.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
@@ -58,7 +56,7 @@ const OrderTable = ({ orders, passOrder }) => {
       </div>
 
       {/* Table */}
-      <div className="overflow-x-auto bg-white rounded-lg shadow overflow-y-auto h-[calc(100vh-290px)]">
+      <div className="overflow-x-auto bg-white rounded-lg shadow overflow-y-auto h-[calc(100vh-310px)]">
         <table className="w-full table-auto">
           <thead
             className="bg-gray-50 border-b border-gray-200"
