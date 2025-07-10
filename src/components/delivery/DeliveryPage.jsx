@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import getAllOrders from "../../api/orderApi/getAllOrders";
 import SearchBar from "../utli/SearchBar";
-import OrderTable from "./OrderTable";
-import OrderInfo from "./OrderInfo";
+import DeliveryTable from "./DeliveryTable";
+import DeliReciept from "./DeliReciept";
 
-function GetAllOrder() {
+function DeliveryPage() {
   const [orders, setOrders] = useState([]);
   const [selectedOrder, setSelectedOrder] = useState(null);
 
@@ -12,7 +12,7 @@ function GetAllOrder() {
     const response = await getAllOrders();
     // console.log(response);
     const filteredOrders = response.data.filter(
-      (order) => order.deliveryStatus === "pending"
+      (order) => order.deliveryStatus === "confirmed"
     );
     setOrders(filteredOrders.reverse());
   };
@@ -31,7 +31,7 @@ function GetAllOrder() {
   return (
     <div className="px-4">
       <div className="flex items-center justify-between ">
-        <h1 className="header">Orders</h1>
+        <h1 className="header">Delivery</h1>
         <div className="flex items-center gap-10">
           <div className="w-[400px]">
             <SearchBar placeholder="Search Order with name or Product Code" />
@@ -45,7 +45,7 @@ function GetAllOrder() {
             selectedOrder ? "w-2/3" : "w-full"
           }`}
         >
-          <OrderTable
+          <DeliveryTable
             orders={orders}
             passOrder={passOrder}
             // handlePrintPDF={handlePrintPDF}
@@ -58,7 +58,7 @@ function GetAllOrder() {
           }`}
         >
           {selectedOrder && (
-            <OrderInfo
+            <DeliReciept
               selectedOrder={selectedOrder}
               refreshOrders={getOrders}
             />
@@ -69,4 +69,4 @@ function GetAllOrder() {
   );
 }
 
-export default GetAllOrder;
+export default DeliveryPage;

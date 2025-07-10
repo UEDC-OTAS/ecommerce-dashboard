@@ -1,16 +1,14 @@
 import { useState } from "react";
-import { generatePDF } from "./PdfGenerator";
+import { generatePDF } from "./../orderManagement/PdfGenerator";
 import { Printer, Download } from "lucide-react";
 import getAOrder from "../../api/orderApi/getAOrder";
 
-const OrderTable = ({ orders, passOrder }) => {
+const DeliveryTable = ({ orders, passOrder }) => {
   console.log("orders", orders);
-  const [activeTab, setActiveTab] = useState("All");
+  // const [activeTab, setActiveTab] = useState("All");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [isGenerating, setIsGenerating] = useState(null);
-
-  const tabs = ["All", "Pending Orders", "Confirm Orders", "Cancelled Orders"];
 
   const totalPages = Math.ceil(orders.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
@@ -69,7 +67,10 @@ const OrderTable = ({ orders, passOrder }) => {
                 Customer
               </th>
               <th className="px-4 py-4 text-left text-xs font-medium text-black uppercase tracking-wider">
-                Total
+                Address
+              </th>
+              <th className="px-4 py-4 text-left text-xs font-medium text-black uppercase tracking-wider">
+                Phone
               </th>
               <th className="px-4 py-4 text-left text-xs font-medium text-black uppercase tracking-wider">
                 Deli Type
@@ -77,9 +78,7 @@ const OrderTable = ({ orders, passOrder }) => {
               <th className="px-4 py-4 text-left text-xs font-medium text-black uppercase tracking-wider">
                 Payment Type
               </th>
-              <th className="px-4 py-4 text-left text-xs font-medium text-black uppercase tracking-wider">
-                Status
-              </th>
+
               <th className="px-4 py-4 text-left text-xs font-medium text-black uppercase tracking-wider">
                 Actions
               </th>
@@ -95,7 +94,10 @@ const OrderTable = ({ orders, passOrder }) => {
                   {order?.customerName}
                 </td>
                 <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {order?.totalAmount.toLocaleString()} MMK
+                  {order?.address}
+                </td>
+                <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
+                  <span>{order.contactNumber}</span>
                 </td>
                 <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
                   {order?.deliveryType}
@@ -103,9 +105,7 @@ const OrderTable = ({ orders, passOrder }) => {
                 <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
                   <span>{order.paymentType}</span>
                 </td>
-                <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
-                  <span>{order.deliveryStatus}</span>
-                </td>
+
                 <td className="px-4 py-4 whitespace-nowrap text-sm font-medium">
                   <div className="flex space-x-2">
                     <button
@@ -237,4 +237,4 @@ const OrderTable = ({ orders, passOrder }) => {
   );
 };
 
-export default OrderTable;
+export default DeliveryTable;

@@ -103,7 +103,12 @@ function createVoucherHTML(orderData) {
             color: #000;
             font-family: Arial, sans-serif;
           ">UEDC</h1>
-          
+          <p style="
+            font-size: 14px; 
+            color: #666; 
+            margin: 5px 0 0 0;
+            font-family: Arial, sans-serif;
+          ">DOOR CITY</p>
         </div>
         <div style="text-align: center;">
           <h2 style="
@@ -113,11 +118,18 @@ function createVoucherHTML(orderData) {
             color: #000;
             font-family: Arial, sans-serif;
           ">Sale Order</h2>
-         
+          <p style="
+            font-size: 18px; 
+            font-weight: 500; 
+            margin: 5px 0 0 0;
+            color: #000;
+            font-family: Arial, sans-serif;
+          ">Sale Order</p>
         </div>
         <div style="width: 150px;"></div>
       </div>
 
+      <!-- Customer Information -->
       <div style="margin-bottom: 20px;">
         <table style="width: 100%; border-collapse: collapse;">
           <tr>
@@ -125,23 +137,25 @@ function createVoucherHTML(orderData) {
               <!-- Left Column -->
               <div style="margin-bottom: 15px;">
                 <span style="font-weight: bold; color: #000; font-family: Arial, sans-serif;">Customer : </span>
-                <span style="margin-top: 5px; color: #000; font-family: Arial, sans-serif;">
+                <div style="margin-top: 5px; color: #000; font-family: Arial, sans-serif;">
                   ${snapshotData.customerName}
-                </span>
-                
+                </div>
+                <div style="margin-top: 3px; color: #000; font-family: Arial, sans-serif;">
+                  ${snapshotData.facebookName}
+                </div>
               </div>
               
               <div style="margin-bottom: 15px;">
-                <span style="font-weight: bold; color: #000; font-family: Arial, sans-serif;">Phone <span style="margin-left:22px;"> : </span></span>
+                <span style="font-weight: bold; color: #000; font-family: Arial, sans-serif;">Phone : </span>
                 <span style="color: #000; font-family: Arial, sans-serif;">${
                   snapshotData.contactNumber
                 }</span>
               </div>
               
               <div style="margin-bottom: 15px;">
-                <span style="font-weight: bold; color: #000; font-family: Arial, sans-serif;">Address :</span>
+                <span style="font-weight: bold; color: #000; font-family: Arial, sans-serif; vertical-align: top;">Address : </span>
                 <div style="
-                  margin-top: 5px;
+                  margin-top: 5px; 
                   line-height: 1.5; 
                   color: #000; 
                   font-family: Arial, sans-serif;
@@ -178,7 +192,7 @@ function createVoucherHTML(orderData) {
                 <span style="font-weight: bold; color: #000; font-family: Arial, sans-serif;">Pay Type : </span>
                 <span style="color: #000; font-family: Arial, sans-serif;">${
                   snapshotData.paymentType === "cash-on-delivery"
-                    ? "Cash on Delivery"
+                    ? "Cash on Delivery (ငွေသားဖြင့်)"
                     : snapshotData.paymentType
                 }</span>
               </div>
@@ -216,7 +230,7 @@ function createVoucherHTML(orderData) {
               font-family: Arial, sans-serif;
               width: 80px;
             ">
-              Usr Code
+               Code
             </th>
             <th style="
               border: 1px solid #000; 
@@ -286,55 +300,49 @@ function createVoucherHTML(orderData) {
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td style="border: 1px solid #000; padding: 8px; text-align: center; color: #000; font-family: Arial, sans-serif;">
-              1
-            </td>
-            <td style="border: 1px solid #000; padding: 8px; text-align: center; color: #000; font-family: Arial, sans-serif;">
-              ${snapshotData.productCode}
-            </td>
-            <td style="border: 1px solid #000; padding: 8px; color: #000; font-family: Arial, sans-serif;">
-              <div style="font-weight: bold;">${snapshotData.productName}</div>
-              <div style="font-size: 12px; color: #666; margin-top: 2px;">Delivery: ${
-                snapshotData.deliveryServiceName
-              }</div>
-              <div style="font-size: 12px; color: #666; margin-top: 2px;">Status: ${
-                snapshotData.deliveryStatus
-              }</div>
-            </td>
-            <td style="border: 1px solid #000; padding: 8px; text-align: center; color: #000; font-family: Arial, sans-serif;">
-              ${snapshotData.quantity}.00
-            </td>
-            <td style="border: 1px solid #000; padding: 8px; text-align: center; color: #000; font-family: Arial, sans-serif;">
-              လုံး
-            </td>
-            <td style="border: 1px solid #000; padding: 8px; text-align: right; color: #000; font-family: Arial, sans-serif;">
-              ${formatPrice(snapshotData.productPrice)}.00
-            </td>
-            <td style="border: 1px solid #000; padding: 8px; text-align: right; color: #000; font-family: Arial, sans-serif; font-weight: bold;">
-              ${formatPrice(
-                snapshotData.productPrice * snapshotData.quantity
-              )}.00
-            </td>
-            <td style="border: 1px solid #000; padding: 8px; text-align: center; color: #000; font-family: Arial, sans-serif;">
-              
-            </td>
-          </tr>
+          ${snapshotData.orderInfo
+            .map(
+              (item, index) => `
+            <tr>
+              <td style="border: 1px solid #000; padding: 8px; text-align: center; color: #000; font-family: Arial, sans-serif;">
+                ${index + 1}
+              </td>
+              <td style="border: 1px solid #000; padding: 8px; text-align: center; color: #000; font-family: Arial, sans-serif;">
+                ${item.productCode}
+              </td>
+              <td style="border: 1px solid #000; padding: 8px; color: #000; font-family: Arial, sans-serif;">
+                <div style="font-weight: bold;">${item.productName}</div>
+              </td>
+              <td style="border: 1px solid #000; padding: 8px; text-align: center; color: #000; font-family: Arial, sans-serif;">
+                ${item.quantity}.00
+              </td>
+              <td style="border: 1px solid #000; padding: 8px; text-align: center; color: #000; font-family: Arial, sans-serif;">
+                pcs
+              </td>
+              <td style="border: 1px solid #000; padding: 8px; text-align: right; color: #000; font-family: Arial, sans-serif;">
+                ${formatPrice(item.productPrice)}.00
+              </td>
+              <td style="border: 1px solid #000; padding: 8px; text-align: right; color: #000; font-family: Arial, sans-serif; font-weight: bold;">
+                ${formatPrice(item.productPrice * item.quantity)}.00
+              </td>
+              <td style="border: 1px solid #000; padding: 8px; text-align: center; color: #000; font-family: Arial, sans-serif;">
+                
+              </td>
+            </tr>
+          `
+            )
+            .join("")}
           
           <!-- Remark Row -->
           <tr>
             <td colspan="4" style="border: 1px solid #000; padding: 8px; color: #000; font-family: Arial, sans-serif;">
-              Remark: Contact ID: ${snapshotData.contactId} | PSID: ${
-    snapshotData.psid
-  }
+              Remark :  Delivery: ${snapshotData.deliveryServiceName}
             </td>
             <td colspan="2" style="border: 1px solid #000; padding: 8px; text-align: center; font-weight: bold; color: #000; font-family: Arial, sans-serif;">
-              Invoice Total:
+              Invoice Total<br>
             </td>
             <td style="border: 1px solid #000; padding: 8px; text-align: right; font-weight: bold; color: #000; font-family: Arial, sans-serif; font-size: 16px;">
-              ${formatPrice(
-                snapshotData.productPrice * snapshotData.quantity
-              )}.00
+              ${formatPrice(snapshotData.totalAmount)}.00
             </td>
             <td style="border: 1px solid #000; padding: 8px;"></td>
           </tr>
@@ -343,17 +351,13 @@ function createVoucherHTML(orderData) {
           <tr>
             <td colspan="4" style="border: 1px solid #000; padding: 8px;"></td>
             <td colspan="2" style="border: 1px solid #000; padding: 8px; text-align: center; font-weight: bold; color: #000; font-family: Arial, sans-serif;">
-              Sign
+              Sign<br>
             </td>
-            <td style="border: 1px solid #000; padding: 8px; text-align: center; color: #000; font-family: Arial, sans-serif; font-size: 18px;">
-              
-            </td>
+            
             <td style="border: 1px solid #000; padding: 8px;"></td>
           </tr>
         </tbody>
       </table>
-
-      
     </div>
   `;
 }

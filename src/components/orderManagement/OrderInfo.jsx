@@ -1,15 +1,28 @@
 import axios from "axios";
 import chgOrderStatus from "../../api/orderApi/chgOrderStatus";
+import { useEffect, useState } from "react";
+import getAOrder from "../../api/orderApi/getAOrder";
 
 function OrderInfo({ selectedOrder, refreshOrders }) {
   console.log(selectedOrder);
-  const confirmOrder = async (orderId, psid) => {
+  const [order, setOrder] = useState(null);
+
+  const getOrder = async () => {
+    const response = await getAOrder(selectedOrder);
+    console.log(response);
+    setOrder(response.data);
+  };
+
+  useEffect(() => {
+    getOrder();
+  }, [selectedOrder]);
+
+  const confirmOrder = async (orderId, contactId) => {
     const data = {
-      subscriber_id: psid,
+      subscriber_id: contactId,
       order_id: orderId,
       message_text: "ဝယ်ယူမှုအောင်မြင်ပါသည်",
     };
-    console.log("order", data);
 
     axios.post(
       "https://hook.us1.make.com/1dl8u4cfm8mzefq9zkevxsmshhqpl4yg",
@@ -33,53 +46,54 @@ function OrderInfo({ selectedOrder, refreshOrders }) {
         <h1 className="header">Order Info</h1>
         <div className="flex flex-col items-end">
           <p className="text-[#696969] text-[10px]">Order ID</p>
-          <span className="text-[16px]">{selectedOrder.orderId}</span>
+          <span className="text-[16px]">{selectedOrder}</span>
         </div>
       </div>
 
-      <div className="flex justify-between items-center mt-10">
+      {order && (
         <div>
-          <p className="font-medium text-[16px]">Customer Name</p>
-          <span className="text-[#696969] text-[16px]">
-            {selectedOrder.snapshotData.customerName}
-          </span>
-        </div>
-        <div>
-          <p className="font-medium text-[16px]">Phone Number</p>
-          <span className="text-[#696969] text-[16px]">
-            {selectedOrder.snapshotData.contactNumber}
-          </span>
-        </div>
-      </div>
+          <div className="flex justify-between items-center mt-10">
+            <div>
+              <p className="font-medium text-[16px]">Customer Name</p>
+              <span className="text-[#696969] text-[16px]">
+                {order.snapshotData.customerName}
+              </span>
+            </div>
+            <div>
+              <p className="font-medium text-[16px]">Phone Number</p>
+              <span className="text-[#696969] text-[16px]">
+                {order.snapshotData.contactNumber}
+              </span>
+            </div>
+          </div>
 
-      {selectedOrder.snapshotData.paymentImage && (
-        <div className="mt-5">
-          <p className="font-medium text-[16px]">Payment Screenshots</p>
-          <img
-            src={selectedOrder.snapshotData.paymentImage.cloudinaryUrl}
-            alt=""
-            className=""
-          />
-        </div>
-      )}
+          {order.snapshotData.paymentImage && (
+            <div className="mt-5">
+              <p className="font-medium text-[16px]">Payment Screenshots</p>
+              <img
+                src={order.snapshotData.paymentImage.cloudinaryUrl}
+                alt=""
+                className=""
+              />
+            </div>
+          )}
 
-      {selectedOrder.deliveryStatus !== "confirm" && (
-        <div
-          style={{ position: "sticky", bottom: 0 }}
-          className="pt-2 bg-white"
-        >
-          <button
-            className="button"
-            onClick={() => {
-              confirmOrder(
-                selectedOrder.orderId,
-                selectedOrder.snapshotData.psid
-              );
-              chgStatus(selectedOrder.orderId);
-            }}
-          >
-            Confirm Order
-          </button>
+          {order.deliveryStatus !== "confirm" && (
+            <div
+              style={{ position: "sticky", bottom: 0 }}
+              className="pt-2 bg-white"
+            >
+              <button
+                className="button"
+                onClick={() => {
+                  confirmOrder(order.orderId, order.snapshotData.contactId);
+                  chgStatus(order.orderId);
+                }}
+              >
+                Confirm Order
+              </button>
+            </div>
+          )}
         </div>
       )}
     </div>

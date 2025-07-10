@@ -50,9 +50,16 @@ const Navbar = () => {
               >
                 <MdOutlineShoppingCart className="w-4 h-4 inline mr-2" /> Order
               </NavLink>
-              {/* <NavLink to="/delivery" className="text-gray-600 px-6 py-3 rounded-lg text-sm font-medium hover:bg-gray-100 transition-colors">
+              <NavLink
+                to="/delivery"
+                className={({ isActive }) =>
+                  isActive
+                    ? "bg-primary text-white px-6 py-3 rounded-lg text-sm font-medium hover:bg-orange-600 transition-colors"
+                    : "text-gray-600 px-6 py-3 rounded-lg text-sm font-medium hover:bg-gray-100 transition-colors"
+                }
+              >
                 <CiDeliveryTruck className="w-4 h-4 inline mr-2" /> Delivery
-              </NavLink> */}
+              </NavLink>
             </div>
           </div>
 
