@@ -60,7 +60,10 @@ function GetAllOrder() {
           {selectedOrder && (
             <OrderInfo
               selectedOrder={selectedOrder}
-              refreshOrders={getOrders}
+              refreshOrders={() => {
+                getOrders();
+                setSelectedOrder(null);
+              }}
             />
           )}
         </div>
