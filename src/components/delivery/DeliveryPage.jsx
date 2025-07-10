@@ -3,10 +3,12 @@ import getAllOrders from "../../api/orderApi/getAllOrders";
 import SearchBar from "../utli/SearchBar";
 import DeliveryTable from "./DeliveryTable";
 import DeliReciept from "./DeliReciept";
+import axios from "./../../axios";
 
 function DeliveryPage() {
   const [orders, setOrders] = useState([]);
   const [selectedOrder, setSelectedOrder] = useState(null);
+  const [receipt, setReceipt] = useState(null);
 
   const getOrders = async () => {
     const response = await getAllOrders();
@@ -22,8 +24,24 @@ function DeliveryPage() {
       setSelectedOrder(null);
     } else {
       setSelectedOrder(orderId);
+      getReceipt(orderId);
     }
   };
+
+  const getReceipt = async (id) => {
+    const response = await axios.get(`api/v1/delivery-receipt`);
+    // if (response.code === 200) {
+    const filteredReceipt = response.data.data.filter(
+      (receipt) => receipt.orderId === id
+    );
+    setReceipt(filteredReceipt);
+    console.log("receipt", filteredReceipt);
+    // }
+  };
+
+  useEffect(() => {
+    getReceipt();
+  }, []);
 
   useEffect(() => {
     getOrders();
@@ -60,7 +78,8 @@ function DeliveryPage() {
           {selectedOrder && (
             <DeliReciept
               selectedOrder={selectedOrder}
-              refreshOrders={getOrders}
+              refreshOrders={() => setSelectedOrder(null)}
+              receipt={receipt}
             />
           )}
         </div>

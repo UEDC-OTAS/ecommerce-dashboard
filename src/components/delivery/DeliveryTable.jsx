@@ -4,7 +4,7 @@ import { Printer, Download } from "lucide-react";
 import getAOrder from "../../api/orderApi/getAOrder";
 
 const DeliveryTable = ({ orders, passOrder }) => {
-  console.log("orders", orders);
+  // console.log("orders", orders);
   // const [activeTab, setActiveTab] = useState("All");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
