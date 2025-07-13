@@ -206,7 +206,7 @@ const AddStockModal = ({ isOpen, onClose, onSubmit }) => {
     data.append("price", stockData.price);
     // Assuming you only upload the first image for now
     if (stockData.images.length > 0) {
-      data.append("stockImagesUrl", stockData.images[0].file);
+      data.append("url", stockData.images[0].file);
     }
 
     const res = await addProduct(data);

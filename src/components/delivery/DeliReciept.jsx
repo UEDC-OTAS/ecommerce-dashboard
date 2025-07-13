@@ -1,7 +1,9 @@
 import { useState } from "react";
 import uploadReceipt from "../../api/deliveryApi/uploadReceipt";
+import axios from "axios";
 
 function DeliReciept({ selectedOrder, refreshOrders, receipt }) {
+  // console.log("selectedOrder", selectedOrder);
   const [formData, setFormData] = useState({
     images: [],
   });
@@ -64,12 +66,19 @@ function DeliReciept({ selectedOrder, refreshOrders, receipt }) {
     console.log(response);
     if (response.code === 201) {
       refreshOrders();
+      await axios.post(
+        "https://hook.us1.make.com/ckbcdf8v49x09xmvp5icapdxu7tgr9wy",
+        {
+          contact_id: response.data.contactId,
+          image_url: response.data.deliveryReceiptImage.deliveryImageUrl,
+        }
+      );
     }
     // refreshOrders();
   };
 
   return (
-    <div className="mx-5 h-[calc(100vh-190px)] overflow-y-auto">
+    <div className="mx-5 mt-5 h-[calc(100vh-190px)] overflow-y-auto">
       <div className="flex items-center justify-between">
         <h1 className="header">Upload Reciept</h1>
       </div>
@@ -156,7 +165,7 @@ function DeliReciept({ selectedOrder, refreshOrders, receipt }) {
         </div>
       )}
 
-      {receipt && (
+      {receipt && receipt.length > 0 && (
         <div>
           <img
             src={receipt[0]?.deliveryReceiptImage?.deliveryImageUrl}
