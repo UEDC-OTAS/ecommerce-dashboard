@@ -6,6 +6,7 @@ import {
   MdShelves,
   MdOutlineShoppingCart,
   MdOutlineDoorBack,
+  MdSupportAgent,
 } from "react-icons/md";
 import { CiDeliveryTruck } from "react-icons/ci";
 import { NavLink } from "react-router-dom";
@@ -29,7 +30,7 @@ const Navbar = () => {
             </div>
 
             {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center space-x-2">
+            <div className="hidden lg:flex items-center space-x-2">
               <NavLink
                 to="/"
                 className={({ isActive }) =>
@@ -60,11 +61,21 @@ const Navbar = () => {
               >
                 <CiDeliveryTruck className="w-4 h-4 inline mr-2" /> Delivery
               </NavLink>
+              <NavLink
+                to="/support"
+                className={({ isActive }) =>
+                  isActive
+                    ? "bg-primary text-white px-6 py-3 rounded-lg text-sm font-medium hover:bg-orange-600 transition-colors"
+                    : "text-gray-600 px-6 py-3 rounded-lg text-sm font-medium hover:bg-gray-100 transition-colors"
+                }
+              >
+                <MdSupportAgent className="w-4 h-4 inline mr-2" /> Cus Support
+              </NavLink>
             </div>
           </div>
 
           {/* Right side - User Profile */}
-          <div className="hidden md:flex items-center space-x-4">
+          <div className="hidden lg:flex items-center space-x-4">
             {/* User Info */}
             <div className="flex items-center space-x-3">
               <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
@@ -84,7 +95,7 @@ const Navbar = () => {
           </div>
 
           {/* Mobile menu button */}
-          <div className="md:hidden">
+          <div className="lg:hidden">
             <button
               onClick={toggleMobileMenu}
               className="text-gray-600 hover:text-gray-900 focus:outline-none focus:text-gray-900"
@@ -100,7 +111,7 @@ const Navbar = () => {
 
         {/* Mobile Navigation Menu */}
         {isMobileMenuOpen && (
-          <div className="md:hidden">
+          <div className="lg:hidden">
             <div className="px-2 pt-2 pb-3 space-y-1 border-t border-gray-200">
               {/* Mobile Navigation Links */}
               <NavLink className="bg-orange-500 text-white block px-3 py-2 rounded text-sm font-medium w-full text-left">
@@ -111,6 +122,9 @@ const Navbar = () => {
               </NavLink>
               <NavLink className="text-gray-600 block px-3 py-2 rounded text-sm font-medium w-full text-left hover:bg-gray-100">
                 🚚 Delivery
+              </NavLink>
+              <NavLink className="text-gray-600 block px-3 py-2 rounded text-sm font-medium w-full text-left hover:bg-gray-100">
+                📬 Customer Support
               </NavLink>
 
               {/* Mobile User Section */}

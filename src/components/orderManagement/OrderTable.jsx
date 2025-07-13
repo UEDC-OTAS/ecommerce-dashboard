@@ -5,12 +5,12 @@ import getAOrder from "../../api/orderApi/getAOrder";
 
 const OrderTable = ({ orders, passOrder }) => {
   console.log("orders", orders);
-  const [activeTab, setActiveTab] = useState("All");
+  // const [activeTab, setActiveTab] = useState("All");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [isGenerating, setIsGenerating] = useState(null);
 
-  const tabs = ["All", "Pending Orders", "Confirm Orders", "Cancelled Orders"];
+  // const tabs = ["All", "Pending Orders", "Confirm Orders", "Cancelled Orders"];
 
   const totalPages = Math.ceil(orders.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
@@ -23,7 +23,6 @@ const OrderTable = ({ orders, passOrder }) => {
 
   const handlePrintPDF = async (order) => {
     const res = await getAOrder(order._id);
-    console.log(res);
     setIsGenerating(order._id);
     try {
       await generatePDF(res.data);
@@ -124,7 +123,10 @@ const OrderTable = ({ orders, passOrder }) => {
                       </svg>
                     </button>
                     <button
-                      onClick={() => handlePrintPDF(order)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handlePrintPDF(order);
+                      }}
                       disabled={isGenerating === order._id}
                       size="sm"
                       className="flex items-center gap-1"

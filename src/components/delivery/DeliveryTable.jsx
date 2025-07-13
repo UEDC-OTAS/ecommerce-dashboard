@@ -124,7 +124,10 @@ const DeliveryTable = ({ orders, passOrder }) => {
                       </svg>
                     </button>
                     <button
-                      onClick={() => handlePrintPDF(order)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handlePrintPDF(order);
+                      }}
                       disabled={isGenerating === order._id}
                       size="sm"
                       className="flex items-center gap-1"

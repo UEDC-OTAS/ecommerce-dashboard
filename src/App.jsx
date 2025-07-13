@@ -8,7 +8,7 @@ export default function App() {
   return (
     <>
       <Router>
-        <Toaster position="top-center" richColors duration={5000} />
+        <Toaster position="top-center" richColors duration={2000} closeButton />
         <Routes>
           {/* <Route path="/auth/sign-in" element={<Login />} /> */}
           <Route path="*" element={<Home />} />
