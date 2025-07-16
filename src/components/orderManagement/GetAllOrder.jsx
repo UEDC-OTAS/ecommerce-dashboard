@@ -11,10 +11,7 @@ function GetAllOrder() {
   const getOrders = async () => {
     const response = await getAllOrders();
     // console.log(response);
-    const filteredOrders = response.data.filter(
-      (order) => order.deliveryStatus === "pending"
-    );
-    setOrders(filteredOrders.reverse());
+    setOrders(response.data.reverse());
   };
 
   const passOrder = (orderId) => {

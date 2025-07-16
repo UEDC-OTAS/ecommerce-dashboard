@@ -30,9 +30,9 @@ function OrderInfo({ selectedOrder, refreshOrders }) {
     );
   };
 
-  const chgStatus = async (orderId) => {
+  const chgStatus = async (orderId, status) => {
     const data = {
-      deliveryStatus: "confirmed",
+      deliveryStatus: status,
     };
     const res = await chgOrderStatus({ orderId, data });
     // console.log("res", res);
@@ -41,7 +41,7 @@ function OrderInfo({ selectedOrder, refreshOrders }) {
     }
   };
   return (
-    <div className="mt-10 mx-5 h-[calc(100vh-190px)] overflow-y-auto">
+    <div className="mt-10 mx-5 h-[calc(100vh-190px)] overflow-y-auto border border-gray-200 rounded-lg px-5 shadow-md pt-5">
       <div className="flex items-center justify-between">
         <h1 className="header">Order Info</h1>
         <div className="flex flex-col items-end">
@@ -80,14 +80,30 @@ function OrderInfo({ selectedOrder, refreshOrders }) {
 
           {order.deliveryStatus !== "confirm" && (
             <div
-              style={{ position: "sticky", bottom: 0 }}
-              className="pt-2 bg-white"
+              style={{
+                position: "sticky",
+                bottom: 0,
+                width: "100%",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                gap: "10px",
+              }}
+              className="py-5 bg-white"
             >
               <button
-                className="button"
+                className="flex-1 border border-gray-200 p-2 rounded-lg text-primary hover:bg-gray-100 text-[16px]"
+                onClick={() => {
+                  chgStatus(order.orderId, "cancelled");
+                }}
+              >
+                Order Cancel
+              </button>
+              <button
+                className="flex-1 bg-primary p-2 rounded-lg text-white hover:bg-primary/80 text-[16px]"
                 onClick={() => {
                   confirmOrder(order.orderId, order.snapshotData.contactId);
-                  chgStatus(order.orderId);
+                  chgStatus(order.orderId, "confirmed");
                 }}
               >
                 Confirm Order
