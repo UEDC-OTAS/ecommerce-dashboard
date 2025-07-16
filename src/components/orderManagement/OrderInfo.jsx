@@ -9,7 +9,7 @@ function OrderInfo({ selectedOrder, refreshOrders }) {
 
   const getOrder = async () => {
     const response = await getAOrder(selectedOrder);
-    console.log(response);
+    console.log("response", response);
     setOrder(response.data);
   };
 
@@ -35,7 +35,7 @@ function OrderInfo({ selectedOrder, refreshOrders }) {
       deliveryStatus: "confirmed",
     };
     const res = await chgOrderStatus({ orderId, data });
-    console.log(res);
+    // console.log("res", res);
     if (res.code === 200) {
       refreshOrders();
     }
@@ -54,13 +54,13 @@ function OrderInfo({ selectedOrder, refreshOrders }) {
         <div>
           <div className="flex justify-between items-center mt-10">
             <div>
-              <p className="font-medium text-[16px]">Customer Name</p>
+              <p className="font-medium text-[12px]">Customer Name</p>
               <span className="text-[#696969] text-[16px]">
                 {order.snapshotData.customerName}
               </span>
             </div>
             <div>
-              <p className="font-medium text-[16px]">Phone Number</p>
+              <p className="font-medium text-[12px]">Phone Number</p>
               <span className="text-[#696969] text-[16px]">
                 {order.snapshotData.contactNumber}
               </span>
@@ -71,7 +71,7 @@ function OrderInfo({ selectedOrder, refreshOrders }) {
             <div className="mt-5">
               <p className="font-medium text-[16px]">Payment Screenshots</p>
               <img
-                src={order.snapshotData.paymentImage.cloudinaryUrl}
+                src={order.snapshotData.paymentImage.url}
                 alt=""
                 className=""
               />

@@ -4,7 +4,7 @@ import { Printer, Download } from "lucide-react";
 import getAOrder from "../../api/orderApi/getAOrder";
 
 const OrderTable = ({ orders, passOrder }) => {
-  console.log("orders", orders);
+  // console.log("orders", orders);
   // const [activeTab, setActiveTab] = useState("All");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
@@ -18,7 +18,7 @@ const OrderTable = ({ orders, passOrder }) => {
   const currentOrders = orders.slice(startIndex, endIndex);
 
   const handleEdit = (id) => {
-    console.log("Edit product:", id);
+    // console.log("Edit product:", id);
   };
 
   const handlePrintPDF = async (order) => {
@@ -27,7 +27,7 @@ const OrderTable = ({ orders, passOrder }) => {
     try {
       await generatePDF(res.data);
     } catch (error) {
-      console.error("PDF generation failed:", error);
+      // console.error("PDF generation failed:", error);
       alert("Failed to generate PDF. Please try again.");
     } finally {
       setIsGenerating(null);
