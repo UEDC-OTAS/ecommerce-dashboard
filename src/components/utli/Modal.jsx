@@ -47,10 +47,10 @@ const Modal = ({
 
   // Size classes
   const sizeClasses = {
-    sm: "max-w-md",
-    md: "max-w-lg",
-    lg: "max-w-2xl",
-    xl: "max-w-4xl",
+    sm: "max-w-sm",
+    md: "max-w-md",
+    lg: "max-w-lg",
+    xl: "max-w-xl",
     full: "max-w-full mx-4",
   };
 

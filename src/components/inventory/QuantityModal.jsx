@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import Modal from "../utli/Modal";
+import updateQuantity from "../../api/inventoryApi/UpdateQuantity";
 
 const QuantityModal = ({ isOpen, onClose, onSubmit, product }) => {
   const [quantity, setQuantity] = useState(0);
@@ -41,9 +42,18 @@ const QuantityModal = ({ isOpen, onClose, onSubmit, product }) => {
     onClose();
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onSubmit();
+
+    const res = await updateQuantity({
+      id: product.code,
+      data: { newQuantity: quantity },
+    });
+    // console.log(res);
+    if (res.code === 200) {
+      onClose();
+      // onSubmit();
+    }
   };
 
   return (
@@ -176,7 +186,7 @@ const QuantityModal = ({ isOpen, onClose, onSubmit, product }) => {
             Cancel
           </button>
           <button
-            type="submit"
+            onClick={handleSubmit}
             className="px-4 py-2 text-sm font-medium text-white bg-orange-500 border border-orange-500 rounded-lg hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-200 transition-colors"
           >
             Confirm Quantity

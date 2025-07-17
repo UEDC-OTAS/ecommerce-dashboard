@@ -19,7 +19,7 @@ body {
 }
 
 .button {
-  @apply flex items-center gap-2 w-full max-w-[160px] bg-primary text-white px-6 py-3 rounded-lg text-sm font-medium hover:scale-105 transition-all;
+  @apply flex items-center gap-2 w-full min-w-[160px] bg-primary text-white px-6 py-3 rounded-lg text-sm font-medium hover:scale-105 transition-all;
 }
 
 .custom-scrollbar::-webkit-scrollbar {

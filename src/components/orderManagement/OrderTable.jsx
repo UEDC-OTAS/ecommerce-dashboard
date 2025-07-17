@@ -37,7 +37,7 @@ const OrderTable = ({ orders, passOrder }) => {
     }
   };
 
-  console.log("filteredOrders", filteredOrders);
+  // console.log("filteredOrders", filteredOrders);
 
   useEffect(() => {
     const filteredOrders = filterOrders();

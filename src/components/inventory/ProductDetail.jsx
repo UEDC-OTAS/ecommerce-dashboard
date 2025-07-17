@@ -1,11 +1,14 @@
 import { useState, useEffect } from "react";
 import Modal from "../utli/Modal";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Trash2 } from "lucide-react";
+import updateProduct from "../../api/inventoryApi/UpdateProduct";
+import deleteStock from "../../api/inventoryApi/DeleteStock";
 
 const ProductDetail = ({ isOpen, onClose, onSubmit, product }) => {
   const [localImages, setLocalImages] = useState([]);
   const [errors, setErrors] = useState({});
   const [dragActive, setDragActive] = useState(false);
+  const [deleteModal, setDeleteModal] = useState(false);
   const [formData, setFormData] = useState({
     stockName: "",
     stockCode: "",
@@ -16,7 +19,7 @@ const ProductDetail = ({ isOpen, onClose, onSubmit, product }) => {
     price: "",
     images: [],
   });
-  console.log(typeof formData.quantity);
+  // console.log(typeof formData.quantity);
 
   useEffect(() => {
     setFormData({
@@ -124,7 +127,7 @@ const ProductDetail = ({ isOpen, onClose, onSubmit, product }) => {
       }));
 
       setLocalImages((prev) => [...prev, ...newImages].slice(0, 5)); // Max 5 images
-      console.log("localImages", localImages);
+      // console.log("localImages", localImages);
     }
   };
 
@@ -206,28 +209,31 @@ const ProductDetail = ({ isOpen, onClose, onSubmit, product }) => {
   };
 
   const handleUpdateStock = async (stockData) => {
-    const data = new FormData();
-    data.append("name", stockData.stockName);
-    data.append("code", stockData.stockCode);
-    data.append("description", stockData.stockDescription);
-    data.append("category", stockData.stockCategory);
-    data.append("subCategory", stockData.subCategory);
-    data.append("stock", stockData.quantity);
-    data.append("price", stockData.price);
+    const data = {
+      name: stockData.stockName,
+      code: stockData.stockCode,
+      description: stockData.stockDescription,
+      category: stockData.stockCategory,
+      subCategory: stockData.subCategory,
+      price: stockData.price,
+    };
+
+    // data.append("name", stockData.stockName);
+    // data.append("code", stockData.stockCode);
+    // data.append("description", stockData.stockDescription);
+    // data.append("category", stockData.stockCategory);
+    // data.append("subCategory", stockData.subCategory);
+    // data.append("stock", stockData.quantity);
+    // data.append("price", stockData.price);
     // Assuming you only upload the first image for now
-    if (localImages.length > 0) {
-      data.append("stockImagesUrl", localImages[0].file);
-    }
-
-    console.log("updatedata", data.get("stockImagesUrl"));
-
-    // const res = await addProduct(data);
-    // if (res.code === 201) {
-    //   handleClose();
-    //   if (onSubmit) {
-    //     onSubmit();
-    //   }
+    // if (localImages.length > 0) {
+    //   data.append("url", localImages[0].file);
     // }
+
+    // console.log("updatedata", data.get("url"));
+
+    const res = await updateProduct({ id: product._id, data });
+    console.log(res);
   };
 
   const handleClose = () => {
@@ -252,6 +258,15 @@ const ProductDetail = ({ isOpen, onClose, onSubmit, product }) => {
     onClose();
   };
 
+  const handleDelete = async () => {
+    // console.log(product.code);
+    const res = await deleteStock(product.code);
+    // console.log(res);
+    if (res.code === 200) {
+      onClose();
+    }
+  };
+
   useEffect(() => {
     // Cleanup function to revoke object URLs when component unmounts
     return () => {
@@ -271,8 +286,8 @@ const ProductDetail = ({ isOpen, onClose, onSubmit, product }) => {
   return (
     <Modal isOpen={isOpen} onClose={handleClose} title="Stock Info" size="md">
       <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="flex gap-6">
-          <div className="space-y-6 w-2/3">
+        <div className="flex flex-col md:flex-row gap-6">
+          <div className="space-y-6 w-full md:w-2/3">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {/* Stock Name */}
               <div>
@@ -286,7 +301,7 @@ const ProductDetail = ({ isOpen, onClose, onSubmit, product }) => {
                   type="text"
                   id="stockName"
                   name="stockName"
-                  value={formData.stockName}
+                  value={formData.stockName || ""}
                   onChange={handleInputChange}
                   placeholder="Enter Stock Name"
                   className={`
@@ -319,7 +334,7 @@ const ProductDetail = ({ isOpen, onClose, onSubmit, product }) => {
                   type="text"
                   id="stockCode"
                   name="stockCode"
-                  value={formData.stockCode}
+                  value={formData.stockCode || ""}
                   onChange={handleInputChange}
                   placeholder="Enter Stock Code"
                   className={`
@@ -352,7 +367,7 @@ const ProductDetail = ({ isOpen, onClose, onSubmit, product }) => {
               <textarea
                 id="stockDescription"
                 name="stockDescription"
-                value={formData.stockDescription}
+                value={formData.stockDescription || ""}
                 onChange={handleInputChange}
                 placeholder="Enter Stock Description"
                 className={`
@@ -385,7 +400,7 @@ const ProductDetail = ({ isOpen, onClose, onSubmit, product }) => {
                   <select
                     id="stockCategory"
                     name="stockCategory"
-                    value={formData.stockCategory}
+                    value={formData.stockCategory || ""}
                     onChange={handleInputChange}
                     className={`
                 w-full px-3 py-2 border rounded-lg text-sm appearance-none
@@ -427,7 +442,7 @@ const ProductDetail = ({ isOpen, onClose, onSubmit, product }) => {
                   <select
                     id="subCategory"
                     name="subCategory"
-                    value={formData.subCategory}
+                    value={formData.subCategory || ""}
                     onChange={handleInputChange}
                     // Disable if no main category is selected
                     disabled={!formData.stockCategory}
@@ -467,7 +482,7 @@ const ProductDetail = ({ isOpen, onClose, onSubmit, product }) => {
             {/* Quantity and Price Row */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {/* Quantity */}
-              <div>
+              {/* <div>
                 <label
                   htmlFor="quantity"
                   className="block text-sm font-medium text-gray-700 mb-2"
@@ -496,7 +511,7 @@ const ProductDetail = ({ isOpen, onClose, onSubmit, product }) => {
                 {errors.quantity && (
                   <p className="mt-1 text-sm text-red-600">{errors.quantity}</p>
                 )}
-              </div>
+              </div> */}
 
               {/* Price */}
               <div>
@@ -511,7 +526,7 @@ const ProductDetail = ({ isOpen, onClose, onSubmit, product }) => {
                     type="number"
                     id="price"
                     name="price"
-                    value={formData.price}
+                    value={formData.price || 0}
                     onChange={handleInputChange}
                     placeholder="Enter Stock Price"
                     min="0"
@@ -538,7 +553,7 @@ const ProductDetail = ({ isOpen, onClose, onSubmit, product }) => {
             </div>
           </div>
           {/* Image Upload */}
-          <div className="w-1/3">
+          <div className="w-full md:w-1/3">
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Product Images
             </label>
@@ -595,22 +610,22 @@ const ProductDetail = ({ isOpen, onClose, onSubmit, product }) => {
               <div className="mt-4 w-full">
                 {formData.images.map((image) => (
                   <div key={image._id} className="relative group">
-                    <div className="aspect-square rounded-lg overflow-hidden bg-gray-100">
+                    <div className="rounded-lg overflow-hidden bg-gray-100">
                       <img
                         src={image.url || "/placeholder.svg"}
                         alt={formData.stockName}
-                        className="w-full h-full object-cover"
+                        className="w-full md:w-[400px] h-[400px] object-cover"
                       />
                     </div>
 
                     {/* Remove Button */}
-                    <button
+                    {/* <button
                       type="button"
                       onClick={() => removeImage(image.id)}
                       className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-xs hover:bg-red-600 transition-colors"
                     >
                       ×
-                    </button>
+                    </button> */}
 
                     {/* Image Info */}
                     <div className="mt-1 text-xs text-gray-500 truncate">
@@ -661,19 +676,60 @@ const ProductDetail = ({ isOpen, onClose, onSubmit, product }) => {
         <div className="flex flex-col sm:flex-row gap-3 pt-4 justify-end">
           <button
             type="button"
-            onClick={handleClose}
-            className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-200 transition-colors"
+            onClick={() => setDeleteModal(true)}
+            className="flex gap-2 px-4 py-2 text-sm font-medium text-red-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-200 transition-colors"
           >
-            Cancel
+            <Trash2 className="w-4 h-4" />
+            Remove Stock
           </button>
           <button
             type="submit"
-            className="px-4 py-2 text-sm font-medium text-white bg-orange-500 border border-orange-500 rounded-lg hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-200 transition-colors"
+            className="flex gap-2 px-4 py-2 text-sm font-medium text-white bg-orange-500 border border-orange-500 rounded-lg hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-200 transition-colors"
           >
-            Add Stock
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              height="18px"
+              viewBox="0 -960 960 960"
+              width="18px"
+              fill="#fff"
+            >
+              <path d="M216-720h528l-34-40H250l-34 40Zm184 270 80-40 80 40v-190H400v190ZM200-120q-33 0-56.5-23.5T120-200v-499q0-14 4.5-27t13.5-24l50-61q11-14 27.5-21.5T250-840h460q18 0 34.5 7.5T772-811l50 61q9 11 13.5 24t4.5 27v139q-21 0-41.5 3T760-545v-95H640v205l-77 77-83-42-160 80v-320H200v440h280v80H200Zm440-520h120-120Zm-440 0h363-363Zm360 520v-123l221-220q9-9 20-13t22-4q12 0 23 4.5t20 13.5l37 37q8 9 12.5 20t4.5 22q0 11-4 22.5T903-340L683-120H560Zm300-263-37-37 37 37ZM620-180h38l121-122-18-19-19-18-122 121v38Zm141-141-19-18 37 37-18-19Z" />
+            </svg>
+            <span>Edit Stock Details</span>
           </button>
         </div>
       </form>
+
+      {deleteModal && (
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-black/50 flex items-center justify-center">
+          <div className="space-y-6 flex flex-col gap-2 p-10 bg-white rounded-lg flex items-center justify-center">
+            <p className="text-[28px] font-medium">
+              Remove Stock From Inventory ?
+            </p>
+            <div className="border border-gray-300 p-4 rounded-lg">
+              <Trash2 className="w-10 h-10 text-red-500" />
+            </div>
+            <span className="text-[#121212] text-[16px] max-w-md text-center">
+              The selected stock will be removed from the UEDC Inventory and
+              will not be possible to recover later.
+            </span>
+            <div className="flex gap-6">
+              <button
+                onClick={() => setDeleteModal(false)}
+                className="bg-[#E9590033] text-[#E95900] px-4 py-2 rounded-lg"
+              >
+                Later
+              </button>
+              <button
+                onClick={handleDelete}
+                className="bg-primary text-white px-4 py-2 rounded-lg"
+              >
+                Remove
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </Modal>
   );
 };
