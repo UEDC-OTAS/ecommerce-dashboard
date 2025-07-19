@@ -40,7 +40,10 @@ function Inventory() {
           <div className="w-[400px]">
             <SearchBar placeholder="Search Product with name or Product Code" />
           </div>
-          <button className="button" onClick={() => setIsModalOpen(true)}>
+          <button
+            className="button w-[150px]"
+            onClick={() => setIsModalOpen(true)}
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               height="24px"
