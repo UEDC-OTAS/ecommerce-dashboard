@@ -2,6 +2,7 @@ import axios from "../../axios";
 import { toast } from "sonner";
 
 const chgOrderStatus = async ({ orderId, data }) => {
+  console.log("orderId", orderId);
   const toastId = toast.loading("Updating order status...");
   try {
     const response = await axios.patch(`api/v1/order/${orderId}`, data);

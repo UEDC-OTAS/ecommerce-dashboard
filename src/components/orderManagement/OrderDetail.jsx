@@ -9,6 +9,7 @@ import chgOrderStatus from "../../api/orderApi/chgOrderStatus";
 export default function OrderDetails() {
   const navigate = useNavigate();
   const { id } = useParams();
+  console.log("id", id);
   const [product, setProduct] = useState(null);
   const [order, setOrder] = useState(null);
   const [printData, setPrintData] = useState(null);
@@ -24,15 +25,13 @@ export default function OrderDetails() {
   };
   console.log("order", order);
 
-  const chgStatus = async (orderId, status) => {
+  const chgStatus = async (status) => {
+    const orderId = id;
+    console.log("orderId", orderId);
     const data = {
       deliveryStatus: status,
     };
-    const res = await chgOrderStatus({ orderId, data });
-    // console.log("res", res);
-    if (res.code === 200) {
-      refreshOrders();
-    }
+    await chgOrderStatus({ orderId, data });
   };
 
   const handleClose = () => {
@@ -80,7 +79,7 @@ export default function OrderDetails() {
             <button
               className="flex items-center gap-2 mr-4 border border-gray-200 px-4 py-3    rounded-lg text-primary hover:bg-gray-100 text-[16px]"
               onClick={() => {
-                chgStatus(order.orderId, "cancelled");
+                chgStatus("cancelled");
               }}
             >
               <svg

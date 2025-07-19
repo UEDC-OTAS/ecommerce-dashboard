@@ -50,9 +50,8 @@ const OrderTable = ({ orders, passOrder, activeOrder, refreshOrders }) => {
   };
 
   const handleDelete = async (orderId) => {
-    console.log("orderId", orderId);
     const res = await deleteOrder(orderId);
-    console.log("res", res);
+
     if (res.code === 200) {
       refreshOrders();
     }

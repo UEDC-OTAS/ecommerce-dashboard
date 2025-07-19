@@ -10,8 +10,11 @@ function GetAllOrder() {
 
   const getOrders = async () => {
     const response = await getAllOrders();
+    const noDeletedOrders = response.data.filter(
+      (order) => order.isDeleted === false
+    );
     // console.log(response);
-    setOrders(response.data.reverse());
+    setOrders(noDeletedOrders.reverse());
   };
 
   const passOrder = (orderId) => {

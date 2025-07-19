@@ -51,7 +51,7 @@ const Navbar = () => {
               >
                 <MdOutlineShoppingCart className="w-4 h-4 inline mr-2" /> Order
               </NavLink>
-              <NavLink
+              {/* <NavLink
                 to="/delivery"
                 className={({ isActive }) =>
                   isActive
@@ -60,7 +60,7 @@ const Navbar = () => {
                 }
               >
                 <CiDeliveryTruck className="w-4 h-4 inline mr-2" /> Delivery
-              </NavLink>
+              </NavLink> */}
               <NavLink
                 to="/support"
                 className={({ isActive }) =>
