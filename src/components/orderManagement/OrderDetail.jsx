@@ -3,14 +3,17 @@ import { useEffect, useState } from "react";
 import getAOrder from "../../api/orderApi/getAOrder";
 import { useParams, useNavigate } from "react-router-dom";
 import { generatePDF } from "./PdfGenerator";
+import UpdateModel from "./UpdateModel";
+import chgOrderStatus from "../../api/orderApi/chgOrderStatus";
 
 export default function OrderDetails() {
   const navigate = useNavigate();
   const { id } = useParams();
+  const [product, setProduct] = useState(null);
   const [order, setOrder] = useState(null);
   const [printData, setPrintData] = useState(null);
   const [isGenerating, setIsGenerating] = useState(null);
-
+  const [isOpen, setIsOpen] = useState(false);
   const getOrder = async () => {
     const response = await getAOrder(id);
 
@@ -19,8 +22,24 @@ export default function OrderDetails() {
       setPrintData(response.data);
     }
   };
+  console.log("order", order);
 
-  console.log("printData", printData);
+  const chgStatus = async (orderId, status) => {
+    const data = {
+      deliveryStatus: status,
+    };
+    const res = await chgOrderStatus({ orderId, data });
+    // console.log("res", res);
+    if (res.code === 200) {
+      refreshOrders();
+    }
+  };
+
+  const handleClose = () => {
+    setIsOpen(false);
+  };
+
+  console.log("setIsOpen", isOpen);
 
   useEffect(() => {
     getOrder();
@@ -43,19 +62,38 @@ export default function OrderDetails() {
   }
 
   return (
-    <div className="p-4 h-screen">
+    <div className="h-[calc(100vh-100px)]">
       {order && (
         <div className="w-full mx-auto">
           {/* Breadcrumb */}
-          <div className="flex items-center text-gray-600 mb-6 ">
-            <span
-              className="header cursor-pointer"
-              onClick={() => navigate("/orders")}
+          <div className="flex justify-between items-center px-4 py-2">
+            <div className="flex items-center text-gray-600 mb-6 ">
+              <span
+                className="header cursor-pointer"
+                onClick={() => navigate("/orders")}
+              >
+                Orders
+              </span>
+              <ChevronRight className="w-6 h-6 mx-2" />
+              <span className="header">Order Details</span>
+            </div>
+            <button
+              className="flex items-center gap-2 mr-4 border border-gray-200 px-4 py-3    rounded-lg text-primary hover:bg-gray-100 text-[16px]"
+              onClick={() => {
+                chgStatus(order.orderId, "cancelled");
+              }}
             >
-              Orders
-            </span>
-            <ChevronRight className="w-6 h-6 mx-2" />
-            <span className="header">Order Details</span>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                height="18px"
+                viewBox="0 -960 960 960"
+                width="24px"
+                fill="#E95900"
+              >
+                <path d="m760-183-85 84-56-56 84-85-84-85 56-56 85 84 85-84 56 56-84 85 84 85-56 56-85-84ZM240-80q-50 0-85-35t-35-85v-120h120v-560h600v415q-19-7-39-10.5t-41-3.5v-321H320v480h214q-7 19-10.5 39t-3.5 41H200v40q0 17 11.5 28.5T240-160h294q8 23 20 43t28 37H240Zm120-520v-80h360v80H360Zm0 120v-80h360v80H360Zm174 320H200h334Z" />
+              </svg>
+              Order Cancel
+            </button>
           </div>
 
           {/* Main Content Grid */}
@@ -130,9 +168,6 @@ export default function OrderDetails() {
             <div className="bg-white rounded-lg shadow-sm border p-6">
               <div className="flex items-center justify-between mb-8 border-b pb-4">
                 <h2 className="text-lg font-semibold text-gray-900">Payment</h2>
-                {/* <span className="px-3 py-1 bg-green-100 text-green-800 text-xs font-medium rounded-full">
-                  Confirmed
-                </span> */}
               </div>
 
               <div className="space-y-6">
@@ -160,9 +195,12 @@ export default function OrderDetails() {
 
             {/* Order Section */}
             <div className="bg-white rounded-lg shadow-sm border p-6">
-              <h2 className="text-lg font-semibold text-gray-900 mb-8 border-b pb-4">
-                Order
-              </h2>
+              <div className="flex justify-between items-center mb-8 border-b pb-4">
+                <h2 className="text-lg font-semibold text-gray-900">Order</h2>
+                <span className="px-3 py-1 bg-green-100 text-green-800 text-xs font-medium rounded-full">
+                  {order.deliveryStatus}
+                </span>
+              </div>
 
               <div className="w-full h-[500px] mx-auto font-sans relative">
                 {/* Header */}
@@ -178,7 +216,14 @@ export default function OrderDetails() {
 
                 {/* Item Row */}
                 {order?.orderInfo?.map((item) => (
-                  <div className="grid grid-cols-3 gap-4 mb-8" key={item._id}>
+                  <div
+                    className="grid grid-cols-3 gap-4 mb-8"
+                    key={item._id}
+                    onClick={() => {
+                      setIsOpen(true);
+                      setProduct(item);
+                    }}
+                  >
                     <div className="text-gray-900 text-sm font-medium">
                       {item.productName}
                     </div>
@@ -238,6 +283,14 @@ export default function OrderDetails() {
           </div>
         </div>
       )}
+
+      <UpdateModel
+        isOpen={isOpen}
+        onClose={handleClose}
+        product={product}
+        orderId={id}
+        onSubmit={getOrder}
+      />
     </div>
   );
 }

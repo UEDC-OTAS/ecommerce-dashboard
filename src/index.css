@@ -4,10 +4,10 @@
 
 body {
   font-family: "Poppins", sans-serif;
-  overflow: hidden;
   background-color: white;
   scroll-behavior: smooth;
   color: black;
+  overflow-y: hidden;
 }
 
 .inter {

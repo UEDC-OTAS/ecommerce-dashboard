@@ -46,6 +46,10 @@ function GetAllOrder() {
             orders={orders}
             passOrder={passOrder}
             activeOrder={selectedOrder}
+            refreshOrders={() => {
+              getOrders();
+              setSelectedOrder(null);
+            }}
             // handlePrintPDF={handlePrintPDF}
           />
         </div>
