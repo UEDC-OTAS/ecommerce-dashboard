@@ -2,9 +2,10 @@ import axios from "axios";
 import chgOrderStatus from "../../api/orderApi/chgOrderStatus";
 import { useEffect, useState } from "react";
 import getAOrder from "../../api/orderApi/getAOrder";
+import { Cross } from "lucide-react";
+import { ImCancelCircle } from "react-icons/im";
 
-function OrderInfo({ selectedOrder, refreshOrders }) {
-  console.log(selectedOrder);
+function OrderInfo({ selectedOrder, refreshOrders, handleClose }) {
   const [order, setOrder] = useState(null);
 
   const getOrder = async () => {
@@ -45,23 +46,22 @@ function OrderInfo({ selectedOrder, refreshOrders }) {
       <div className="flex items-center justify-between">
         <h1 className="header">Order Info</h1>
         <div className="flex flex-col items-end">
-          <p className="text-[#696969] text-[10px]">Order ID</p>
-          <span className="text-[16px]">{selectedOrder}</span>
+          <ImCancelCircle size={24} onClick={handleClose} />
         </div>
       </div>
 
       {order && (
         <div>
-          <div className="flex justify-between items-center mt-10">
+          <div className="flex justify-between items-center mt-5">
             <div>
-              <p className="font-medium text-[12px]">Customer Name</p>
-              <span className="text-[#696969] text-[16px]">
+              <p className="text-[#696969] text-[12px]">Customer Name</p>
+              <span className="font-medium text-[16px]">
                 {order.snapshotData.customerName}
               </span>
             </div>
             <div>
-              <p className="font-medium text-[12px]">Phone Number</p>
-              <span className="text-[#696969] text-[16px]">
+              <p className="text-[#696969] text-[12px]">Phone Number</p>
+              <span className="font-medium text-[16px]">
                 {order.snapshotData.contactNumber}
               </span>
             </div>
@@ -69,7 +69,9 @@ function OrderInfo({ selectedOrder, refreshOrders }) {
 
           {order.snapshotData.paymentImage && (
             <div className="mt-5">
-              <p className="font-medium text-[16px]">Payment Screenshots</p>
+              <p className="font-medium text-[16px] mb-5">
+                Payment Screenshots
+              </p>
               <img
                 src={order.snapshotData.paymentImage.url}
                 alt=""

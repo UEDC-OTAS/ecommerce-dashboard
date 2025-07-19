@@ -45,6 +45,7 @@ function GetAllOrder() {
           <OrderTable
             orders={orders}
             passOrder={passOrder}
+            activeOrder={selectedOrder}
             // handlePrintPDF={handlePrintPDF}
           />
         </div>
@@ -61,6 +62,7 @@ function GetAllOrder() {
                 getOrders();
                 setSelectedOrder(null);
               }}
+              handleClose={() => setSelectedOrder(null)}
             />
           )}
         </div>

@@ -15,9 +15,7 @@ const DeliveryTable = ({ orders, passOrder }) => {
   const endIndex = startIndex + itemsPerPage;
   const currentOrders = orders.slice(startIndex, endIndex);
 
-  const handleEdit = (id) => {
-    console.log("Edit product:", id);
-  };
+  const handleEdit = (id) => {};
 
   const handlePrintPDF = async (order) => {
     const res = await getAOrder(order._id);
