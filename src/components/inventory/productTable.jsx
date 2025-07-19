@@ -6,11 +6,13 @@ const ProductTable = ({ products, sentproductDetail, sentQuantityModal }) => {
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  console.log("products", products);
+  console.log("selectedCategory", selectedCategory);
   const filteredProducts = products.filter((product) => {
     if (selectedCategory === "All") {
       return true;
     }
-    return product.category === selectedCategory.toLowerCase();
+    return product.category === selectedCategory;
   });
 
   const getAproductDetail = async (product) => {
@@ -29,7 +31,7 @@ const ProductTable = ({ products, sentproductDetail, sentQuantityModal }) => {
     "Aircoolers/Fans",
     "Home Electronics",
     "Wall Decoration",
-    "Kitchen Electronics",
+    "kitchen-electronics",
     "Doors",
     "Toilets",
     "Powerbanks",

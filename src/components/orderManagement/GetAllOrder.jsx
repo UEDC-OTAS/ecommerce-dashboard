@@ -33,9 +33,9 @@ function GetAllOrder() {
       <div className="flex items-center justify-between ">
         <h1 className="header">Orders</h1>
         <div className="flex items-center gap-10">
-          <div className="w-[400px]">
+          {/* <div className="w-[400px]">
             <SearchBar placeholder="Search Order with name or Product Code" />
-          </div>
+          </div> */}
         </div>
       </div>
 

@@ -9,7 +9,7 @@ import chgOrderStatus from "../../api/orderApi/chgOrderStatus";
 export default function OrderDetails() {
   const navigate = useNavigate();
   const { id } = useParams();
-  console.log("id", id);
+  // console.log(order);
   const [product, setProduct] = useState(null);
   const [order, setOrder] = useState(null);
   const [printData, setPrintData] = useState(null);
@@ -76,23 +76,25 @@ export default function OrderDetails() {
               <ChevronRight className="w-6 h-6 mx-2" />
               <span className="header">Order Details</span>
             </div>
-            <button
-              className="flex items-center gap-2 mr-4 border border-gray-200 px-4 py-3    rounded-lg text-primary hover:bg-gray-100 text-[16px]"
-              onClick={() => {
-                chgStatus("cancelled");
-              }}
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                height="18px"
-                viewBox="0 -960 960 960"
-                width="24px"
-                fill="#E95900"
+            {order.deliveryStatus !== "cancelled" && (
+              <button
+                className="flex items-center gap-2 mr-4 border border-gray-200 px-4 py-3    rounded-lg text-primary hover:bg-gray-100 text-[16px]"
+                onClick={() => {
+                  chgStatus("cancelled");
+                }}
               >
-                <path d="m760-183-85 84-56-56 84-85-84-85 56-56 85 84 85-84 56 56-84 85 84 85-56 56-85-84ZM240-80q-50 0-85-35t-35-85v-120h120v-560h600v415q-19-7-39-10.5t-41-3.5v-321H320v480h214q-7 19-10.5 39t-3.5 41H200v40q0 17 11.5 28.5T240-160h294q8 23 20 43t28 37H240Zm120-520v-80h360v80H360Zm0 120v-80h360v80H360Zm174 320H200h334Z" />
-              </svg>
-              Order Cancel
-            </button>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  height="18px"
+                  viewBox="0 -960 960 960"
+                  width="24px"
+                  fill="#E95900"
+                >
+                  <path d="m760-183-85 84-56-56 84-85-84-85 56-56 85 84 85-84 56 56-84 85 84 85-56 56-85-84ZM240-80q-50 0-85-35t-35-85v-120h120v-560h600v415q-19-7-39-10.5t-41-3.5v-321H320v480h214q-7 19-10.5 39t-3.5 41H200v40q0 17 11.5 28.5T240-160h294q8 23 20 43t28 37H240Zm120-520v-80h360v80H360Zm0 120v-80h360v80H360Zm174 320H200h334Z" />
+                </svg>
+                Order Cancel
+              </button>
+            )}
           </div>
 
           {/* Main Content Grid */}

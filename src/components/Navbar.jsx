@@ -77,7 +77,7 @@ const Navbar = () => {
           {/* Right side - User Profile */}
           <div className="hidden lg:flex items-center space-x-4">
             {/* User Info */}
-            <div className="flex items-center space-x-3">
+            {/* <div className="flex items-center space-x-3">
               <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
                 <User className="w-5 h-5 text-gray-600" />
               </div>
@@ -85,13 +85,13 @@ const Navbar = () => {
                 <div className="font-medium text-gray-900">New New Lin</div>
                 <div className="text-gray-500">Finance</div>
               </div>
-            </div>
+            </div> */}
 
             {/* Logout Button */}
-            <button className="bg-orange-100 text-black px-6 py-3 rounded-lg text-sm font-medium hover:bg-orange-200 transition-colors flex items-center space-x-2">
+            {/* <button className="bg-orange-100 text-black px-6 py-3 rounded-lg text-sm font-medium hover:bg-orange-200 transition-colors flex items-center space-x-2">
               <MdOutlineDoorBack className="w-4 h-4" />
               <span>Logout</span>
-            </button>
+            </button> */}
           </div>
 
           {/* Mobile menu button */}
@@ -114,21 +114,30 @@ const Navbar = () => {
           <div className="lg:hidden">
             <div className="px-2 pt-2 pb-3 space-y-1 border-t border-gray-200">
               {/* Mobile Navigation Links */}
-              <NavLink className="bg-orange-500 text-white block px-3 py-2 rounded text-sm font-medium w-full text-left">
+              <NavLink
+                to="/"
+                className="bg-orange-500 text-white block px-3 py-2 rounded text-sm font-medium w-full text-left"
+              >
                 📦 Inventory
               </NavLink>
-              <NavLink className="text-gray-600 block px-3 py-2 rounded text-sm font-medium w-full text-left hover:bg-gray-100">
+              <NavLink
+                to="/orders"
+                className="text-gray-600 block px-3 py-2 rounded text-sm font-medium w-full text-left hover:bg-gray-100"
+              >
                 📋 Order
               </NavLink>
-              <NavLink className="text-gray-600 block px-3 py-2 rounded text-sm font-medium w-full text-left hover:bg-gray-100">
+              {/* <NavLink to="/support" className="text-gray-600 block px-3 py-2 rounded text-sm font-medium w-full text-left hover:bg-gray-100">
                 🚚 Delivery
-              </NavLink>
-              <NavLink className="text-gray-600 block px-3 py-2 rounded text-sm font-medium w-full text-left hover:bg-gray-100">
+              </NavLink> */}
+              <NavLink
+                to="/support"
+                className="text-gray-600 block px-3 py-2 rounded text-sm font-medium w-full text-left hover:bg-gray-100"
+              >
                 📬 Customer Support
               </NavLink>
 
               {/* Mobile User Section */}
-              <div className="border-t border-gray-200 pt-3 mt-3">
+              {/* <div className="border-t border-gray-200 pt-3 mt-3">
                 <div className="flex items-center space-x-3 px-3 py-2">
                   <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
                     <User className="w-5 h-5 text-gray-600" />
@@ -142,7 +151,7 @@ const Navbar = () => {
                   <MdOutlineDoorBack className="w-4 h-4 inline mr-2" />
                   Logout
                 </button>
-              </div>
+              </div> */}
             </div>
           </div>
         )}

@@ -15,6 +15,7 @@ function Inventory() {
 
   const getProducts = async () => {
     const response = await getAllProducts();
+    console.log("response", response.data);
     setProducts(response.data.reverse());
   };
 
@@ -37,9 +38,9 @@ function Inventory() {
       <div className="flex items-center justify-between ">
         <h1 className="header">Inventory</h1>
         <div className="flex items-center gap-10">
-          <div className="w-[400px]">
+          {/* <div className="w-[400px]">
             <SearchBar placeholder="Search Product with name or Product Code" />
-          </div>
+          </div> */}
           <button
             className="button w-[150px]"
             onClick={() => setIsModalOpen(true)}

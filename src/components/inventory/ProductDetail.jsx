@@ -34,6 +34,8 @@ const ProductDetail = ({ isOpen, onClose, onSubmit, product }) => {
     });
   }, [product]);
 
+  // console.log("product", formData);
+
   // Consolidated category and sub-category data structure
   const allCategories = {
     Speakers: ["Speaker", "JBL Speaker"],
@@ -218,22 +220,8 @@ const ProductDetail = ({ isOpen, onClose, onSubmit, product }) => {
       price: stockData.price,
     };
 
-    // data.append("name", stockData.stockName);
-    // data.append("code", stockData.stockCode);
-    // data.append("description", stockData.stockDescription);
-    // data.append("category", stockData.stockCategory);
-    // data.append("subCategory", stockData.subCategory);
-    // data.append("stock", stockData.quantity);
-    // data.append("price", stockData.price);
-    // Assuming you only upload the first image for now
-    // if (localImages.length > 0) {
-    //   data.append("url", localImages[0].file);
-    // }
-
-    // console.log("updatedata", data.get("url"));
-
     const res = await updateProduct({ id: product._id, data });
-    console.log(res);
+    // console.log(res);
   };
 
   const handleClose = () => {
@@ -400,7 +388,7 @@ const ProductDetail = ({ isOpen, onClose, onSubmit, product }) => {
                   <select
                     id="stockCategory"
                     name="stockCategory"
-                    value={formData.stockCategory || ""}
+                    value={formData.stockCategory}
                     onChange={handleInputChange}
                     className={`
                 w-full px-3 py-2 border rounded-lg text-sm appearance-none
@@ -414,6 +402,7 @@ const ProductDetail = ({ isOpen, onClose, onSubmit, product }) => {
                 ${!formData.stockCategory ? "text-gray-500" : "text-gray-900"}
               `}
                   >
+                    <option value="">{formData.stockCategory}</option>
                     {Object.keys(allCategories).map((category) => (
                       <option key={category} value={category}>
                         {category}
