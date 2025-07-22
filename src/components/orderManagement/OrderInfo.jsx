@@ -4,13 +4,13 @@ import { useEffect, useState } from "react";
 import getAOrder from "../../api/orderApi/getAOrder";
 import { Cross } from "lucide-react";
 import { ImCancelCircle } from "react-icons/im";
-import getReceiptImage from "../../api/receipt/getReceiptIamge";
 
 function OrderInfo({ selectedOrder, refreshOrders, handleClose }) {
   const [order, setOrder] = useState(null);
 
   const getOrder = async () => {
     const response = await getAOrder(selectedOrder);
+    console.log("response", response);
     setOrder(response.data);
   };
 
@@ -19,38 +19,16 @@ function OrderInfo({ selectedOrder, refreshOrders, handleClose }) {
   }, [selectedOrder]);
 
   const confirmOrder = async (orderId, contactId) => {
-    const res = await getReceiptImage(orderId);
-    // console.log(res.data.receiptImage.cdnUrl);
-    if (res.code === 201) {
-      const data = {
-        subscriber_id: contactId,
-        data: {
-          version: "v2",
-          content: {
-            messages: [
-              {
-                type: "image",
-                // url: res.data.receiptImage.cdnUrl,
-                url: "https://otas.sgp1.cdn.digitaloceanspaces.com/uedc/receipt-images/2dc2e269-4270-4b30-b4b7-f25ee0a550ed-1753190155616.png",
-              },
-              {
-                type: "text",
-                text: `ဝယ်ယူမှု အောင်မြင်ပါတယ်ရှင့် ဘောင်ချာလေးတင်ထားပြီးပါပြီရှင့် Delivery လေးနဲ့ ၂ ရက်အတွင်း ပစ္စည်းလေးတွေ အပ်ပေးလိုက်ပါမယ်ရှင့် ၃ ရက်အတွင်း ပစ္စည်းလေးတွေရောက်ပါမယ်ရှင့် ကျေးဇူးပြုပြီး Delivery ပစ္စည်လေးလာပိုပေးပြီး ၂၄ နာရီအတွင်းပစ္စည်း error ကင်းမကင်းပစ္စည်းစုံ မစုံ လေးပြန်ပြောပေးပါရှင့်24နာရီကျော်ပီးမှဖြစ်ပေါ်လာတဲ့ကိစ္စများကို Deli ဘက်လေးကတာဝန်ယူမှုလေးမရှိလိုပါရှင့် ဝယ်ယူအားပေးမှုအတွက် အထူးကျေးဇူးတင်ပါတယ်ရှင့်🙆‍♀️🩷အဆင်ပြေတယ်ဆိုရင်တော့ "ok" လိုပြန်ပိုထားပေးပါရှင့်။ မှာယူအားပေးလို ကျေးဇူးအများကြီးတင်ပါတယ်ရှင့်🙆🧡`,
-              },
-            ],
-          },
-        },
-        message_tag: "POST_PURCHASE_UPDATE",
-      };
+    const data = {
+      subscriber_id: contactId,
+      order_id: orderId,
+      message_text: "ဝယ်ယူမှုအောင်မြင်ပါသည်",
+    };
 
-      axios.post("https://api.manychat.com/fb/sending/sendContent", data, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization:
-            "Bearer 104552281496385:20586026d1d0670ca058d14d006d66a8",
-        },
-      });
-    }
+    axios.post(
+      "https://hook.us1.make.com/1dl8u4cfm8mzefq9zkevxsmshhqpl4yg",
+      data
+    );
   };
 
   const chgStatus = async (orderId, status) => {
