@@ -124,7 +124,7 @@ const ProductTable = ({ products, sentproductDetail, sentQuantityModal }) => {
       </div>
 
       {/* Table */}
-      <div className="overflow-x-auto bg-white rounded-lg shadow overflow-y-auto h-[calc(100vh-310px)]">
+      <div className="overflow-x-auto bg-white rounded-lg shadow overflow-y-auto h-[calc(100vh-220px)]">
         <table className="w-full table-auto">
           <thead
             className="bg-gray-50 border-b border-gray-200"

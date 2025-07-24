@@ -8,16 +8,17 @@ import OrderDetail from "../components/orderManagement/OrderDetail";
 function Home() {
   return (
     <>
-      <Navbar />
-
-      <div className="p-4">
-        <Routes>
-          <Route path="/" element={<Inventory />} />
-          <Route path="/orders" element={<GetAllOrder />} />
-          <Route path="/order/:id" element={<OrderDetail />} />
-          <Route path="/delivery" element={<DeliveryPage />} />
-          <Route path="/support" element={<CustomerSupport />} />
-        </Routes>
+      <div className="flex min-h-screen bg-gray-50">
+        <Navbar />
+        <div className="flex-1 lg:ml-16 p-4">
+          <Routes>
+            <Route path="/" element={<Inventory />} />
+            <Route path="/orders" element={<GetAllOrder />} />
+            <Route path="/order/:id" element={<OrderDetail />} />
+            <Route path="/delivery" element={<DeliveryPage />} />
+            <Route path="/support" element={<CustomerSupport />} />
+          </Routes>
+        </div>
       </div>
     </>
   );
