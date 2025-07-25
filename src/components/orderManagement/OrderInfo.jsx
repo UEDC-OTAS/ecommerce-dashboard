@@ -96,7 +96,7 @@ function OrderInfo({ selectedOrder, refreshOrders, handleClose }) {
                 className="flex-1 bg-primary p-2 rounded-lg text-white hover:bg-primary/80 text-[16px]"
                 onClick={() => {
                   confirmOrder(order.orderId, order.snapshotData.contactId);
-                  // chgStatus(order.orderId, "confirmed");
+                  chgStatus(order.orderId, "confirmed");
                 }}
               >
                 Confirm Order

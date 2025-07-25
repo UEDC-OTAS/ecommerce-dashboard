@@ -1,12 +1,16 @@
 import { useState } from "react";
 import uploadReceipt from "../../api/deliveryApi/uploadReceipt";
 import axios from "axios";
+import { IoCloseCircleOutline } from "react-icons/io5";
 
-function DeliReciept({ selectedOrder, refreshOrders, receipt }) {
+function DeliReciept({ selectedOrder, refreshOrders, receipt, onClose }) {
+  console.log("receipt", receipt[0]?.parcelTrackingLink);
   // console.log("selectedOrder", selectedOrder);
   const [formData, setFormData] = useState({
     images: [],
+    trackingLink: "",
   });
+
   const [dragActive, setDragActive] = useState(false);
 
   const handleImageUpload = (files) => {
@@ -62,6 +66,7 @@ function DeliReciept({ selectedOrder, refreshOrders, receipt }) {
   const handleConfirm = async () => {
     const data = new FormData();
     data.append("deliveryReceiptImage", formData.images[0].file);
+    data.append("parcelTrackingLink", formData.trackingLink);
     const response = await uploadReceipt({ data: data, id: selectedOrder });
     console.log(response);
     if (response.code === 201) {
@@ -70,25 +75,53 @@ function DeliReciept({ selectedOrder, refreshOrders, receipt }) {
         "https://hook.us1.make.com/ckbcdf8v49x09xmvp5icapdxu7tgr9wy",
         {
           contact_id: response.data.contactId,
-          image_url: response.data.deliveryReceiptImage.deliveryImageUrl,
+          image_url: response.data.deliveryReceiptImage.url,
+          tracking_link: response.data.parcelTrackingLink,
         }
       );
     }
-    // refreshOrders();
+    refreshOrders();
   };
 
   return (
-    <div className="mx-5 mt-5 h-[calc(100vh-190px)] overflow-y-auto">
-      <div className="flex items-center justify-between">
-        <h1 className="header">Upload Reciept</h1>
-      </div>
+    <div className="px-5 mt-5 h-[calc(100vh-100px)] flex flex-col justify-between overflow-y-auto">
+      <div>
+        <div className="flex items-center justify-between mb-5">
+          <h1 className="header">
+            {receipt.length === 0 ? "Upload Reciept" : "Reciept"}
+          </h1>
 
-      {receipt.length === 0 && (
-        <div className="mt-10">
-          {/* Upload Area */}
-          {formData.images.length === 0 && (
-            <div
-              className={`
+          <button onClick={() => onClose()}>
+            <IoCloseCircleOutline className="w-6 h-6" />
+          </button>
+        </div>
+
+        <div className="space-y-4">
+          <label htmlFor="">Tracking Link</label>
+          {receipt.length === 0 && (
+            <input
+              type="text"
+              value={formData.trackingLink}
+              onChange={(e) =>
+                setFormData({ ...formData, trackingLink: e.target.value })
+              }
+              className="w-full border border-gray-300 rounded-md p-2"
+            />
+          )}
+
+          {receipt.length > 0 && (
+            <div className="w-full border border-gray-300 rounded-md p-2">
+              <p>{receipt[0]?.parcelTrackingLink}</p>
+            </div>
+          )}
+        </div>
+
+        {receipt.length === 0 && (
+          <div className="mt-10">
+            {/* Upload Area */}
+            {formData.images.length === 0 && (
+              <div
+                className={`
                   relative flex items-center justify-center border-2 h-[200px] border-dashed rounded-lg p-6 text-center transition-colors
                   ${
                     dragActive
@@ -96,89 +129,96 @@ function DeliReciept({ selectedOrder, refreshOrders, receipt }) {
                       : "border-gray-300 hover:border-gray-400"
                   }
                 `}
-              onDragEnter={handleDrag}
-              onDragLeave={handleDrag}
-              onDragOver={handleDrag}
-              onDrop={handleDrop}
-            >
-              <input
-                type="file"
-                accept="image/*"
-                onChange={(e) => handleImageUpload(e.target.files)}
-                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-              />
+                onDragEnter={handleDrag}
+                onDragLeave={handleDrag}
+                onDragOver={handleDrag}
+                onDrop={handleDrop}
+              >
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => handleImageUpload(e.target.files)}
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                />
 
-              <div className="space-y-2">
-                <div className="mx-auto w-12 h-12 text-gray-400">
-                  <svg fill="none" stroke="currentColor" viewBox="0 0 48 48">
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
-                    />
-                  </svg>
+                <div className="space-y-2">
+                  <div className="mx-auto w-12 h-12 text-gray-400">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 48 48">
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
+                      />
+                    </svg>
+                  </div>
+                  <div className="text-sm text-gray-600">
+                    <span className="font-medium text-orange-600">
+                      Click to upload
+                    </span>{" "}
+                    or drag and drop
+                  </div>
+                  <p className="text-xs text-gray-500">
+                    PNG, JPG, GIF up to 5MB (Max 5 images)
+                  </p>
                 </div>
-                <div className="text-sm text-gray-600">
-                  <span className="font-medium text-orange-600">
-                    Click to upload
-                  </span>{" "}
-                  or drag and drop
-                </div>
-                <p className="text-xs text-gray-500">
-                  PNG, JPG, GIF up to 5MB (Max 5 images)
-                </p>
               </div>
-            </div>
-          )}
+            )}
 
-          {/* Image Previews */}
-          {formData.images.length > 0 && (
-            <div className="mt-4 w-[350px] mx-auto">
-              {formData.images.map((image) => (
-                <div key={image.id} className="relative group">
-                  <div className="aspect-square rounded-lg overflow-hidden bg-gray-100">
-                    <img
-                      src={image.preview || "/placeholder.svg"}
-                      alt={image.name}
-                      className="w-full h-full object-cover"
-                    />
+            {/* Image Previews */}
+            {formData.images.length > 0 && (
+              <div className="mt-4 w-[350px] mx-auto">
+                {formData.images.map((image) => (
+                  <div key={image.id} className="relative group">
+                    <div className="aspect-square rounded-lg overflow-hidden bg-gray-100">
+                      <img
+                        src={image.preview || "/placeholder.svg"}
+                        alt={image.name}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+
+                    {/* Remove Button */}
+                    <button
+                      type="button"
+                      onClick={() => removeImage(image.id)}
+                      className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-xs hover:bg-red-600 transition-colors"
+                    >
+                      ×
+                    </button>
+
+                    {/* Image Info */}
+                    <div className="mt-1 text-xs text-gray-500 truncate">
+                      {image.name}
+                    </div>
                   </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
 
-                  {/* Remove Button */}
-                  <button
-                    type="button"
-                    onClick={() => removeImage(image.id)}
-                    className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-xs hover:bg-red-600 transition-colors"
-                  >
-                    ×
-                  </button>
-
-                  {/* Image Info */}
-                  <div className="mt-1 text-xs text-gray-500 truncate">
-                    {image.name}
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
-
-      {receipt && receipt.length > 0 && (
-        <div>
-          <img
-            src={receipt[0]?.deliveryReceiptImage?.deliveryImageUrl}
-            alt=""
-            className="w-full h-full object-cover"
-          />
-        </div>
-      )}
+        {receipt && receipt.length > 0 && (
+          <div className="mt-10">
+            <img
+              src={receipt[0]?.deliveryReceiptImage?.url}
+              alt=""
+              className="w-full h-full object-cover"
+            />
+          </div>
+        )}
+      </div>
 
       {receipt.length === 0 && (
-        <div className="flex items-center justify-end gap-5 mt-10">
+        <div className="flex items-center justify-end gap-5 pt-5 sticky bottom-0">
           <button
-            className="button flex items-center justify-center"
+            className="flex-1 bg-primary text-white p-2 rounded-md"
+            onClick={() => handleConfirm()}
+          >
+            Cancel
+          </button>
+          <button
+            className="flex-1 bg-primary text-white p-2 rounded-md"
             onClick={() => handleConfirm()}
           >
             Confirm

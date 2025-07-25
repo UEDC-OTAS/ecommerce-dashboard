@@ -1,7 +1,9 @@
 import { EyeIcon } from "lucide-react";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const ProductTable = ({ products, sentproductDetail, sentQuantityModal }) => {
+  const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [selectedCategory, setSelectedCategory] = useState("All");
@@ -204,7 +206,7 @@ const ProductTable = ({ products, sentproductDetail, sentQuantityModal }) => {
                         </svg>
                       </button>
                       <button
-                        onClick={() => getAproductDetail(product)}
+                        onClick={() => navigate(`/stock/${product._id}`)}
                         className="bg-[#FBDECC] hover:bg-gray-200 text-black p-3 rounded-lg transition-colors"
                         title="Info"
                       >

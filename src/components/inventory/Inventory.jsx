@@ -9,9 +9,9 @@ import { useNavigate } from "react-router-dom";
 
 function Inventory() {
   const navigate = useNavigate();
-  const [products, setProducts] = useState([]);
+  const [selectedProduct, setSelectedProduct] = useState(null);
   const [quantityModalOpen, setIsQuantityModalOpen] = useState(false);
-
+  const [products, setProducts] = useState([]);
   const getProducts = async () => {
     const response = await getAllProducts();
     console.log("response", response.data);
@@ -54,7 +54,7 @@ function Inventory() {
       </div>
       <ProductTable
         products={products}
-        sentproductDetail={getProductDetail}
+        // sentproductDetail={getProductDetail}
         sentQuantityModal={getQuantityModal}
       />
 

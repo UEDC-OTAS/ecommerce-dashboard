@@ -12,11 +12,7 @@ function DeliveryPage() {
 
   const getOrders = async () => {
     const response = await getAllOrders();
-    // console.log(response);
-    const filteredOrders = response.data.filter(
-      (order) => order.deliveryStatus === "confirmed"
-    );
-    setOrders(filteredOrders.reverse());
+    setOrders(response.data.reverse());
   };
 
   const passOrder = (orderId) => {
@@ -35,7 +31,7 @@ function DeliveryPage() {
       (receipt) => receipt.orderId === id
     );
     setReceipt(filteredReceipt);
-    console.log("receipt", filteredReceipt);
+    // console.log("receipt", filteredReceipt);
     // }
   };
 
@@ -80,6 +76,7 @@ function DeliveryPage() {
               selectedOrder={selectedOrder}
               refreshOrders={() => setSelectedOrder(null)}
               receipt={receipt}
+              onClose={() => setSelectedOrder(null)}
             />
           )}
         </div>
