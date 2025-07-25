@@ -118,7 +118,7 @@ function Navbar() {
       <div className="hidden lg:block">
         <div
           className={`
-          fixed left-2.5 px-2 top-0 h-full bg-white border-r border-gray-200 z-40 transition-all duration-300 ease-in-out shadow-lg
+          fixed left-0 px-2 top-0 h-full bg-white border-r border-gray-200 z-40 transition-all duration-300 ease-in-out shadow-lg
           ${isDesktopExpanded ? "w-64" : "w-16"}
         `}
         >

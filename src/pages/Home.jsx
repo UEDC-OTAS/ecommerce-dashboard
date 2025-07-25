@@ -5,6 +5,9 @@ import GetAllOrder from "../components/orderManagement/GetAllOrder";
 import DeliveryPage from "../components/delivery/DeliveryPage";
 import CustomerSupport from "../components/support/CustomerSupport";
 import OrderDetail from "../components/orderManagement/OrderDetail";
+import AddStockModal from "../components/inventory/AddProductModal";
+import AddProduct from "../components/inventory/AddProduct";
+import ProductDetail from "../components/inventory/ProductDetail";
 function Home() {
   return (
     <>
@@ -13,6 +16,8 @@ function Home() {
         <div className="flex-1 lg:ml-16 p-4">
           <Routes>
             <Route path="/" element={<Inventory />} />
+            <Route path="/add-stock" element={<AddProduct />} />
+            <Route path="/stock/:id" element={<ProductDetail />} />
             <Route path="/orders" element={<GetAllOrder />} />
             <Route path="/order/:id" element={<OrderDetail />} />
             <Route path="/delivery" element={<DeliveryPage />} />

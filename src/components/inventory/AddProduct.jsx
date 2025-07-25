@@ -1,19 +1,11 @@
 import { useState, useEffect } from "react";
-import { ChevronDown, Trash2 } from "lucide-react";
-import updateProduct from "../../api/inventoryApi/UpdateProduct";
-import deleteStock from "../../api/inventoryApi/DeleteStock";
-import { useParams, useNavigate } from "react-router-dom";
-import getAProducts from "../../api/inventoryApi/getAproduct";
+import { ChevronDown } from "lucide-react";
+import addProduct from "../../api/inventoryApi/AddProduct";
 import { IoIosCloseCircleOutline } from "react-icons/io";
+import { useNavigate } from "react-router-dom";
 
-const ProductDetail = () => {
+const AddProduct = () => {
   const navigate = useNavigate();
-  const { id } = useParams();
-  const [product, setProduct] = useState([]);
-  const [localImages, setLocalImages] = useState([]);
-  const [errors, setErrors] = useState({});
-  const [dragActive, setDragActive] = useState(false);
-  const [deleteModal, setDeleteModal] = useState(false);
   const [formData, setFormData] = useState({
     stockName: "",
     stockCode: "",
@@ -26,33 +18,9 @@ const ProductDetail = () => {
     isDeliverable: true,
     images: [],
   });
-  // console.log(typeof formData.quantity);
-  const getProductDetail = async (id) => {
-    const response = await getAProducts(id);
-    console.log("response", response);
-    setProduct(response);
-  };
 
-  useEffect(() => {
-    getProductDetail(id);
-  }, [id]);
-
-  useEffect(() => {
-    setFormData({
-      stockName: product?.name,
-      stockCode: product?.productCode,
-      saleCode: product?.saleCode,
-      isDeliverable: product?.isDeliverable,
-      stockDescription: product?.description,
-      stockCategory: product?.category,
-      subCategory: product?.subCategory,
-      quantity: product?.stock,
-      price: product?.price,
-      images: product?.stockImagesUrl || [],
-    });
-  }, [product]);
-
-  // console.log("product", formData);
+  const [errors, setErrors] = useState({});
+  const [dragActive, setDragActive] = useState(false);
 
   // Consolidated category and sub-category data structure
   const allCategories = {
@@ -146,8 +114,10 @@ const ProductDetail = () => {
         size: file.size,
       }));
 
-      setLocalImages((prev) => [...prev, ...newImages].slice(0, 5)); // Max 5 images
-      // console.log("localImages", localImages);
+      setFormData((prev) => ({
+        ...prev,
+        images: [...prev.images, ...newImages].slice(0, 5), // Max 5 images
+      }));
     }
   };
 
@@ -201,7 +171,7 @@ const ProductDetail = () => {
       newErrors.subCategory = "Please select a sub category";
     }
 
-    if (!formData.quantity) {
+    if (!formData.quantity.trim()) {
       newErrors.quantity = "Quantity is required";
     } else if (
       isNaN(formData.quantity) ||
@@ -210,7 +180,7 @@ const ProductDetail = () => {
       newErrors.quantity = "Please enter a valid quantity";
     }
 
-    if (!formData.price) {
+    if (!formData.price.trim()) {
       newErrors.price = "Price is required";
     } else if (isNaN(formData.price) || Number.parseFloat(formData.price) < 0) {
       newErrors.price = "Please enter a valid price";
@@ -228,27 +198,30 @@ const ProductDetail = () => {
     e.preventDefault();
 
     if (validateForm()) {
-      handleUpdateStock(formData);
+      handleAddStock(formData);
     }
   };
 
-  const handleUpdateStock = async (stockData) => {
-    const data = {
-      name: stockData.stockName,
-      code: stockData.stockCode,
-      saleCode: stockData.saleCode,
-      isDeliverable: stockData.isDeliverable,
-      description: stockData.stockDescription,
-      category: stockData.stockCategory,
-      subCategory: stockData.subCategory,
-      price: stockData.price,
-    };
+  const handleAddStock = async (stockData) => {
+    const data = new FormData();
+    data.append("name", stockData.stockName);
+    data.append("productCode", stockData.stockCode);
+    data.append("description", stockData.stockDescription);
+    data.append("category", stockData.stockCategory);
+    data.append("subCategory", stockData.subCategory);
+    data.append("stock", stockData.quantity);
+    data.append("price", stockData.price);
+    data.append("saleCode", stockData.saleCode);
+    data.append("isDeliverable", stockData.isDeliverable);
+    // Assuming you only upload the first image for now
+    if (stockData.images.length > 0) {
+      data.append("url", stockData.images[0].file);
+    }
 
-    const res = await updateProduct({ id: product._id, data });
-    if (res.code === 200) {
+    const res = await addProduct(data);
+    if (res.code === 201) {
       handleClose();
     }
-    // console.log(res);
   };
 
   const handleClose = () => {
@@ -273,15 +246,6 @@ const ProductDetail = () => {
     navigate("/");
   };
 
-  const handleDelete = async () => {
-    // console.log(product.code);
-    const res = await deleteStock(product.stockCode);
-    // console.log(res);
-    if (res.code === 200) {
-      handleClose();
-    }
-  };
-
   useEffect(() => {
     // Cleanup function to revoke object URLs when component unmounts
     return () => {
@@ -301,16 +265,16 @@ const ProductDetail = () => {
   return (
     <div className="w-full h-[calc(100vh-30px)] px-4 overflow-y-auto">
       <div className="flex justify-between items-center mb-4 border-b border-gray-200 pb-4">
-        <h1 className="header">Stock Info</h1>
+        <h1 className="header">Create New Stock</h1>
         <button onClick={handleClose} className="text-2xl font-bold">
           <IoIosCloseCircleOutline className="w-5 h-5" />
         </button>
       </div>
       <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="flex flex-col md:flex-row gap-6">
-          <div className="space-y-6 w-full md:w-2/3">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {/* Stock Name */}
+        <div className="flex gap-10">
+          <div className="space-y-6 w-2/3">
+            {/* Stock name */}
+            <div className="grid grid-cols-1 gap-4">
               <div>
                 <label
                   htmlFor="stockName"
@@ -322,7 +286,7 @@ const ProductDetail = () => {
                   type="text"
                   id="stockName"
                   name="stockName"
-                  value={formData.stockName || ""}
+                  value={formData.stockName}
                   onChange={handleInputChange}
                   placeholder="Enter Stock Name"
                   className={`
@@ -342,46 +306,7 @@ const ProductDetail = () => {
                   </p>
                 )}
               </div>
-
-              {/* Price */}
-              <div>
-                <label
-                  htmlFor="price"
-                  className="block text-sm font-medium text-gray-700 mb-2"
-                >
-                  Price
-                </label>
-                <div className="relative">
-                  <input
-                    type="number"
-                    id="price"
-                    name="price"
-                    value={formData.price || 0}
-                    onChange={handleInputChange}
-                    placeholder="Enter Stock Price"
-                    min="0"
-                    step="0.01"
-                    className={`
-                  w-full px-3 py-2 pr-12 border rounded-lg text-sm
-                  focus:outline-none focus:ring-2 focus:ring-orange-100 focus:border-orange-300
-                  transition-colors
-                  ${
-                    errors.price
-                      ? "border-red-300 bg-red-50"
-                      : "border-gray-300"
-                  }
-                `}
-                  />
-                  <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-sm text-gray-500">
-                    MMK
-                  </span>
-                </div>
-                {errors.price && (
-                  <p className="mt-1 text-sm text-red-600">{errors.price}</p>
-                )}
-              </div>
             </div>
-
             {/* Stock Description */}
             <div>
               <label
@@ -393,7 +318,7 @@ const ProductDetail = () => {
               <textarea
                 id="stockDescription"
                 name="stockDescription"
-                value={formData.stockDescription || ""}
+                value={formData.stockDescription}
                 onChange={handleInputChange}
                 placeholder="Enter Stock Description"
                 className={`
@@ -413,6 +338,7 @@ const ProductDetail = () => {
                 </p>
               )}
             </div>
+            {/* Stock Category and Sub Category */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {/* Stock Category */}
               <div>
@@ -440,7 +366,7 @@ const ProductDetail = () => {
                 ${!formData.stockCategory ? "text-gray-500" : "text-gray-900"}
               `}
                   >
-                    <option value="">{formData.stockCategory}</option>
+                    <option value="">Select Stock Category</option>
                     {Object.keys(allCategories).map((category) => (
                       <option key={category} value={category}>
                         {category}
@@ -469,7 +395,7 @@ const ProductDetail = () => {
                   <select
                     id="subCategory"
                     name="subCategory"
-                    value={formData.subCategory || ""}
+                    value={formData.subCategory}
                     onChange={handleInputChange}
                     // Disable if no main category is selected
                     disabled={!formData.stockCategory}
@@ -490,7 +416,8 @@ const ProductDetail = () => {
                 }
               `}
                   >
-                    <option value="">{formData.subCategory}</option>
+                    <option value="">Select Sub Category</option>{" "}
+                    {/* Changed placeholder */}
                     {filteredSubCategories.map((subCategory) => (
                       <option key={subCategory} value={subCategory}>
                         {subCategory}
@@ -509,7 +436,7 @@ const ProductDetail = () => {
             {/* Quantity and Price Row */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {/* Quantity */}
-              {/* <div>
+              <div>
                 <label
                   htmlFor="quantity"
                   className="block text-sm font-medium text-gray-700 mb-2"
@@ -538,11 +465,48 @@ const ProductDetail = () => {
                 {errors.quantity && (
                   <p className="mt-1 text-sm text-red-600">{errors.quantity}</p>
                 )}
-              </div> */}
+              </div>
+
+              {/* Price */}
+              <div>
+                <label
+                  htmlFor="price"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
+                  Price
+                </label>
+                <div className="relative">
+                  <input
+                    type="number"
+                    id="price"
+                    name="price"
+                    value={formData.price}
+                    onChange={handleInputChange}
+                    placeholder="Enter Stock Price"
+                    min="0"
+                    step="0.01"
+                    className={`
+                  w-full px-3 py-2 pr-12 border rounded-lg text-sm
+                  focus:outline-none focus:ring-2 focus:ring-orange-100 focus:border-orange-300
+                  transition-colors
+                  ${
+                    errors.price
+                      ? "border-red-300 bg-red-50"
+                      : "border-gray-300"
+                  }
+                `}
+                  />
+                  <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-sm text-gray-500">
+                    MMK
+                  </span>
+                </div>
+                {errors.price && (
+                  <p className="mt-1 text-sm text-red-600">{errors.price}</p>
+                )}
+              </div>
             </div>
             {/* Stock Code and Sale Code */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {/* Sale Code */}
               <div>
                 <label
                   htmlFor="stockName"
@@ -552,9 +516,9 @@ const ProductDetail = () => {
                 </label>
                 <input
                   type="text"
-                  id="stockName"
-                  name="stockName"
-                  value={formData.saleCode || ""}
+                  id="saleCode"
+                  name="saleCode"
+                  value={formData.saleCode}
                   onChange={handleInputChange}
                   placeholder="Enter Sale Code"
                   className={`
@@ -583,7 +547,7 @@ const ProductDetail = () => {
                   type="text"
                   id="stockCode"
                   name="stockCode"
-                  value={formData.stockCode || ""}
+                  value={formData.stockCode}
                   onChange={handleInputChange}
                   placeholder="Enter Stock Code"
                   className={`
@@ -643,13 +607,13 @@ const ProductDetail = () => {
             </div>
           </div>
           {/* Image Upload */}
-          <div className="w-full md:w-1/3">
+          <div className="w-1/3">
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Product Images
             </label>
 
             {/* Upload Area */}
-            {localImages.length === 0 && formData.images.length === 0 && (
+            {formData.images.length === 0 && (
               <div
                 className={`
                   relative border-2 border-dashed rounded-lg p-6 text-center transition-colors
@@ -695,45 +659,14 @@ const ProductDetail = () => {
               </div>
             )}
 
-            {/* Form Image Previews */}
+            {/* Image Previews */}
             {formData.images.length > 0 && (
               <div className="mt-4 w-full">
                 {formData.images.map((image) => (
-                  <div key={image._id} className="relative group">
-                    <div className="rounded-lg overflow-hidden bg-gray-100">
-                      <img
-                        src={image.url || "/placeholder.svg"}
-                        alt={formData.stockName}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-
-                    {/* Remove Button */}
-                    {/* <button
-                      type="button"
-                      onClick={() => removeImage(image.id)}
-                      className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-xs hover:bg-red-600 transition-colors"
-                    >
-                      ×
-                    </button> */}
-
-                    {/* Image Info */}
-                    <div className="mt-1 text-xs text-gray-500 truncate">
-                      {image.name}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {/* Local Image Previews */}
-            {localImages.length > 0 && (
-              <div className="mt-4 w-full">
-                {localImages.map((image) => (
                   <div key={image.id} className="relative group">
                     <div className="aspect-square rounded-lg overflow-hidden bg-gray-100">
                       <img
-                        src={image.preview}
+                        src={image.preview || "/placeholder.svg"}
                         alt={image.name}
                         className="w-full h-full object-cover"
                       />
@@ -742,11 +675,7 @@ const ProductDetail = () => {
                     {/* Remove Button */}
                     <button
                       type="button"
-                      onClick={() =>
-                        setLocalImages(
-                          localImages.filter((img) => img.id !== image.id)
-                        )
-                      }
+                      onClick={() => removeImage(image.id)}
                       className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-xs hover:bg-red-600 transition-colors"
                     >
                       ×
@@ -766,62 +695,21 @@ const ProductDetail = () => {
         <div className="flex flex-col sm:flex-row gap-3 pt-4 justify-end">
           <button
             type="button"
-            onClick={() => setDeleteModal(true)}
-            className="flex gap-2 px-4 py-2 text-sm font-medium text-red-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-200 transition-colors"
+            onClick={handleClose}
+            className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-200 transition-colors"
           >
-            <Trash2 className="w-4 h-4" />
-            Remove Stock
+            Cancel
           </button>
           <button
             type="submit"
-            className="flex gap-2 px-4 py-2 text-sm font-medium text-white bg-orange-500 border border-orange-500 rounded-lg hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-200 transition-colors"
+            className="px-4 py-2 text-sm font-medium text-white bg-orange-500 border border-orange-500 rounded-lg hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-200 transition-colors"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              height="18px"
-              viewBox="0 -960 960 960"
-              width="18px"
-              fill="#fff"
-            >
-              <path d="M216-720h528l-34-40H250l-34 40Zm184 270 80-40 80 40v-190H400v190ZM200-120q-33 0-56.5-23.5T120-200v-499q0-14 4.5-27t13.5-24l50-61q11-14 27.5-21.5T250-840h460q18 0 34.5 7.5T772-811l50 61q9 11 13.5 24t4.5 27v139q-21 0-41.5 3T760-545v-95H640v205l-77 77-83-42-160 80v-320H200v440h280v80H200Zm440-520h120-120Zm-440 0h363-363Zm360 520v-123l221-220q9-9 20-13t22-4q12 0 23 4.5t20 13.5l37 37q8 9 12.5 20t4.5 22q0 11-4 22.5T903-340L683-120H560Zm300-263-37-37 37 37ZM620-180h38l121-122-18-19-19-18-122 121v38Zm141-141-19-18 37 37-18-19Z" />
-            </svg>
-            <span>Edit Stock Details</span>
+            Add Stock
           </button>
         </div>
       </form>
-
-      {deleteModal && (
-        <div className="fixed inset-0 z-50 overflow-y-auto bg-black/50 flex items-center justify-center">
-          <div className="space-y-6 flex flex-col gap-2 p-10 bg-white rounded-lg flex items-center justify-center">
-            <p className="text-[28px] font-medium">
-              Remove Stock From Inventory ?
-            </p>
-            <div className="border border-gray-300 p-4 rounded-lg">
-              <Trash2 className="w-10 h-10 text-red-500" />
-            </div>
-            <span className="text-[#121212] text-[16px] max-w-md text-center">
-              The selected stock will be removed from the UEDC Inventory and
-              will not be possible to recover later.
-            </span>
-            <div className="flex gap-6">
-              <button
-                onClick={() => setDeleteModal(false)}
-                className="bg-[#E9590033] text-[#E95900] px-4 py-2 rounded-lg"
-              >
-                Later
-              </button>
-              <button
-                onClick={handleDelete}
-                className="bg-primary text-white px-4 py-2 rounded-lg"
-              >
-                Remove
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
 
-export default ProductDetail;
+export default AddProduct;

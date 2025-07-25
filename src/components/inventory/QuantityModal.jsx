@@ -46,7 +46,7 @@ const QuantityModal = ({ isOpen, onClose, onSubmit, product }) => {
     e.preventDefault();
 
     const res = await updateQuantity({
-      id: product.code,
+      id: product.saleCode,
       data: { newQuantity: quantity },
     });
     // console.log(res);
@@ -164,7 +164,7 @@ const QuantityModal = ({ isOpen, onClose, onSubmit, product }) => {
               type="text"
               id="stockCode"
               name="stockCode"
-              value={product?.code}
+              value={product?.saleCode}
               onChange={handleInputChange}
               placeholder="Enter Stock Code"
               className={`

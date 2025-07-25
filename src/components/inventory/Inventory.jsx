@@ -5,23 +5,17 @@ import AddProductModal from "./AddProductModal";
 import getAllProducts from "../../api/inventoryApi/GetAllProducts";
 import ProductDetail from "./ProductDetail";
 import QuantityModal from "./QuantityModal";
+import { useNavigate } from "react-router-dom";
 
 function Inventory() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
-  const [quantityModalOpen, setIsQuantityModalOpen] = useState(false);
+  const navigate = useNavigate();
   const [products, setProducts] = useState([]);
-  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [quantityModalOpen, setIsQuantityModalOpen] = useState(false);
 
   const getProducts = async () => {
     const response = await getAllProducts();
     console.log("response", response.data);
     setProducts(response.data.reverse());
-  };
-
-  const getProductDetail = async (product) => {
-    setSelectedProduct(product);
-    setIsDetailModalOpen(true);
   };
 
   const getQuantityModal = async (product) => {
@@ -43,7 +37,7 @@ function Inventory() {
           </div> */}
           <button
             className="button w-[150px]"
-            onClick={() => setIsModalOpen(true)}
+            onClick={() => navigate("/add-stock")}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -62,25 +56,6 @@ function Inventory() {
         products={products}
         sentproductDetail={getProductDetail}
         sentQuantityModal={getQuantityModal}
-      />
-
-      {/* Add Stock Modal */}
-      <AddProductModal
-        isOpen={isModalOpen}
-        onClose={() => {
-          setIsModalOpen(false);
-          getProducts();
-        }}
-      />
-
-      {/* Product Detail Modal */}
-      <ProductDetail
-        isOpen={isDetailModalOpen}
-        product={selectedProduct}
-        onClose={() => {
-          setIsDetailModalOpen(false);
-          getProducts();
-        }}
       />
 
       {/* Quantity Modal */}

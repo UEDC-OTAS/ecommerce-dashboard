@@ -226,14 +226,14 @@ export default function OrderDetails() {
                     }}
                   >
                     <div className="text-gray-900 text-sm font-medium">
-                      {item.productName}
+                      {item.productCode}
                     </div>
                     <div className="text-gray-900 text-sm text-center">
                       {item.quantity}
                     </div>
-                    <div className="text-gray-900 text-sm text-right">
+                    {/* <div className="text-gray-900 text-sm text-right">
                       {item.productPrice.toLocaleString()} MMK
-                    </div>
+                    </div> */}
                   </div>
                 ))}
 

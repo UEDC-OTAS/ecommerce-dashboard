@@ -165,7 +165,7 @@ const ProductTable = ({ products, sentproductDetail, sentQuantityModal }) => {
                     {product.name}
                   </td>
                   <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {product.code}
+                    {product.saleCode}
                   </td>
                   <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
                     {product.stock}

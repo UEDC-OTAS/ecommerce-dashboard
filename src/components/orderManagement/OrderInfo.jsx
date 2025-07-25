@@ -42,7 +42,7 @@ function OrderInfo({ selectedOrder, refreshOrders, handleClose }) {
     }
   };
   return (
-    <div className="mt-10 mx-5 h-[calc(100vh-190px)] overflow-y-auto border border-gray-200 rounded-lg px-5 shadow-md pt-5">
+    <div className="mt-10 mx-5 border border-gray-200 rounded-lg px-5 shadow-md pt-5">
       <div className="flex items-center justify-between">
         <h1 className="header">Order Info</h1>
         <div className="flex flex-col items-end">
@@ -51,48 +51,39 @@ function OrderInfo({ selectedOrder, refreshOrders, handleClose }) {
       </div>
 
       {order && (
-        <div>
-          <div className="flex justify-between items-center mt-5">
-            <div>
-              <p className="text-[#696969] text-[12px]">Customer Name</p>
-              <span className="font-medium text-[16px]">
-                {order.snapshotData.customerName}
-              </span>
+        <div className="h-[calc(100vh-185px)] overflow-y-auto flex flex-col justify-between">
+          <div>
+            <div className="flex justify-between items-center mt-5">
+              <div>
+                <p className="text-[#696969] text-[12px]">Customer Name</p>
+                <span className="font-medium text-[16px]">
+                  {order.snapshotData.customerName}
+                </span>
+              </div>
+              <div>
+                <p className="text-[#696969] text-[12px]">Phone Number</p>
+                <span className="font-medium text-[16px]">
+                  {order.snapshotData.contactNumber}
+                </span>
+              </div>
             </div>
-            <div>
-              <p className="text-[#696969] text-[12px]">Phone Number</p>
-              <span className="font-medium text-[16px]">
-                {order.snapshotData.contactNumber}
-              </span>
-            </div>
+
+            {order.snapshotData.paymentImage && (
+              <div className="mt-5">
+                <p className="font-medium text-[16px] mb-5">
+                  Payment Screenshots
+                </p>
+                <img
+                  src={order.snapshotData.paymentImage.url}
+                  alt=""
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            )}
           </div>
 
-          {order.snapshotData.paymentImage && (
-            <div className="mt-5">
-              <p className="font-medium text-[16px] mb-5">
-                Payment Screenshots
-              </p>
-              <img
-                src={order.snapshotData.paymentImage.url}
-                alt=""
-                className=""
-              />
-            </div>
-          )}
-
           {order.deliveryStatus !== "confirm" && (
-            <div
-              style={{
-                position: "sticky",
-                bottom: 0,
-                width: "100%",
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                gap: "10px",
-              }}
-              className="py-5 bg-white"
-            >
+            <div className="py-5 flex justify-between items-center sticky bottom-0">
               <button
                 className="flex-1 border border-gray-200 p-2 rounded-lg text-primary hover:bg-gray-100 text-[16px]"
                 onClick={() => {
