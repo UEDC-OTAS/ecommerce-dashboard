@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
+import { CgProfile } from "react-icons/cg";
 import {
   Package,
   ShoppingCart,
@@ -22,6 +23,7 @@ function Navbar() {
     { path: "/orders", icon: ShoppingCart, label: "Order" },
     { path: "/delivery", icon: Truck, label: "Delivery" },
     { path: "/support", icon: Headphones, label: "Customer Support" },
+    { path: "/accs", icon: CgProfile, label: "Account" },
   ];
 
   const isActive = (path) => location.pathname === path;

@@ -5,13 +5,13 @@ import { useNavigate } from "react-router-dom";
 function PrivateRoute({ children }) {
   const navigate = useNavigate();
   //   handleTokenExpiration();
-  const token = localStorage.getItem("piper-token");
+  const token = sessionStorage.getItem("uedc-token");
   if (token) {
     return children;
   } else {
     console.log("error");
     return useEffect(() => {
-      navigate("/auth/sign-in");
+      navigate("/login");
     }, []);
   }
 }

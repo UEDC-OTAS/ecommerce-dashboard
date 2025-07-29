@@ -109,7 +109,7 @@ const CustomerSupport = () => {
                 onClick={() => setFilter("unseen")}
                 className={`py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap ${
                   filter === "unseen"
-                    ? "border-blue-500 text-blue-600"
+                    ? "text-primary border-b-2 border-primary"
                     : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
                 }`}
               >
@@ -117,7 +117,7 @@ const CustomerSupport = () => {
                 <span
                   className={`ml-2 py-0.5 px-2 rounded-full text-xs ${
                     filter === "unseen"
-                      ? "bg-blue-100 text-blue-600"
+                      ? " text-primary border-b-2 border-primary"
                       : "bg-gray-100 text-gray-900"
                   }`}
                 >
@@ -128,7 +128,7 @@ const CustomerSupport = () => {
                 onClick={() => setFilter("unsolved")}
                 className={`py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap ${
                   filter === "unsolved"
-                    ? "border-blue-500 text-blue-600"
+                    ? "text-primary border-b-2 border-primary"
                     : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
                 }`}
               >
@@ -136,7 +136,7 @@ const CustomerSupport = () => {
                 <span
                   className={`ml-2 py-0.5 px-2 rounded-full text-xs ${
                     filter === "unsolved"
-                      ? "bg-blue-100 text-blue-600"
+                      ? "text-primary border-b-2 border-primary"
                       : "bg-gray-100 text-gray-900"
                   }`}
                 >
@@ -147,7 +147,7 @@ const CustomerSupport = () => {
                 onClick={() => setFilter("solved")}
                 className={`py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap ${
                   filter === "solved"
-                    ? "border-blue-500 text-blue-600"
+                    ? "text-primary border-b-2 border-primary"
                     : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
                 }`}
               >
@@ -155,7 +155,7 @@ const CustomerSupport = () => {
                 <span
                   className={`ml-2 py-0.5 px-2 rounded-full text-xs ${
                     filter === "solved"
-                      ? "bg-blue-100 text-blue-600"
+                      ? "text-primary border-b-2 border-primary"
                       : "bg-gray-100 text-gray-900"
                   }`}
                 >

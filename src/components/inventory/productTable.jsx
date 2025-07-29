@@ -8,8 +8,6 @@ const ProductTable = ({ products, sentproductDetail, sentQuantityModal }) => {
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  console.log("products", products);
-  console.log("selectedCategory", selectedCategory);
   const filteredProducts = products.filter((product) => {
     if (selectedCategory === "All") {
       return true;
@@ -66,7 +64,7 @@ const ProductTable = ({ products, sentproductDetail, sentQuantityModal }) => {
             }}
             className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-colors ${
               selectedCategory === tab
-                ? "bg-blue-500 text-white border-b-2 border-blue-500"
+                ? "text-primary border-b-2 border-primary"
                 : "text-gray-600 hover:text-gray-800 hover:bg-gray-50"
             }`}
           >
@@ -80,7 +78,7 @@ const ProductTable = ({ products, sentproductDetail, sentQuantityModal }) => {
             className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-colors flex items-center whitespace-nowrap
                 ${
                   isDropdownOpen
-                    ? "bg-blue-500 text-white border-b-2 border-blue-500"
+                    ? "  text-primary border-b-2 border-primary"
                     : "text-gray-600 hover:text-gray-800 hover:bg-gray-50"
                 }`}
           >

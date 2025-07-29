@@ -8,6 +8,7 @@ import OrderDetail from "../components/orderManagement/OrderDetail";
 import AddStockModal from "../components/inventory/AddProductModal";
 import AddProduct from "../components/inventory/AddProduct";
 import ProductDetail from "../components/inventory/ProductDetail";
+import Accounts from "../components/accounts/Accounts";
 function Home() {
   return (
     <>
@@ -22,6 +23,7 @@ function Home() {
             <Route path="/order/:id" element={<OrderDetail />} />
             <Route path="/delivery" element={<DeliveryPage />} />
             <Route path="/support" element={<CustomerSupport />} />
+            <Route path="/accs" element={<Accounts />} />
           </Routes>
         </div>
       </div>
