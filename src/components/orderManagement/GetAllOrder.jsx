@@ -13,7 +13,6 @@ function GetAllOrder() {
     const noDeletedOrders = response.data.filter(
       (order) => order.isDeleted === false
     );
-    // console.log(response);
     setOrders(noDeletedOrders.reverse());
   };
 

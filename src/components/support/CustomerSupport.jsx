@@ -3,6 +3,12 @@ import { useEffect, useState } from "react";
 import updateTicket from "../../api/support/UpdateTicket";
 import { MdOutlineMarkChatRead } from "react-icons/md";
 import { RiCustomerService2Fill } from "react-icons/ri";
+import io from "socket.io-client";
+
+const socket = io.connect(import.meta.env.VITE_APP_API, {
+  transports: ["websocket"],
+  secure: true,
+});
 
 const CustomerSupport = () => {
   const [tickets, setTickets] = useState([]);
@@ -10,23 +16,126 @@ const CustomerSupport = () => {
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [selectedTicket, setSelectedTicket] = useState(null);
   const [filter, setFilter] = useState("unseen");
+  const [notificationPermission, setNotificationPermission] = useState(
+    typeof window !== "undefined" && "Notification" in window
+      ? Notification.permission
+      : "denied"
+  );
+
+  // Request notification permission
+  const requestNotificationPermission = async () => {
+    if (typeof window !== "undefined" && "Notification" in window) {
+      const permission = await Notification.requestPermission();
+      setNotificationPermission(permission);
+      return permission;
+    }
+    return "denied";
+  };
+
+  // Play notification sound
+  const playNotificationSound = () => {
+    try {
+      // Create audio context for notification sound
+      const audioContext = new (window.AudioContext ||
+        window.webkitAudioContext)();
+
+      // Create a simple beep sound
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+
+      oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+      oscillator.frequency.setValueAtTime(600, audioContext.currentTime + 0.1);
+      oscillator.frequency.setValueAtTime(800, audioContext.currentTime + 0.2);
+
+      gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(
+        0.01,
+        audioContext.currentTime + 0.3
+      );
+
+      oscillator.start(audioContext.currentTime);
+      oscillator.stop(audioContext.currentTime + 0.3);
+    } catch (error) {
+      // console.log("Could not play notification sound:", error);
+    }
+  };
+
+  // Show browser notification
+  const showNotification = (ticket, name) => {
+    // console.log(ticket);
+    if (typeof window !== "undefined" && notificationPermission === "granted") {
+      const notification = new Notification(
+        name ? name : "New Support Ticket",
+        {
+          body: `From: ${ticket.customerName}`,
+          tag: "support-ticket",
+        }
+      );
+
+      notification.onclick = () => {
+        window.focus();
+        notification.close();
+        setFilter("unseen");
+      };
+
+      // Auto close after 10 seconds
+      setTimeout(() => {
+        notification.close();
+      }, 5000);
+    }
+  };
 
   const getTickets = async () => {
     const response = await getAllTickets();
-    console.log("response", response.data);
-    setTickets(response.data);
+    // console.log("response", response.data);
+    setTickets(response.data.reverse());
   };
 
   const chgStatusTicket = async (id, data) => {
     const response = await updateTicket({ id, data });
-    console.log(response);
+    // console.log(response);
     if (response.code === 200) {
       getTickets();
     }
   };
 
   useEffect(() => {
+    requestNotificationPermission();
     getTickets();
+    socket.on("newCustomerSupportTicket", (data) => {
+      // console.log("newCustomerSupportTicket", data);
+      setTickets((prevTickets) => [data, ...prevTickets]);
+      // Play notification sound
+      if (typeof window !== "undefined") {
+        // playNotificationSound();
+        showNotification(data);
+      }
+    });
+    return () => {
+      socket.off("newCustomerSupportTicket");
+    };
+  }, []);
+
+  useEffect(() => {
+    socket.on("customerSupportTicketUpdated", (data) => {
+      // console.log("customerSupportTicketUpdated", data);
+      setTickets((prevTickets) =>
+        prevTickets.map((ticket) =>
+          ticket.ticketId === data.ticketId ? data : ticket
+        )
+      );
+      // Play notification sound
+      if (typeof window !== "undefined") {
+        playNotificationSound();
+        showNotification(data, "Updated Support Ticket");
+      }
+    });
+    return () => {
+      socket.off("customerSupportTicketUpdated");
+    };
   }, []);
 
   const formatDate = (dateString) => {
@@ -39,7 +148,7 @@ const CustomerSupport = () => {
   };
 
   const filteredTickets = tickets.filter((ticket) => {
-    if (filter === "unseen") return !ticket.hasSeen;
+    if (filter === "unseen") return !ticket.hasSeen && !ticket.hasSolved;
     if (filter === "solved") return ticket.hasSolved;
     if (filter === "unsolved") return !ticket.hasSolved;
     return true;
@@ -121,7 +230,7 @@ const CustomerSupport = () => {
                       : "bg-gray-100 text-gray-900"
                   }`}
                 >
-                  {tickets.filter((t) => !t.hasSeen).length}
+                  {tickets.filter((t) => !t.hasSeen && !t.hasSolved).length}
                 </span>
               </button>
               <button
@@ -167,7 +276,7 @@ const CustomerSupport = () => {
         </div>
 
         {/* Table */}
-        <div className="bg-white rounded-lg shadow overflow-y-auto h-[calc(100vh-220px)]">
+        <div className="bg-white w-[calc(100vw-90px)] lg:w-full rounded-lg shadow overflow-y-auto h-[calc(100vh-220px)]">
           <table className="w-full table-auto">
             <thead
               className="bg-gray-50 border-b border-gray-200"

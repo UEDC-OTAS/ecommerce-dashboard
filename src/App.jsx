@@ -8,7 +8,12 @@ export default function App() {
   return (
     <>
       <Router>
-        <Toaster position="top-center" richColors duration={2000} closeButton />
+        <Toaster
+          position="bottom-left"
+          richColors
+          duration={2000}
+          closeButton
+        />
         <Routes>
           <Route path="/login" element={<LoginPage />} />
           <Route

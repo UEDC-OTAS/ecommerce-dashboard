@@ -3,6 +3,7 @@ import { Eye, EyeClosedIcon } from "lucide-react";
 import { MdLogin } from "react-icons/md";
 import handleLogin from "../../api/auth/login";
 import { useNavigate } from "react-router-dom";
+import { setAuthToken } from "../../axios";
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -24,10 +25,9 @@ const LoginPage = () => {
         name: username,
         role: res.data.user.role,
       };
+      setAuthToken(res.token);
       localStorage.setItem("uedc-user", JSON.stringify(user));
       sessionStorage.setItem("uedc-token", res.token);
-      // localStorage.setItem("uedc-token", res.token);
-      // localStorage.setItem("uedc-id", res.data.UUID);
       navigate("/");
     }
   };
