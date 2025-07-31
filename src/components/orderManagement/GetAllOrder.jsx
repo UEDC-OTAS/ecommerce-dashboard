@@ -3,6 +3,12 @@ import getAllOrders from "../../api/orderApi/getAllOrders";
 import SearchBar from "../utli/SearchBar";
 import OrderTable from "./OrderTable";
 import OrderInfo from "./OrderInfo";
+import { io } from "socket.io-client";
+
+const socket = io.connect(import.meta.env.VITE_APP_API, {
+  transports: ["websocket"],
+  secure: true,
+});
 
 function GetAllOrder() {
   const [orders, setOrders] = useState([]);
@@ -27,6 +33,20 @@ function GetAllOrder() {
   useEffect(() => {
     getOrders();
   }, []);
+
+  useEffect(() => {
+    socket.on("orderUpdated", (data) => {
+      console.log("orderUpdated", data.snapshotData);
+      const newOrder = { _id: data.orderId, ...data.snapshotData };
+      setOrders((prevOrders) => [newOrder, ...prevOrders]);
+    });
+    return () => {
+      socket.off("orderUpdated");
+    };
+  }, []);
+
+  // console.log("orders", orders);
+
   return (
     <div className="px-4">
       <div className="flex items-center justify-between ">
