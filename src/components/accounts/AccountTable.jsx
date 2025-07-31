@@ -60,7 +60,7 @@ const AccountTable = ({ users, sentproductDetail, sentQuantityModal }) => {
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-colors ${
+            className={`px-4 py-2 text-sm font-medium rubik rounded-t-lg transition-colors ${
               activeTab === tab
                 ? "  text-primary border-b-2 border-primary"
                 : "text-gray-600 hover:text-gray-800 hover:bg-gray-50"

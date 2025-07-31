@@ -4,14 +4,14 @@ import { Printer, Download } from "lucide-react";
 import getAOrder from "../../api/orderApi/getAOrder";
 import chgOrderStatus from "../../api/orderApi/chgOrderStatus";
 
-const DeliveryTable = ({ orders, passOrder }) => {
+const DeliveryTable = ({ orders, passOrder, refreshOrders }) => {
   // console.log("orders", orders);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [filteredOrders, setFilteredOrders] = useState([]);
-  const [activeTab, setActiveTab] = useState("On-delivery");
+  const [activeTab, setActiveTab] = useState("Pending");
   // console.log(filteredOrders);
-  const tabs = ["Confirmed", "On-delivery", "Delivered"];
+  const tabs = ["Pending", "On-delivery", "Delivered"];
 
   const totalPages = Math.ceil(filteredOrders.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
@@ -19,7 +19,7 @@ const DeliveryTable = ({ orders, passOrder }) => {
   const currentOrders = filteredOrders.slice(startIndex, endIndex);
 
   const filterOrders = () => {
-    if (activeTab === "Confirmed") {
+    if (activeTab === "Pending") {
       return orders.filter((order) => order.deliveryStatus === "confirmed");
     } else if (activeTab === "On-delivery") {
       return orders.filter((order) => order.deliveryStatus === "on-delivery");
@@ -52,7 +52,7 @@ const DeliveryTable = ({ orders, passOrder }) => {
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-colors ${
+            className={`px-4 py-2 text-sm font-medium rounded-t-lg rubik transition-colors ${
               activeTab === tab
                 ? "  text-primary border-b-2 border-primary"
                 : "text-gray-600 hover:text-gray-800 hover:bg-gray-50"
@@ -64,7 +64,7 @@ const DeliveryTable = ({ orders, passOrder }) => {
       </div>
 
       {/* Table */}
-      <div className="overflow-x-auto bg-white rounded-lg shadow overflow-y-auto h-[calc(100vh-160px)]">
+      <div className="overflow-x-auto bg-white rounded-lg shadow overflow-y-auto h-[calc(100vh-230px)]">
         <table className="w-full table-auto">
           <thead
             className="bg-gray-50 border-b border-gray-200"
@@ -111,29 +111,50 @@ const DeliveryTable = ({ orders, passOrder }) => {
                   <span>{order.contactNumber}</span>
                 </td>
                 <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {order?.delivery.deliveryServiceName}
+                  <span className="piller">
+                    {order?.delivery.deliveryServiceName}
+                  </span>
                 </td>
                 <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
-                  <span>{order.paymentType}</span>
+                  <span className="piller">{order?.paymentType}</span>
                 </td>
 
                 <td className="px-4 py-4 whitespace-nowrap text-sm font-medium">
                   <div className="flex space-x-2">
-                    <button
-                      onClick={() => passOrder(order._id)}
-                      className="bg-primary hover:bg-primary/80 text-white p-3 rounded-lg transition-colors"
-                      title="Edit"
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        height="18px"
-                        viewBox="0 -960 960 960"
-                        width="18px"
-                        fill="#fff"
+                    {order.deliveryStatus !== "confirmed" && (
+                      <button
+                        onClick={() => passOrder(order._id)}
+                        className="border-2 border-gray-800 p-3 rounded-lg transition-colors"
+                        title="completed"
                       >
-                        <path d="M216-720h528l-34-40H250l-34 40Zm184 270 80-40 80 40v-190H400v190ZM200-120q-33 0-56.5-23.5T120-200v-499q0-14 4.5-27t13.5-24l50-61q11-14 27.5-21.5T250-840h460q18 0 34.5 7.5T772-811l50 61q9 11 13.5 24t4.5 27v139q-21 0-41.5 3T760-545v-95H640v205l-77 77-83-42-160 80v-320H200v440h280v80H200Zm440-520h120-120Zm-440 0h363-363Zm360 520v-123l221-220q9-9 20-13t22-4q12 0 23 4.5t20 13.5l37 37q8 9 12.5 20t4.5 22q0 11-4 22.5T903-340L683-120H560Zm300-263-37-37 37 37ZM620-180h38l121-122-18-19-19-18-122 121v38Zm141-141-19-18 37 37-18-19Z" />
-                      </svg>
-                    </button>
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          height="24px"
+                          viewBox="0 -960 960 960"
+                          width="24px"
+                          fill="#000"
+                        >
+                          <path d="M240-80q-50 0-85-35t-35-85v-120h120v-560l60 60 60-60 60 60 60-60 60 60 60-60 60 60 60-60 60 60 60-60v680q0 50-35 85t-85 35H240Zm480-80q17 0 28.5-11.5T760-200v-560H320v440h360v120q0 17 11.5 28.5T720-160ZM360-600v-80h240v80H360Zm0 120v-80h240v80H360Zm320-120q-17 0-28.5-11.5T640-640q0-17 11.5-28.5T680-680q17 0 28.5 11.5T720-640q0 17-11.5 28.5T680-600Zm0 120q-17 0-28.5-11.5T640-520q0-17 11.5-28.5T680-560q17 0 28.5 11.5T720-520q0 17-11.5 28.5T680-480ZM240-160h360v-80H200v40q0 17 11.5 28.5T240-160Zm-40 0v-80 80Z" />
+                        </svg>
+                      </button>
+                    )}
+                    {order.deliveryStatus === "confirmed" && (
+                      <button
+                        onClick={() => chgStatus(order._id, "on-delivery")}
+                        className="border-2 border-gray-800 p-3 rounded-lg transition-colors"
+                        title="on-delivery"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          height="24px"
+                          viewBox="0 -960 960 960"
+                          width="24px"
+                          fill="#000"
+                        >
+                          <path d="M280-160q-50 0-85-35t-35-85H60l18-80h113q17-19 40-29.5t49-10.5q26 0 49 10.5t40 29.5h167l84-360H182l4-17q6-28 27.5-45.5T264-800h456l-37 160h117l120 160-40 200h-80q0 50-35 85t-85 35q-50 0-85-35t-35-85H400q0 50-35 85t-85 35Zm357-280h193l4-21-74-99h-95l-28 120Zm-19-273 2-7-84 360 2-7 34-146 46-200ZM20-427l20-80h220l-20 80H20Zm80-146 20-80h260l-20 80H100Zm180 333q17 0 28.5-11.5T320-280q0-17-11.5-28.5T280-320q-17 0-28.5 11.5T240-280q0 17 11.5 28.5T280-240Zm400 0q17 0 28.5-11.5T720-280q0-17-11.5-28.5T680-320q-17 0-28.5 11.5T640-280q0 17 11.5 28.5T680-240Z" />
+                        </svg>
+                      </button>
+                    )}
                   </div>
                 </td>
               </tr>

@@ -14,7 +14,7 @@ function Inventory() {
   const [products, setProducts] = useState([]);
   const getProducts = async () => {
     const response = await getAllProducts();
-    console.log("response", response.data);
+
     setProducts(response.data.reverse());
   };
 

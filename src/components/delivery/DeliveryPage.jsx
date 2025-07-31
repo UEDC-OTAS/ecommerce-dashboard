@@ -12,7 +12,7 @@ function DeliveryPage() {
 
   const getOrders = async () => {
     const response = await getAllOrders();
-    setOrders(response.data.reverse());
+    setOrders(response.data);
   };
 
   const passOrder = (orderId) => {
@@ -62,6 +62,10 @@ function DeliveryPage() {
           <DeliveryTable
             orders={orders}
             passOrder={passOrder}
+            refreshOrders={() => {
+              setSelectedOrder(null);
+              getOrders();
+            }}
             // handlePrintPDF={handlePrintPDF}
           />
         </div>
@@ -74,7 +78,10 @@ function DeliveryPage() {
           {selectedOrder && (
             <DeliReciept
               selectedOrder={selectedOrder}
-              refreshOrders={() => setSelectedOrder(null)}
+              refreshOrders={() => {
+                setSelectedOrder(null);
+                getOrders();
+              }}
               receipt={receipt}
               onClose={() => setSelectedOrder(null)}
             />

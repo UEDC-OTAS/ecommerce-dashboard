@@ -2,10 +2,9 @@ import { useState } from "react";
 import uploadReceipt from "../../api/deliveryApi/uploadReceipt";
 import axios from "axios";
 import { IoCloseCircleOutline } from "react-icons/io5";
+import chgOrderStatus from "../../api/orderApi/chgOrderStatus";
 
 function DeliReciept({ selectedOrder, refreshOrders, receipt, onClose }) {
-  console.log("receipt", receipt[0]?.parcelTrackingLink);
-  // console.log("selectedOrder", selectedOrder);
   const [formData, setFormData] = useState({
     images: [],
     trackingLink: "",
@@ -63,6 +62,13 @@ function DeliReciept({ selectedOrder, refreshOrders, receipt, onClose }) {
     }));
   };
 
+  const chgStatus = async (orderId, status) => {
+    const data = {
+      deliveryStatus: status,
+    };
+    await chgOrderStatus({ orderId, data });
+  };
+
   const handleConfirm = async () => {
     const data = new FormData();
     data.append("deliveryReceiptImage", formData.images[0].file);
@@ -70,6 +76,7 @@ function DeliReciept({ selectedOrder, refreshOrders, receipt, onClose }) {
     const response = await uploadReceipt({ data: data, id: selectedOrder });
     console.log(response);
     if (response.code === 201) {
+      await chgStatus(selectedOrder, "completed");
       refreshOrders();
       await axios.post(
         "https://hook.us1.make.com/ckbcdf8v49x09xmvp5icapdxu7tgr9wy",
@@ -84,12 +91,10 @@ function DeliReciept({ selectedOrder, refreshOrders, receipt, onClose }) {
   };
 
   return (
-    <div className="px-5 mt-5 h-[calc(100vh-100px)] flex flex-col justify-between overflow-y-auto">
+    <div className="p-5 mt-5 ms-5 h-[calc(100vh-100px)] border border-gray-300 rounded-xl flex flex-col justify-between overflow-y-auto">
       <div>
-        <div className="flex items-center justify-between mb-5">
-          <h1 className="header">
-            {receipt.length === 0 ? "Upload Reciept" : "Reciept"}
-          </h1>
+        <div className="flex items-center justify-between mb-5 border-b border-gray-300 pb-5">
+          <h1 className="header">Delivery Detail</h1>
 
           <button onClick={() => onClose()}>
             <IoCloseCircleOutline className="w-6 h-6" />
@@ -97,11 +102,12 @@ function DeliReciept({ selectedOrder, refreshOrders, receipt, onClose }) {
         </div>
 
         <div className="space-y-4">
-          <label htmlFor="">Tracking Link</label>
+          <label htmlFor="">Delivery Route Link</label>
           {receipt.length === 0 && (
-            <input
-              type="text"
+            <textarea
+              rows={3}
               value={formData.trackingLink}
+              placeholder="Enter Delivery Route Link"
               onChange={(e) =>
                 setFormData({ ...formData, trackingLink: e.target.value })
               }
@@ -117,8 +123,9 @@ function DeliReciept({ selectedOrder, refreshOrders, receipt, onClose }) {
         </div>
 
         {receipt.length === 0 && (
-          <div className="mt-10">
+          <div className="mt-5">
             {/* Upload Area */}
+            <p className="font-medium text-lg mb-4">E-Receipt</p>
             {formData.images.length === 0 && (
               <div
                 className={`

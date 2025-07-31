@@ -72,7 +72,7 @@ const OrderTable = ({ orders, passOrder, activeOrder, refreshOrders }) => {
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-colors ${
+            className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-colors rubik ${
               activeTab === tab
                 ? "  text-primary border-b-2 border-primary"
                 : "text-gray-600 hover:text-gray-800 hover:bg-gray-50"
@@ -84,7 +84,7 @@ const OrderTable = ({ orders, passOrder, activeOrder, refreshOrders }) => {
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-lg shadow overflow-y-auto h-[calc(100vh-220px)]">
+      <div className="bg-white rounded-lg shadow overflow-y-auto h-[calc(100vh-230px)]">
         <table className="w-full table-auto">
           <thead
             className="bg-gray-50 border-b border-gray-200"
@@ -165,7 +165,7 @@ const OrderTable = ({ orders, passOrder, activeOrder, refreshOrders }) => {
                         </svg>
                       </button>
                     )}
-                    {order.deliveryStatus === "confirmed" && (
+                    {/* {order.deliveryStatus === "confirmed" && (
                       <button
                         onClick={() => chgStatus(order._id, "on-delivery")}
                         className="bg-primary hover:bg-primary/80 text-white p-3 rounded-lg transition-colors"
@@ -181,7 +181,7 @@ const OrderTable = ({ orders, passOrder, activeOrder, refreshOrders }) => {
                           <path d="M280-160q-50 0-85-35t-35-85H60l18-80h113q17-19 40-29.5t49-10.5q26 0 49 10.5t40 29.5h167l84-360H182l4-17q6-28 27.5-45.5T264-800h456l-37 160h117l120 160-40 200h-80q0 50-35 85t-85 35q-50 0-85-35t-35-85H400q0 50-35 85t-85 35Zm357-280h193l4-21-74-99h-95l-28 120Zm-19-273 2-7-84 360 2-7 34-146 46-200ZM20-427l20-80h220l-20 80H20Zm80-146 20-80h260l-20 80H100Zm180 333q17 0 28.5-11.5T320-280q0-17-11.5-28.5T280-320q-17 0-28.5 11.5T240-280q0 17 11.5 28.5T280-240Zm400 0q17 0 28.5-11.5T720-280q0-17-11.5-28.5T680-320q-17 0-28.5 11.5T640-280q0 17 11.5 28.5T680-240Z" />
                         </svg>
                       </button>
-                    )}
+                    )} */}
                     {order.deliveryStatus === "cancelled" && (
                       <button
                         onClick={() => handleDelete(order._id)}

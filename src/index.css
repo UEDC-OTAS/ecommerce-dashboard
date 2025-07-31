@@ -1,5 +1,6 @@
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Squada+One&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,100..900;1,100..900&display=swap");
 
 body {
@@ -10,12 +11,16 @@ body {
   overflow-y: hidden;
 }
 
+.rubik {
+  font-family: "Rubik", sans-serif;
+}
+
 .inter {
   font-family: "Inter", sans-serif;
 }
 
 .header {
-  @apply font-semibold text-[28px] inter;
+  @apply font-semibold text-[28px] rubik;
 }
 
 .button {
@@ -33,6 +38,10 @@ body {
 
 .custom-scrollbar::-webkit-scrollbar-track {
   background: #edf2f7; /* Background of the scrollbar track */
+}
+
+.piller {
+  @apply py-2 px-4 bg-[#FFFBEB] text-[#682D03] font-semibold rounded-xl shadow-md;
 }
 
 @layer utilities {

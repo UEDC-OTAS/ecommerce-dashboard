@@ -190,93 +190,73 @@ const CustomerSupport = () => {
         </div>
       </div>
 
-      <div className="w-full py-6 px-4">
+      <div className="w-full pt-6 px-4">
         {/* Tab Bar Filters */}
-        <div className="">
-          <div className="border-b border-gray-200">
-            <nav className="-mb-px flex space-x-8" aria-label="Tabs">
-              {/* <button
-                onClick={() => setFilter("all")}
-                className={`py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap ${
-                  filter === "all"
-                    ? "border-blue-500 text-blue-600"
-                    : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-                }`}
-              >
-                All Tickets
-                <span
-                  className={`ml-2 py-0.5 px-2 rounded-full text-xs ${
-                    filter === "all"
-                      ? "bg-blue-100 text-blue-600"
-                      : "bg-gray-100 text-gray-900"
-                  }`}
-                >
-                  {tickets.length}
-                </span>
-              </button> */}
-              <button
-                onClick={() => setFilter("unseen")}
-                className={`py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap ${
+
+        <div className="border-b mb-6 border-gray-200">
+          <nav className="-mb-px flex space-x-8 rubik" aria-label="Tabs">
+            <button
+              onClick={() => setFilter("unseen")}
+              className={`py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap ${
+                filter === "unseen"
+                  ? "text-primary border-b-2 border-primary"
+                  : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+              }`}
+            >
+              Waiting Support
+              <span
+                className={`ml-2 py-0.5 px-2 rounded-full text-xs ${
                   filter === "unseen"
-                    ? "text-primary border-b-2 border-primary"
-                    : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                    ? " text-primary border-b-2 border-primary"
+                    : "bg-gray-100 text-gray-900"
                 }`}
               >
-                Waiting Support
-                <span
-                  className={`ml-2 py-0.5 px-2 rounded-full text-xs ${
-                    filter === "unseen"
-                      ? " text-primary border-b-2 border-primary"
-                      : "bg-gray-100 text-gray-900"
-                  }`}
-                >
-                  {tickets.filter((t) => !t.hasSeen && !t.hasSolved).length}
-                </span>
-              </button>
-              <button
-                onClick={() => setFilter("unsolved")}
-                className={`py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap ${
+                {tickets.filter((t) => !t.hasSeen && !t.hasSolved).length}
+              </span>
+            </button>
+            <button
+              onClick={() => setFilter("unsolved")}
+              className={`py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap ${
+                filter === "unsolved"
+                  ? "text-primary border-b-2 border-primary"
+                  : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+              }`}
+            >
+              Solving
+              <span
+                className={`ml-2 py-0.5 px-2 rounded-full text-xs ${
                   filter === "unsolved"
                     ? "text-primary border-b-2 border-primary"
-                    : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                    : "bg-gray-100 text-gray-900"
                 }`}
               >
-                Solving
-                <span
-                  className={`ml-2 py-0.5 px-2 rounded-full text-xs ${
-                    filter === "unsolved"
-                      ? "text-primary border-b-2 border-primary"
-                      : "bg-gray-100 text-gray-900"
-                  }`}
-                >
-                  {tickets.filter((t) => !t.hasSolved).length}
-                </span>
-              </button>
-              <button
-                onClick={() => setFilter("solved")}
-                className={`py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap ${
+                {tickets.filter((t) => !t.hasSolved).length}
+              </span>
+            </button>
+            <button
+              onClick={() => setFilter("solved")}
+              className={`py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap ${
+                filter === "solved"
+                  ? "text-primary border-b-2 border-primary"
+                  : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+              }`}
+            >
+              Solved
+              <span
+                className={`ml-2 py-0.5 px-2 rounded-full text-xs ${
                   filter === "solved"
                     ? "text-primary border-b-2 border-primary"
-                    : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                    : "bg-gray-100 text-gray-900"
                 }`}
               >
-                Solved
-                <span
-                  className={`ml-2 py-0.5 px-2 rounded-full text-xs ${
-                    filter === "solved"
-                      ? "text-primary border-b-2 border-primary"
-                      : "bg-gray-100 text-gray-900"
-                  }`}
-                >
-                  {tickets.filter((t) => t.hasSolved).length}
-                </span>
-              </button>
-            </nav>
-          </div>
+                {tickets.filter((t) => t.hasSolved).length}
+              </span>
+            </button>
+          </nav>
         </div>
 
         {/* Table */}
-        <div className="bg-white w-[calc(100vw-90px)] lg:w-full rounded-lg shadow overflow-y-auto h-[calc(100vh-220px)]">
+        <div className="bg-white w-[calc(100vw-90px)] lg:w-full rounded-lg shadow overflow-y-auto h-[calc(100vh-230px)]">
           <table className="w-full table-auto">
             <thead
               className="bg-gray-50 border-b border-gray-200"
