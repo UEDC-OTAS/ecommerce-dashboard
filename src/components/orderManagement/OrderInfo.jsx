@@ -10,7 +10,7 @@ function OrderInfo({ selectedOrder, refreshOrders, handleClose }) {
 
   const getOrder = async () => {
     const response = await getAOrder(selectedOrder);
-    // console.log("response", response);
+    console.log("response", response);
     setOrder(response.data);
   };
 

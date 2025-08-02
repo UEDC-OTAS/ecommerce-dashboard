@@ -1,26 +1,47 @@
 import { useEffect, useState } from "react";
 import getAllOrders from "../../api/orderApi/getAllOrders";
-import SearchBar from "../utli/SearchBar";
 import OrderTable from "./OrderTable";
 import OrderInfo from "./OrderInfo";
-import { io } from "socket.io-client";
-
-const socket = io.connect(import.meta.env.VITE_APP_API, {
-  transports: ["websocket"],
-  secure: true,
-});
+import { format } from "date-fns";
+import { Calendar } from "react-date-range";
+import { FaCalendarAlt } from "react-icons/fa";
+import "react-date-range/dist/styles.css"; // main style file
+import "react-date-range/dist/theme/default.css"; // theme css file
 
 function GetAllOrder() {
+  const today = new Date();
+  const [loading, setLoading] = useState(false);
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [date, setDate] = useState(today);
   const [orders, setOrders] = useState([]);
   const [selectedOrder, setSelectedOrder] = useState(null);
+  const [activeTab, setActiveTab] = useState("pending");
+  const [activePage, setActivePage] = useState(1);
+
+  const msToAdd = (4 * 60 + 22) * 60 * 1000; // 15,720,000 ms
+
+  const formattedDate = format("2025-08-02T09:55:51.986Z", "yyyy-MM-dd");
+  // console.log("formattedDate", formattedDate);
+
+  // console.log("activeTab", activeTab);
 
   const getOrders = async () => {
-    const response = await getAllOrders();
-    const noDeletedOrders = response.data.filter(
-      (order) => order.isDeleted === false
-    );
-    setOrders(noDeletedOrders.reverse());
+    setLoading(true);
+    const response = await getAllOrders(activeTab, activePage);
+    console.log("response", response);
+    if (response.code === 200) {
+      setLoading(false);
+      const filteredOrders = response.data.filter((item) => {
+        const orderDate = new Date(item.snapshotData.updatedAt);
+        const orderDateWithMs = new Date(orderDate.getTime() + msToAdd);
+        const formattedOrderDate = format(orderDateWithMs, "yyyy-MM-dd");
+        return formattedOrderDate === format(date, "yyyy-MM-dd");
+      });
+      setOrders(filteredOrders);
+    }
   };
+
+  // console.log("orders", orders);
 
   const passOrder = (orderId) => {
     if (selectedOrder === orderId) {
@@ -30,33 +51,55 @@ function GetAllOrder() {
     }
   };
 
+  const passTab = (tab) => {
+    if (tab === "Pending Orders") {
+      setActiveTab("pending");
+    } else if (tab === "Confirm Orders") {
+      setActiveTab("confirmed");
+    } else if (tab === "Cancel Orders") {
+      setActiveTab("cancelled");
+    }
+  };
+
+  const passPage = (page) => {
+    setActivePage(page);
+  };
+
   useEffect(() => {
     getOrders();
-  }, []);
-
-  useEffect(() => {
-    socket.on("orderUpdated", (data) => {
-      console.log("orderUpdated", data.snapshotData);
-      const newOrder = { _id: data.orderId, ...data.snapshotData };
-      setOrders((prevOrders) => [newOrder, ...prevOrders]);
-    });
-    return () => {
-      socket.off("orderUpdated");
-    };
-  }, []);
-
-  // console.log("orders", orders);
+  }, [activeTab, date]);
 
   return (
     <div className="px-4">
       <div className="flex items-center justify-between ">
         <h1 className="header">Orders</h1>
+
         <div className="flex items-center gap-10">
-          {/* <div className="w-[400px]">
-            <SearchBar placeholder="Search Order with name or Product Code" />
-          </div> */}
+          <button
+            onClick={() => {
+              setShowDatePicker(!showDatePicker);
+              // console.log(showDatePicker);
+            }}
+            className="button button-color text-color border border-primary transition-all duration-300 "
+          >
+            <FaCalendarAlt className="text-color" />
+            {format(date, "MMMM d,yyyy")}
+          </button>
         </div>
       </div>
+
+      {/* Date Range Picker */}
+      {showDatePicker && (
+        <div className="mb-4 bg-white rounded-lg shadow-md absolute right-0 z-10">
+          <Calendar
+            date={today}
+            onChange={(date) => {
+              setDate(date);
+              setShowDatePicker(false);
+            }}
+          />
+        </div>
+      )}
 
       <div className="flex">
         <div
@@ -68,11 +111,13 @@ function GetAllOrder() {
             orders={orders}
             passOrder={passOrder}
             activeOrder={selectedOrder}
+            passTab={passTab}
+            loading={loading}
+            passPage={passPage}
             refreshOrders={() => {
               getOrders();
               setSelectedOrder(null);
             }}
-            // handlePrintPDF={handlePrintPDF}
           />
         </div>
 

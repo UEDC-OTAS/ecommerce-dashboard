@@ -9,10 +9,12 @@ function DeliveryPage() {
   const [orders, setOrders] = useState([]);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [receipt, setReceipt] = useState(null);
+  const [activeTab, setActiveTab] = useState("pending");
+  const [activePage, setActivePage] = useState(1);
 
   const getOrders = async () => {
-    const response = await getAllOrders();
-    setOrders(response.data);
+    const response = await getAllOrders(activeTab, activePage);
+    setOrders(response);
   };
 
   const passOrder = (orderId) => {
@@ -35,13 +37,29 @@ function DeliveryPage() {
     // }
   };
 
+  const passTab = (tab) => {
+    if (tab === "Pending") {
+      setActiveTab("pending");
+    } else if (tab === "On-delivery") {
+      setActiveTab("on-delivery");
+    } else if (tab === "Delivered") {
+      setActiveTab("completed");
+    }
+  };
+
+  // console.log("activeTab", activeTab);
+
+  const passPage = (page) => {
+    setActivePage(page);
+  };
+
   useEffect(() => {
     getReceipt();
   }, []);
 
   useEffect(() => {
     getOrders();
-  }, []);
+  }, [activeTab, activePage]);
   return (
     <div className="px-4">
       <div className="flex items-center justify-between ">
@@ -66,7 +84,8 @@ function DeliveryPage() {
               setSelectedOrder(null);
               getOrders();
             }}
-            // handlePrintPDF={handlePrintPDF}
+            passTab={passTab}
+            passPage={passPage}
           />
         </div>
 

@@ -6,36 +6,31 @@ import { useNavigate } from "react-router-dom";
 import chgOrderStatus from "../../api/orderApi/chgOrderStatus";
 import deleteOrder from "../../api/orderApi/DeleteOrder";
 
-const OrderTable = ({ orders, passOrder, activeOrder, refreshOrders }) => {
+const OrderTable = ({
+  orders,
+  passOrder,
+  activeOrder,
+  refreshOrders,
+  passTab,
+  loading,
+}) => {
+  // console.log("orders", orders);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const navigate = useNavigate();
-  const [filteredOrders, setFilteredOrders] = useState([]);
   const [activeTab, setActiveTab] = useState("Pending Orders");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
 
   const tabs = ["Pending Orders", "Confirm Orders", "Cancel Orders"];
 
-  const totalPages = Math.ceil(filteredOrders.length / itemsPerPage);
+  const totalPages = Math.ceil(orders.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  const currentOrders = filteredOrders.slice(startIndex, endIndex);
+  const currentOrders = orders.slice(startIndex, endIndex);
 
   const handleView = (id) => {
     navigate(`/order/${id}`);
     // console.log("Edit product:", id);
-  };
-
-  const filterOrders = () => {
-    if (activeTab === "All") {
-      return orders;
-    } else if (activeTab === "Pending Orders") {
-      return orders.filter((order) => order.deliveryStatus === "pending");
-    } else if (activeTab === "Confirm Orders") {
-      return orders.filter((order) => order.deliveryStatus === "confirmed");
-    } else if (activeTab === "Cancel Orders") {
-      return orders.filter((order) => order.deliveryStatus === "cancelled");
-    }
   };
 
   const chgStatus = async (orderId, status) => {
@@ -57,13 +52,6 @@ const OrderTable = ({ orders, passOrder, activeOrder, refreshOrders }) => {
     }
   };
 
-  // console.log("filteredOrders", filteredOrders);
-
-  useEffect(() => {
-    const filteredOrders = filterOrders();
-    setFilteredOrders(filteredOrders);
-  }, [activeTab, orders]);
-
   return (
     <div className="w-full mx-auto pt-6">
       {/* Tabs */}
@@ -71,7 +59,10 @@ const OrderTable = ({ orders, passOrder, activeOrder, refreshOrders }) => {
         {tabs.map((tab) => (
           <button
             key={tab}
-            onClick={() => setActiveTab(tab)}
+            onClick={() => {
+              setActiveTab(tab);
+              passTab(tab);
+            }}
             className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-colors rubik ${
               activeTab === tab
                 ? "  text-primary border-b-2 border-primary"
@@ -114,95 +105,118 @@ const OrderTable = ({ orders, passOrder, activeOrder, refreshOrders }) => {
               </th>
             </tr>
           </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {currentOrders.map((order, index) => (
-              <tr
-                key={order._id}
-                className={`${
-                  activeOrder === order._id ? "bg-primary/10" : ""
-                }`}
-              >
-                <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {currentPage * itemsPerPage - itemsPerPage + index + 1}
-                </td>
-                <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {order?.customerName}
-                </td>
-                <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {order?.contactNumber}
-                </td>
-                <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
-                  <p
-                    className={`text-ellipsis overflow-hidden whitespace-nowrap ${
-                      activeOrder ? "max-w-[100px]" : "w-full"
-                    }`}
-                  >
-                    {order?.address}
-                  </p>
-                </td>
-                <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
-                  <span>{order.paymentType}</span>
-                </td>
-                <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
-                  <span>{order.totalAmount.toLocaleString()} MMK</span>
-                </td>
-                <td className="px-4 py-4 whitespace-nowrap text-sm font-medium">
-                  <div className="flex space-x-2">
-                    {!activeOrder && order.deliveryStatus === "pending" && (
-                      <button
-                        onClick={() => passOrder(order._id)}
-                        className="bg-primary hover:bg-primary/80 text-white p-3 rounded-lg transition-colors"
-                        title="Edit"
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          height="18px"
-                          viewBox="0 -960 960 960"
-                          width="24px"
-                          fill="#e3e3e3"
-                        >
-                          <path d="m691-150 139-138-42-42-97 95-39-39-42 43 81 81ZM240-600h480v-80H240v80ZM720-40q-83 0-141.5-58.5T520-240q0-83 58.5-141.5T720-440q83 0 141.5 58.5T920-240q0 83-58.5 141.5T720-40ZM120-80v-680q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v267q-19-9-39-15t-41-9v-243H200v562h243q5 31 15.5 59T486-86l-6 6-60-60-60 60-60-60-60 60-60-60-60 60Zm120-200h203q3-21 9-41t15-39H240v80Zm0-160h284q38-37 88.5-58.5T720-520H240v80Zm-40 242v-562 562Z" />
-                        </svg>
-                      </button>
-                    )}
-                    {/* {order.deliveryStatus === "confirmed" && (
-                      <button
-                        onClick={() => chgStatus(order._id, "on-delivery")}
-                        className="bg-primary hover:bg-primary/80 text-white p-3 rounded-lg transition-colors"
-                        title="Edit"
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          height="24px"
-                          viewBox="0 -960 960 960"
-                          width="24px"
-                          fill="#e3e3e3"
-                        >
-                          <path d="M280-160q-50 0-85-35t-35-85H60l18-80h113q17-19 40-29.5t49-10.5q26 0 49 10.5t40 29.5h167l84-360H182l4-17q6-28 27.5-45.5T264-800h456l-37 160h117l120 160-40 200h-80q0 50-35 85t-85 35q-50 0-85-35t-35-85H400q0 50-35 85t-85 35Zm357-280h193l4-21-74-99h-95l-28 120Zm-19-273 2-7-84 360 2-7 34-146 46-200ZM20-427l20-80h220l-20 80H20Zm80-146 20-80h260l-20 80H100Zm180 333q17 0 28.5-11.5T320-280q0-17-11.5-28.5T280-320q-17 0-28.5 11.5T240-280q0 17 11.5 28.5T280-240Zm400 0q17 0 28.5-11.5T720-280q0-17-11.5-28.5T680-320q-17 0-28.5 11.5T640-280q0 17 11.5 28.5T680-240Z" />
-                        </svg>
-                      </button>
-                    )} */}
-                    {order.deliveryStatus === "cancelled" && (
-                      <button
-                        onClick={() => handleDelete(order._id)}
-                        className="bg-red-600 hover:bg-red-700 text-white p-3 rounded-lg transition-colors"
-                        title=""
-                      >
-                        <Trash2 size={18} />
-                      </button>
-                    )}
-                    <button
-                      onClick={() => handleView(order._id)}
-                      className="border border-gray-200 hover:bg-gray-200 text-delete p-3 rounded-lg transition-colors"
-                      title="View"
-                    >
-                      <Eye size={18} />
-                    </button>
-                  </div>
+          {loading ? (
+            <tbody>
+              <tr>
+                <td colSpan={7} className="px-4 py-8 text-center text-gray-500">
+                  loading...
                 </td>
               </tr>
-            ))}
-          </tbody>
+            </tbody>
+          ) : (
+            <tbody className="bg-white divide-y divide-gray-200">
+              {currentOrders.length === 0 ? (
+                <tr>
+                  <td
+                    colSpan={7}
+                    className="px-4 py-8 text-center text-gray-500"
+                  >
+                    No orders found
+                  </td>
+                </tr>
+              ) : (
+                currentOrders.map((order, index) => (
+                  <tr
+                    key={order._id}
+                    className={`${
+                      activeOrder === order._id ? "bg-primary/10" : ""
+                    }`}
+                  >
+                    <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {currentPage * itemsPerPage - itemsPerPage + index + 1}
+                    </td>
+                    <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {order?.snapshotData.customerName}
+                    </td>
+                    <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {order?.snapshotData.contactNumber}
+                    </td>
+                    <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
+                      <p
+                        className={`text-ellipsis overflow-hidden whitespace-nowrap ${
+                          activeOrder ? "max-w-[100px]" : "w-full"
+                        }`}
+                      >
+                        {order?.snapshotData.address}
+                      </p>
+                    </td>
+                    <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
+                      <span>{order?.snapshotData.paymentType}</span>
+                    </td>
+                    <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
+                      <span>
+                        {order?.snapshotData.totalAmount.toLocaleString()} MMK
+                      </span>
+                    </td>
+                    <td className="px-4 py-4 whitespace-nowrap text-sm font-medium">
+                      <div className="flex space-x-2">
+                        {!activeOrder && order.deliveryStatus === "pending" && (
+                          <button
+                            onClick={() => passOrder(order._id)}
+                            className="bg-primary hover:bg-primary/80 text-white p-3 rounded-lg transition-colors"
+                            title="Edit"
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              height="18px"
+                              viewBox="0 -960 960 960"
+                              width="24px"
+                              fill="#e3e3e3"
+                            >
+                              <path d="m691-150 139-138-42-42-97 95-39-39-42 43 81 81ZM240-600h480v-80H240v80ZM720-40q-83 0-141.5-58.5T520-240q0-83 58.5-141.5T720-440q83 0 141.5 58.5T920-240q0 83-58.5 141.5T720-40ZM120-80v-680q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v267q-19-9-39-15t-41-9v-243H200v562h243q5 31 15.5 59T486-86l-6 6-60-60-60 60-60-60-60 60-60-60-60 60Zm120-200h203q3-21 9-41t15-39H240v80Zm0-160h284q38-37 88.5-58.5T720-520H240v80Zm-40 242v-562 562Z" />
+                            </svg>
+                          </button>
+                        )}
+                        {/* {order.deliveryStatus === "confirmed" && (
+                        <button
+                          onClick={() => chgStatus(order._id, "on-delivery")}
+                          className="bg-primary hover:bg-primary/80 text-white p-3 rounded-lg transition-colors"
+                          title="Edit"
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            height="24px"
+                            viewBox="0 -960 960 960"
+                            width="24px"
+                            fill="#e3e3e3"
+                          >
+                            <path d="M280-160q-50 0-85-35t-35-85H60l18-80h113q17-19 40-29.5t49-10.5q26 0 49 10.5t40 29.5h167l84-360H182l4-17q6-28 27.5-45.5T264-800h456l-37 160h117l120 160-40 200h-80q0 50-35 85t-85 35q-50 0-85-35t-35-85H400q0 50-35 85t-85 35Zm357-280h193l4-21-74-99h-95l-28 120Zm-19-273 2-7-84 360 2-7 34-146 46-200ZM20-427l20-80h220l-20 80H20Zm80-146 20-80h260l-20 80H100Zm180 333q17 0 28.5-11.5T320-280q0-17-11.5-28.5T280-320q-17 0-28.5 11.5T240-280q0 17 11.5 28.5T280-240Zm400 0q17 0 28.5-11.5T720-280q0-17-11.5-28.5T680-320q-17 0-28.5 11.5T640-280q0 17 11.5 28.5T680-240Z" />
+                          </svg>
+                        </button>
+                      )} */}
+                        {order.deliveryStatus === "cancelled" && (
+                          <button
+                            onClick={() => handleDelete(order._id)}
+                            className="bg-red-600 hover:bg-red-700 text-white p-3 rounded-lg transition-colors"
+                            title=""
+                          >
+                            <Trash2 size={18} />
+                          </button>
+                        )}
+                        <button
+                          onClick={() => handleView(order._id)}
+                          className="border border-gray-200 hover:bg-gray-200 text-delete p-3 rounded-lg transition-colors"
+                          title="View"
+                        >
+                          <Eye size={18} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          )}
         </table>
       </div>
 

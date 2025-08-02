@@ -1,32 +1,21 @@
 import { useEffect, useState } from "react";
-import { generatePDF } from "./../orderManagement/PdfGenerator";
-import { Printer, Download } from "lucide-react";
-import getAOrder from "../../api/orderApi/getAOrder";
 import chgOrderStatus from "../../api/orderApi/chgOrderStatus";
 
-const DeliveryTable = ({ orders, passOrder, refreshOrders }) => {
+const DeliveryTable = ({
+  orders,
+  passOrder,
+  refreshOrders,
+  passTab,
+  passPage,
+}) => {
   // console.log("orders", orders);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
-  const [filteredOrders, setFilteredOrders] = useState([]);
   const [activeTab, setActiveTab] = useState("Pending");
   // console.log(filteredOrders);
   const tabs = ["Pending", "On-delivery", "Delivered"];
 
-  const totalPages = Math.ceil(filteredOrders.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  const currentOrders = filteredOrders.slice(startIndex, endIndex);
-
-  const filterOrders = () => {
-    if (activeTab === "Pending") {
-      return orders.filter((order) => order.deliveryStatus === "confirmed");
-    } else if (activeTab === "On-delivery") {
-      return orders.filter((order) => order.deliveryStatus === "on-delivery");
-    } else if (activeTab === "Delivered") {
-      return orders.filter((order) => order.deliveryStatus === "completed");
-    }
-  };
+  const totalPages = orders?.totalPages || 1;
 
   const chgStatus = async (orderId, status) => {
     const data = {
@@ -39,11 +28,6 @@ const DeliveryTable = ({ orders, passOrder, refreshOrders }) => {
     }
   };
 
-  useEffect(() => {
-    const filteredOrders = filterOrders();
-    setFilteredOrders(filteredOrders);
-  }, [activeTab, orders]);
-
   return (
     <div className="w-full mx-auto pt-6">
       {/* Tabs */}
@@ -51,7 +35,7 @@ const DeliveryTable = ({ orders, passOrder, refreshOrders }) => {
         {tabs.map((tab) => (
           <button
             key={tab}
-            onClick={() => setActiveTab(tab)}
+            onClick={() => [setActiveTab(tab), passTab(tab)]}
             className={`px-4 py-2 text-sm font-medium rounded-t-lg rubik transition-colors ${
               activeTab === tab
                 ? "  text-primary border-b-2 border-primary"
@@ -96,32 +80,34 @@ const DeliveryTable = ({ orders, passOrder, refreshOrders }) => {
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {currentOrders.map((order, index) => (
+            {orders?.data?.map((order, index) => (
               <tr key={order._id}>
                 <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
                   {index + 1}
                 </td>
                 <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {order?.customerName}
+                  {order?.snapshotData?.customerName}
                 </td>
                 <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {order?.address}
+                  {order?.snapshotData?.address}
                 </td>
                 <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
-                  <span>{order.contactNumber}</span>
+                  <span>{order?.snapshotData?.contactNumber}</span>
                 </td>
                 <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
                   <span className="piller">
-                    {order?.delivery.deliveryServiceName}
+                    {order?.snapshotData?.delivery.deliveryServiceName}
                   </span>
                 </td>
                 <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
-                  <span className="piller">{order?.paymentType}</span>
+                  <span className="piller">
+                    {order?.snapshotData?.paymentType}
+                  </span>
                 </td>
 
                 <td className="px-4 py-4 whitespace-nowrap text-sm font-medium">
                   <div className="flex space-x-2">
-                    {order.deliveryStatus !== "confirmed" && (
+                    {order?.snapshotData?.deliveryStatus !== "confirmed" && (
                       <button
                         onClick={() => passOrder(order._id)}
                         className="border-2 border-gray-800 p-3 rounded-lg transition-colors"
@@ -138,7 +124,7 @@ const DeliveryTable = ({ orders, passOrder, refreshOrders }) => {
                         </svg>
                       </button>
                     )}
-                    {order.deliveryStatus === "confirmed" && (
+                    {order?.snapshotData?.deliveryStatus === "confirmed" && (
                       <button
                         onClick={() => chgStatus(order._id, "on-delivery")}
                         className="border-2 border-gray-800 p-3 rounded-lg transition-colors"
@@ -180,14 +166,17 @@ const DeliveryTable = ({ orders, passOrder, refreshOrders }) => {
         </div>
 
         <div className="flex items-center space-x-4">
-          <span className="text-sm text-gray-700">
+          {/* <span className="text-sm text-gray-700">
             {startIndex + 1} - {Math.min(endIndex, orders.length)} of{" "}
             {orders.length} Orders
-          </span>
+          </span> */}
 
           <div className="flex items-center space-x-2">
             <button
-              onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+              onClick={() => {
+                setCurrentPage(Math.max(1, currentPage - 1));
+                passPage(Math.max(1, currentPage - 1));
+              }}
               disabled={currentPage === 1}
               className="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
             >
@@ -203,7 +192,10 @@ const DeliveryTable = ({ orders, passOrder, refreshOrders }) => {
                 return (
                   <button
                     key={pageNum}
-                    onClick={() => setCurrentPage(pageNum)}
+                    onClick={() => {
+                      setCurrentPage(pageNum);
+                      passPage(pageNum);
+                    }}
                     className={`px-3 py-1 text-sm border rounded ${
                       currentPage === pageNum
                         ? "bg-blue-500 text-white border-blue-500"
@@ -217,9 +209,10 @@ const DeliveryTable = ({ orders, passOrder, refreshOrders }) => {
             </div>
 
             <button
-              onClick={() =>
-                setCurrentPage(Math.min(totalPages, currentPage + 1))
-              }
+              onClick={() => {
+                setCurrentPage(Math.min(totalPages, currentPage + 1));
+                passPage(Math.min(totalPages, currentPage + 1));
+              }}
               disabled={currentPage === totalPages}
               className="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
             >
