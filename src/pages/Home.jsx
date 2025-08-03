@@ -14,7 +14,7 @@ function Home() {
     <>
       <div className="flex min-h-screen bg-gray-50">
         <Navbar />
-        <div className="flex-1 lg:ml-16 p-4">
+        <div className="flex-1 ml-8 lg:ml-16 p-4">
           <Routes>
             <Route path="/" element={<Inventory />} />
             <Route path="/add-stock" element={<AddProduct />} />

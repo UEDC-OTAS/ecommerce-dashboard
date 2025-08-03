@@ -7,28 +7,103 @@ import { Calendar } from "react-date-range";
 import { FaCalendarAlt } from "react-icons/fa";
 import "react-date-range/dist/styles.css"; // main style file
 import "react-date-range/dist/theme/default.css"; // theme css file
+import io from "socket.io-client";
+
+const socket = io.connect(import.meta.env.VITE_APP_API, {
+  transports: ["websocket"],
+  secure: true,
+});
 
 function GetAllOrder() {
   const today = new Date();
   const [loading, setLoading] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
-  const [date, setDate] = useState(today);
+  const [date, setDate] = useState(
+    new Date(sessionStorage.getItem("choseDate")) || today
+  );
   const [orders, setOrders] = useState([]);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [activeTab, setActiveTab] = useState("pending");
   const [activePage, setActivePage] = useState(1);
+  const [notificationPermission, setNotificationPermission] = useState(
+    typeof window !== "undefined" && "Notification" in window
+      ? Notification.permission
+      : "denied"
+  );
 
   const msToAdd = (4 * 60 + 22) * 60 * 1000; // 15,720,000 ms
 
-  const formattedDate = format("2025-08-02T09:55:51.986Z", "yyyy-MM-dd");
-  // console.log("formattedDate", formattedDate);
+  // Request notification permission
+  const requestNotificationPermission = async () => {
+    if (typeof window !== "undefined" && "Notification" in window) {
+      const permission = await Notification.requestPermission();
+      setNotificationPermission(permission);
+      return permission;
+    }
+    return "denied";
+  };
 
-  // console.log("activeTab", activeTab);
+  // Play notification sound
+  const playNotificationSound = () => {
+    try {
+      // Create audio context for notification sound
+      const audioContext = new (window.AudioContext ||
+        window.webkitAudioContext)();
+
+      // Create a simple beep sound
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+
+      oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+      oscillator.frequency.setValueAtTime(600, audioContext.currentTime + 0.1);
+      oscillator.frequency.setValueAtTime(800, audioContext.currentTime + 0.2);
+
+      gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(
+        0.01,
+        audioContext.currentTime + 0.3
+      );
+
+      oscillator.start(audioContext.currentTime);
+      oscillator.stop(audioContext.currentTime + 0.3);
+    } catch (error) {
+      // console.log("Could not play notification sound:", error);
+    }
+  };
+
+  // console.log("orderDay", orderDateWithMs);
+
+  // Show browser notification
+  const showNotification = (ticket, name) => {
+    // console.log(ticket);
+    if (typeof window !== "undefined" && notificationPermission === "granted") {
+      const notification = new Notification(
+        name ? name : "New Support Ticket",
+        {
+          body: `From: ${ticket.customerName}`,
+          tag: "support-ticket",
+        }
+      );
+
+      notification.onclick = () => {
+        window.focus();
+        notification.close();
+        setFilter("unseen");
+      };
+
+      // Auto close after 10 seconds
+      setTimeout(() => {
+        notification.close();
+      }, 5000);
+    }
+  };
 
   const getOrders = async () => {
     setLoading(true);
     const response = await getAllOrders(activeTab, activePage);
-    console.log("response", response);
     if (response.code === 200) {
       setLoading(false);
       const filteredOrders = response.data.filter((item) => {
@@ -40,8 +115,6 @@ function GetAllOrder() {
       setOrders(filteredOrders);
     }
   };
-
-  // console.log("orders", orders);
 
   const passOrder = (orderId) => {
     if (selectedOrder === orderId) {
@@ -66,8 +139,46 @@ function GetAllOrder() {
   };
 
   useEffect(() => {
+    requestNotificationPermission();
     getOrders();
   }, [activeTab, date]);
+
+  useEffect(() => {
+    socket.on("orderUpdated", (data) => {
+      playNotificationSound();
+      const newOrders = new Date(data.snapshotData.updatedAt);
+      const orderDateWithMs = new Date(newOrders.getTime() + msToAdd);
+      const formattedOrderDate = format(orderDateWithMs, "yyyy-MM-dd");
+      if (
+        formattedOrderDate ===
+        format(sessionStorage.getItem("choseDate"), "yyyy-MM-dd")
+      ) {
+        if (activeTab === "pending") {
+          // if (activePage === 1) {
+          setOrders((prev) => {
+            const index = prev.findIndex((order) => order._id === data._id);
+            if (index !== -1) {
+              // Replace existing order
+              const updatedOrders = [...prev];
+              updatedOrders[index] = data;
+              return updatedOrders;
+            } else {
+              // Add new order
+              return [data, ...prev];
+            }
+          });
+          // }
+        } else {
+          showNotification(data.snapshotData, "New Order");
+        }
+      } else {
+        showNotification(data.snapshotData, "New Order");
+      }
+    });
+    return () => {
+      socket.off("orderUpdated");
+    };
+  }, []);
 
   return (
     <div className="px-4">
@@ -92,9 +203,10 @@ function GetAllOrder() {
       {showDatePicker && (
         <div className="mb-4 bg-white rounded-lg shadow-md absolute right-0 z-10">
           <Calendar
-            date={today}
+            date={date}
             onChange={(date) => {
               setDate(date);
+              sessionStorage.setItem("choseDate", date.toISOString());
               setShowDatePicker(false);
             }}
           />
