@@ -298,6 +298,16 @@ const ProductDetail = () => {
     ? allCategories[formData.stockCategory] || []
     : [];
 
+  if (!product) {
+    return (
+      <div className="h-[calc(100vh-100px)] flex items-center justify-center">
+        <div className="flex items-center justify-center">
+          <div className="animate-spin rounded-full h-24 w-24 border-b-2 border-primary"></div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="w-full h-[calc(100vh-30px)] px-4 overflow-y-auto">
       <div className="flex justify-between items-center mb-4 border-b border-gray-200 pb-4">

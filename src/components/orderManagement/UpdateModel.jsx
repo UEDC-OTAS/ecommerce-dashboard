@@ -1,10 +1,9 @@
 import { useState, useEffect } from "react";
 import Modal from "../utli/Modal";
-import updateQuantity from "../../api/inventoryApi/UpdateQuantity";
 import updateOrderQuantity from "../../api/orderApi/updateOrderQuantity";
 
 const UpdateModel = ({ isOpen, onClose, onSubmit, product, orderId }) => {
-  console.log("product", product);
+  // console.log("product", product);
   const [quantity, setQuantity] = useState(product?.quantity || 0);
   const handleDecrement = () => {
     setQuantity(quantity - 1);
@@ -25,7 +24,7 @@ const UpdateModel = ({ isOpen, onClose, onSubmit, product, orderId }) => {
     const res = await updateOrderQuantity({
       orderId: orderId,
       data: data,
-      id: product.saleCode,
+      id: product.stockId,
     });
 
     if (res.code === 200) {

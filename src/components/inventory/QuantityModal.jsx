@@ -3,6 +3,7 @@ import Modal from "../utli/Modal";
 import updateQuantity from "../../api/inventoryApi/UpdateQuantity";
 
 const QuantityModal = ({ isOpen, onClose, onSubmit, product }) => {
+  // console.log("product", product);
   const [quantity, setQuantity] = useState(0);
 
   useEffect(() => {

@@ -1,11 +1,16 @@
 import { useEffect, useState } from "react";
 import SearchBar from "../utli/SearchBar";
 import ProductTable from "./productTable";
-import AddProductModal from "./AddProductModal";
 import getAllProducts from "../../api/inventoryApi/GetAllProducts";
-import ProductDetail from "./ProductDetail";
 import QuantityModal from "./QuantityModal";
 import { useNavigate } from "react-router-dom";
+import searchProduct from "../../api/inventoryApi/SearchProduct";
+import io from "socket.io-client";
+
+const socket = io.connect(import.meta.env.VITE_APP_API, {
+  transports: ["websocket"],
+  secure: true,
+});
 
 function Inventory() {
   const navigate = useNavigate();
@@ -14,7 +19,7 @@ function Inventory() {
   const [products, setProducts] = useState([]);
   const getProducts = async () => {
     const response = await getAllProducts();
-
+    // console.log("response", response.data);
     setProducts(response.data.reverse());
   };
 
@@ -23,8 +28,71 @@ function Inventory() {
     setIsQuantityModalOpen(true);
   };
 
+  // const searchFunction = async (name) => {
+  //   if (!name) {
+  //     getProducts();
+  //     return;
+  //   }
+  //   console.log("name", name);
+  //   const filteredProducts = products.filter((product) => {
+  //     return (
+  //       product.name.toLowerCase().includes(name.toLowerCase()) ||
+  //       product.saleCode.toLowerCase().includes(name.toLowerCase())
+  //     );
+  //   });
+  //   console.log("filteredProducts", filteredProducts);
+  //   setProducts(filteredProducts);
+  // };
+
+  const searchFunction = async (name) => {
+    if (!name) {
+      getProducts();
+      return;
+    }
+    const res = await searchProduct(name);
+    // console.log("res", res);
+    setProducts(res.data || []);
+  };
+
   useEffect(() => {
     getProducts();
+    socket.on("stockCreated", (data) => {
+      setProducts((prevProducts) => [data, ...prevProducts]);
+    });
+
+    socket.on("orderFinalized", (data) => {
+      // console.log("orderFinalized", data);
+      setProducts((prevProducts) => {
+        const updatedProducts = prevProducts.map((product) => {
+          if (product.saleCode === data.saleCode) {
+            return {
+              ...product,
+              stock: data.snapshotData.orderInfo.currentStockQuantity,
+            };
+          }
+          return product;
+        });
+        return updatedProducts;
+      });
+    });
+
+    socket.on("stockUpdated", (data) => {
+      setProducts((prevProducts) => {
+        const updatedProducts = prevProducts.map((product) => {
+          if (product._id === data._id) {
+            return data;
+          }
+          return product;
+        });
+        return updatedProducts;
+      });
+    });
+
+    return () => {
+      socket.off("stockCreated");
+      socket.off("stockUpdated");
+      socket.off("orderFinalized");
+    };
   }, []);
 
   return (
@@ -32,9 +100,13 @@ function Inventory() {
       <div className="flex items-center justify-between ">
         <h1 className="header">Inventory</h1>
         <div className="flex items-center gap-10">
-          {/* <div className="w-[400px]">
-            <SearchBar placeholder="Search Product with name or Product Code" />
-          </div> */}
+          <div className="w-[400px]">
+            <SearchBar
+              onSearch={(name) => (!name ? getProducts() : null)}
+              placeholder="Search Product with name or Product Code"
+              onClick={searchFunction}
+            />
+          </div>
           <button
             className="button w-[150px]"
             onClick={() => navigate("/add-stock")}

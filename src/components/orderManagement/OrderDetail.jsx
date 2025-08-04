@@ -17,7 +17,7 @@ export default function OrderDetails() {
   const [isOpen, setIsOpen] = useState(false);
   const getOrder = async () => {
     const response = await getAOrder(id);
-    console.log("response", response);
+
     if (response.code === 200) {
       setOrder(response.data.snapshotData);
       setPrintData(response.data);
@@ -53,7 +53,13 @@ export default function OrderDetails() {
   };
 
   if (!order) {
-    return <div>Loading...</div>;
+    return (
+      <div className="h-[calc(100vh-100px)] flex items-center justify-center">
+        <div className="flex items-center justify-center">
+          <div className="animate-spin rounded-full h-24 w-24 border-b-2 border-primary"></div>
+        </div>
+      </div>
+    );
   }
 
   return (

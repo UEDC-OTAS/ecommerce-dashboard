@@ -2,7 +2,7 @@ import { EyeIcon } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-const ProductTable = ({ products, sentproductDetail, sentQuantityModal }) => {
+const ProductTable = ({ products, sentQuantityModal }) => {
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
@@ -12,12 +12,8 @@ const ProductTable = ({ products, sentproductDetail, sentQuantityModal }) => {
     if (selectedCategory === "All") {
       return true;
     }
-    return product.category === selectedCategory;
+    return product.category === selectedCategory.toLowerCase();
   });
-
-  const getAproductDetail = async (product) => {
-    sentproductDetail(product);
-  };
 
   const getQuantityModal = async (product) => {
     sentQuantityModal(product);
@@ -78,7 +74,7 @@ const ProductTable = ({ products, sentproductDetail, sentQuantityModal }) => {
             className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-colors flex items-center whitespace-nowrap
                 ${
                   isDropdownOpen
-                    ? "  text-primary border-b-2 border-primary"
+                    ? "  text-primary"
                     : "text-gray-600 hover:text-gray-800 hover:bg-gray-50"
                 }`}
           >
@@ -113,7 +109,11 @@ const ProductTable = ({ products, sentproductDetail, sentQuantityModal }) => {
                     setSelectedCategory(tab);
                     setIsDropdownOpen(false);
                   }}
-                  className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+                  className={`block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 ${
+                    selectedCategory === tab
+                      ? "text-primary border-b-2 border-primary"
+                      : "text-gray-600 hover:text-gray-800 hover:bg-gray-50"
+                  }`}
                 >
                   {tab}
                 </button>

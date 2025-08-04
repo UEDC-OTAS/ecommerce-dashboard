@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Search, X } from "lucide-react";
 
-const SearchBar = ({ placeholder, onSearch }) => {
+const SearchBar = ({ placeholder, onSearch, onClick }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [isFocused, setIsFocused] = useState(false);
 
@@ -15,17 +15,16 @@ const SearchBar = ({ placeholder, onSearch }) => {
     }
   };
 
-  const handleClear = () => {
-    setSearchTerm("");
-    if (onSearch) {
-      onSearch("");
+  const handleClick = () => {
+    if (onClick) {
+      onClick(searchTerm);
     }
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (onSearch) {
-      onSearch(searchTerm);
+    if (onClick) {
+      onClick(searchTerm);
     }
   };
 
@@ -43,7 +42,11 @@ const SearchBar = ({ placeholder, onSearch }) => {
       `}
       >
         {/* Search Icon */}
-        <div className="absolute left-3 flex items-center pointer-events-none">
+        <div
+          className={`absolute left-3 items-center pointer-events-none ${
+            isFocused ? "hidden" : "flex"
+          }`}
+        >
           <Search className="w-5 h-5 text-gray-400" />
         </div>
 
@@ -55,24 +58,25 @@ const SearchBar = ({ placeholder, onSearch }) => {
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
           placeholder={placeholder}
-          className="
-            w-full pl-10 pr-10 py-3 text-sm text-gray-900 placeholder-gray-500
+          className={`
+            w-full  py-3 text-sm text-gray-900 placeholder-gray-500
             bg-transparent border-none rounded-lg focus:outline-none
-          "
+            ${isFocused ? "pl-3" : "pl-10"}
+          `}
         />
 
         {/* Clear Button */}
         {searchTerm && (
           <button
             type="button"
-            onClick={handleClear}
-            className="
+            onClick={handleClick}
+            className={`
               absolute right-3 flex items-center justify-center
               w-5 h-5 text-gray-400 hover:text-gray-600
               transition-colors duration-200
-            "
+            `}
           >
-            <X className="w-4 h-4" />
+            <Search className="w-4 h-4" />
           </button>
         )}
       </div>
