@@ -2,7 +2,6 @@ import axios from "axios";
 import chgOrderStatus from "../../api/orderApi/chgOrderStatus";
 import { useEffect, useState } from "react";
 import getAOrder from "../../api/orderApi/getAOrder";
-import { Cross } from "lucide-react";
 import { ImCancelCircle } from "react-icons/im";
 
 function OrderInfo({ selectedOrder, refreshOrders, handleClose }) {
@@ -87,7 +86,7 @@ function OrderInfo({ selectedOrder, refreshOrders, handleClose }) {
               <button
                 className="flex-1 border border-gray-200 p-2 rounded-lg text-primary hover:bg-gray-100 text-[16px]"
                 onClick={() => {
-                  chgStatus(order.orderId, "cancelled");
+                  chgStatus(order._id, "cancelled");
                 }}
               >
                 Order Cancel
@@ -95,8 +94,8 @@ function OrderInfo({ selectedOrder, refreshOrders, handleClose }) {
               <button
                 className="flex-1 bg-primary p-2 rounded-lg text-white hover:bg-primary/80 text-[16px]"
                 onClick={() => {
-                  confirmOrder(order.orderId, order.snapshotData.contactId);
-                  chgStatus(order.orderId, "confirmed");
+                  // confirmOrder(order._id, order.snapshotData.contactId);
+                  chgStatus(order._id, "confirmed");
                 }}
               >
                 Confirm Order

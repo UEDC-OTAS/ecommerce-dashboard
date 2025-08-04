@@ -25,7 +25,7 @@ const UpdateModel = ({ isOpen, onClose, onSubmit, product, orderId }) => {
     const res = await updateOrderQuantity({
       orderId: orderId,
       data: data,
-      id: product._id,
+      id: product.saleCode,
     });
 
     if (res.code === 200) {
@@ -43,12 +43,7 @@ const UpdateModel = ({ isOpen, onClose, onSubmit, product, orderId }) => {
   }
 
   return (
-    <Modal
-      isOpen={isOpen}
-      onClose={onClose}
-      size="lg"
-      title={product.productName}
-    >
+    <Modal isOpen={isOpen} onClose={onClose} size="lg" title={product.name}>
       <div className="space-y-6 w-[500px]">
         <div className="">
           {/* Title for the stock quantity */}

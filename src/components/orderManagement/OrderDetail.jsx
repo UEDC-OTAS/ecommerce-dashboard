@@ -17,17 +17,15 @@ export default function OrderDetails() {
   const [isOpen, setIsOpen] = useState(false);
   const getOrder = async () => {
     const response = await getAOrder(id);
-
+    console.log("response", response);
     if (response.code === 200) {
       setOrder(response.data.snapshotData);
       setPrintData(response.data);
     }
   };
-  console.log("order", order);
 
   const chgStatus = async (status) => {
     const orderId = id;
-    console.log("orderId", orderId);
     const data = {
       deliveryStatus: status,
     };
@@ -37,8 +35,6 @@ export default function OrderDetails() {
   const handleClose = () => {
     setIsOpen(false);
   };
-
-  console.log("setIsOpen", isOpen);
 
   useEffect(() => {
     getOrder();
@@ -187,7 +183,7 @@ export default function OrderDetails() {
                     <img
                       src={order.paymentImage.url}
                       alt="Payment Screenshot"
-                      className="w-[280px] h-[378px] max-w-xs mx-auto"
+                      className=""
                     />
                   </div>
                 </div>
@@ -198,7 +194,15 @@ export default function OrderDetails() {
             <div className="bg-white rounded-lg shadow-sm border p-6">
               <div className="flex justify-between items-center mb-8 border-b pb-4">
                 <h2 className="text-lg font-semibold text-gray-900">Order</h2>
-                <span className="px-3 py-1 bg-green-100 text-green-800 text-xs font-medium rounded-full">
+                <span
+                  className={`px-3 py-1 text-xs font-medium rounded-full ${
+                    order.deliveryStatus === "Delivered"
+                      ? "bg-green-100 text-green-800"
+                      : order.deliveryStatus === "Pending"
+                      ? "bg-orange-100 text-orange-800"
+                      : "bg-red-100 text-red-800"
+                  }`}
+                >
                   {order.deliveryStatus}
                 </span>
               </div>
@@ -219,21 +223,21 @@ export default function OrderDetails() {
                 {order?.orderInfo?.map((item) => (
                   <div
                     className="grid grid-cols-3 gap-4 mb-8"
-                    key={item._id}
+                    key={item.saleCode}
                     onClick={() => {
                       setIsOpen(true);
                       setProduct(item);
                     }}
                   >
                     <div className="text-gray-900 text-sm font-medium">
-                      {item.productCode}
+                      {item.name}
                     </div>
                     <div className="text-gray-900 text-sm text-center">
                       {item.quantity}
                     </div>
-                    {/* <div className="text-gray-900 text-sm text-right">
-                      {item.productPrice.toLocaleString()} MMK
-                    </div> */}
+                    <div className="text-gray-900 text-sm text-right">
+                      {(item.price * item.quantity).toLocaleString()} MMK
+                    </div>
                   </div>
                 ))}
 

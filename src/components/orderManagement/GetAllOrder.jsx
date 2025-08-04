@@ -19,7 +19,9 @@ function GetAllOrder() {
   const [loading, setLoading] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [date, setDate] = useState(
-    new Date(sessionStorage.getItem("choseDate")) || today
+    sessionStorage.getItem("choseDate")
+      ? new Date(sessionStorage.getItem("choseDate"))
+      : today
   );
   const [orders, setOrders] = useState([]);
   const [selectedOrder, setSelectedOrder] = useState(null);
@@ -104,10 +106,11 @@ function GetAllOrder() {
   const getOrders = async () => {
     setLoading(true);
     const response = await getAllOrders(activeTab, activePage);
+    console.log("response", response);
     if (response.code === 200) {
       setLoading(false);
       const filteredOrders = response.data.filter((item) => {
-        const orderDate = new Date(item.snapshotData.updatedAt);
+        const orderDate = new Date(item.snapshotData.createdAt);
         const orderDateWithMs = new Date(orderDate.getTime() + msToAdd);
         const formattedOrderDate = format(orderDateWithMs, "yyyy-MM-dd");
         return formattedOrderDate === format(date, "yyyy-MM-dd");
@@ -144,7 +147,13 @@ function GetAllOrder() {
   }, [activeTab, date]);
 
   useEffect(() => {
-    socket.on("orderUpdated", (data) => {
+    // Connection established
+    socket.on("connect", () => {
+      console.log("Connected to socket.io server");
+    });
+
+    socket.on("orderFinalized", (data) => {
+      console.log("data", data);
       playNotificationSound();
       const newOrders = new Date(data.snapshotData.updatedAt);
       const orderDateWithMs = new Date(newOrders.getTime() + msToAdd);
@@ -175,8 +184,32 @@ function GetAllOrder() {
         showNotification(data.snapshotData, "New Order");
       }
     });
+
+    socket.on("orderStatusUpdated", (data) => {
+      console.log("data", data);
+      if (activeTab === "pending") {
+        const handleRemove = (value) => {
+          setOrders((prev) => prev.filter((item) => item._id !== value));
+        };
+        handleRemove(data.orderId);
+      }
+    });
+
+    socket.on("orderSoftDeleted", (data) => {
+      console.log("data", data);
+      if (activeTab === "cancelled") {
+        const handleRemove = (value) => {
+          setOrders((prev) => prev.filter((item) => item._id !== value));
+        };
+        handleRemove(data.orderId);
+      }
+    });
+
+    // Cleanup
     return () => {
-      socket.off("orderUpdated");
+      socket.off("orderFinalized");
+      socket.off("orderStatusUpdated");
+      socket.off("orderSoftDeleted");
     };
   }, []);
 
