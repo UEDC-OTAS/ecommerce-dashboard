@@ -1,23 +1,20 @@
-import { EyeIcon } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { MdOutlineManageAccounts } from "react-icons/md";
+import AccUpdateModel from "./AccUpdateModel";
+import DeleteConfirmationModal from "./DeleteModal";
 
-const AccountTable = ({ users, sentproductDetail, sentQuantityModal }) => {
-  const navigate = useNavigate();
+const AccountTable = ({ users, refetch }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [activeTab, setActiveTab] = useState("Admin");
   const [filteredUsers, setFilteredUsers] = useState(users);
+  const [isOpen, setIsOpen] = useState(false);
+  const [isPasswordOpen, setIsPasswordOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
 
-  console.log("users", users);
-
-  const getAproductDetail = async (product) => {
-    sentproductDetail(product);
-  };
-
-  const getQuantityModal = async (product) => {
-    sentQuantityModal(product);
+  const onSubmit = () => {
+    refetch();
   };
 
   const tabs = [
@@ -112,9 +109,13 @@ const AccountTable = ({ users, sentproductDetail, sentQuantityModal }) => {
                   <td className="px-4 py-4 whitespace-nowrap text-sm font-medium">
                     <div className="flex space-x-2">
                       <button
-                        onClick={() => getQuantityModal(user)}
+                        onClick={() => {
+                          setIsOpen(true);
+                          setIsPasswordOpen(false);
+                          setSelectedUser(user);
+                        }}
                         className="bg-white hover:bg-gray-100 border border-gray-800 text-black p-3 rounded-lg transition-colors"
-                        title="Edit"
+                        title="Update Department"
                       >
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
@@ -127,9 +128,13 @@ const AccountTable = ({ users, sentproductDetail, sentQuantityModal }) => {
                         </svg>
                       </button>
                       <button
-                        onClick={() => getQuantityModal(user)}
+                        onClick={() => {
+                          setIsOpen(true);
+                          setIsPasswordOpen(true);
+                          setSelectedUser(user);
+                        }}
                         className="bg-white hover:bg-gray-100 border border-gray-800 text-black p-3 rounded-lg transition-colors"
-                        title="update"
+                        title="update password"
                       >
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
@@ -142,9 +147,12 @@ const AccountTable = ({ users, sentproductDetail, sentQuantityModal }) => {
                         </svg>
                       </button>
                       <button
-                        onClick={() => getQuantityModal(user)}
+                        onClick={() => {
+                          setIsDeleteModalOpen(true);
+                          setSelectedUser(user);
+                        }}
                         className="bg-white hover:bg-gray-100 border border-gray-800 text-black p-3 rounded-lg transition-colors"
-                        title="Edit"
+                        title="delete"
                       >
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
@@ -238,6 +246,19 @@ const AccountTable = ({ users, sentproductDetail, sentQuantityModal }) => {
           </div>
         </div>
       </div>
+
+      <AccUpdateModel
+        isOpen={isOpen}
+        onClose={() => setIsOpen(false)}
+        user={selectedUser}
+        onSubmit={onSubmit}
+        isPasswordOpen={isPasswordOpen}
+      />
+      <DeleteConfirmationModal
+        isOpen={isDeleteModalOpen}
+        user={selectedUser}
+        onClose={() => setIsDeleteModalOpen(false)}
+      />
     </div>
   );
 };

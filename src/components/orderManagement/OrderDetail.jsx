@@ -1,21 +1,21 @@
-import { ChevronRight, Download, Printer } from "lucide-react";
+import { Download, Printer } from "lucide-react";
 import { useEffect, useState } from "react";
 import getAOrder from "../../api/orderApi/getAOrder";
 import { useParams, useNavigate } from "react-router-dom";
 import { generatePDF } from "./PdfGenerator";
 import UpdateModel from "./UpdateModel";
 import chgOrderStatus from "../../api/orderApi/chgOrderStatus";
+import { MdArrowBack } from "react-icons/md";
 
 export default function OrderDetails() {
   const navigate = useNavigate();
   const { id } = useParams();
-  // console.log(order);
   const [product, setProduct] = useState(null);
-
   const [order, setOrder] = useState(null);
   const [printData, setPrintData] = useState(null);
   const [isGenerating, setIsGenerating] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
+  const [isEditOpen, setIsEditOpen] = useState(false);
   const getOrder = async () => {
     const response = await getAOrder(id);
 
@@ -25,6 +25,7 @@ export default function OrderDetails() {
       setPrintData(response.data);
     }
   };
+  // console.log("isEditOpen", isEditOpen);
 
   const chgStatus = async (status) => {
     const orderId = id;
@@ -54,6 +55,8 @@ export default function OrderDetails() {
     }
   };
 
+  // console.log(order);
+
   if (!order) {
     return (
       <div className="h-[calc(100vh-100px)] flex items-center justify-center">
@@ -65,21 +68,15 @@ export default function OrderDetails() {
   }
 
   return (
-    <div className="h-[calc(100vh-100px)]">
-      {order && (
-        <div className="w-full mx-auto">
-          {/* Breadcrumb */}
-          <div className="flex justify-between items-center px-4 py-2">
-            <div className="flex items-center text-gray-600 mb-6 ">
-              <span
-                className="header cursor-pointer"
-                onClick={() => navigate("/orders")}
-              >
-                Orders
-              </span>
-              <ChevronRight className="w-6 h-6 mx-2" />
-              <span className="header">Order Details</span>
-            </div>
+    <div className="h-[calc(100vh-50px)] overflow-y-auto">
+      <div>
+        <div className="flex justify-between items-center mb-4 border-b border-gray-200 pb-4">
+          <div className="flex gap-2 items-center">
+            <MdArrowBack size={24} onClick={() => navigate("/orders")} />
+            <h1 className="header">Order Details</h1>
+          </div>
+
+          <div className="flex gap-2 items-center">
             {order.deliveryStatus !== "cancelled" && (
               <button
                 className="flex items-center gap-2 mr-4 border border-gray-200 px-4 py-3    rounded-lg text-primary hover:bg-gray-100 text-[16px]"
@@ -99,109 +96,169 @@ export default function OrderDetails() {
                 Order Cancel
               </button>
             )}
+
+            <button
+              className="flex items-center gap-2 mr-4 bg-primary px-4 py-3 rounded-lg text-white hover:bg-primary/80"
+              onClick={() => {
+                setIsOpen(true);
+                setIsEditOpen(true);
+                setProduct(order);
+              }}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                height="24px"
+                viewBox="0 -960 960 960"
+                width="24px"
+                fill="#fff"
+              >
+                <path d="M480-240Zm-320 80v-112q0-34 17.5-62.5T224-378q62-31 126-46.5T480-440q37 0 73 4.5t72 14.5l-67 68q-20-3-39-5t-39-2q-56 0-111 13.5T260-306q-9 5-14.5 14t-5.5 20v32h240v80H160Zm400 40v-123l221-220q9-9 20-13t22-4q12 0 23 4.5t20 13.5l37 37q8 9 12.5 20t4.5 22q0 11-4 22.5T903-340L683-120H560Zm300-263-37-37 37 37ZM620-180h38l121-122-18-19-19-18-122 121v38Zm141-141-19-18 37 37-18-19ZM480-480q-66 0-113-47t-47-113q0-66 47-113t113-47q66 0 113 47t47 113q0 66-47 113t-113 47Zm0-80q33 0 56.5-23.5T560-640q0-33-23.5-56.5T480-720q-33 0-56.5 23.5T400-640q0 33 23.5 56.5T480-560Zm0-80Z" />
+              </svg>
+              Edit Customer Info
+            </button>
           </div>
+        </div>
 
-          {/* Main Content Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6 p-4 overflow-y-auto h-[calc(100vh-160px)]">
-            {/* Customer Section */}
-            <div className="space-y-10">
-              <div className="bg-white rounded-lg shadow-sm border  py-10 px-6">
-                <h2 className="text-lg font-semibold text-gray-900 mb-8 border-b pb-4">
-                  Customer
-                </h2>
-
-                <div className="space-y-4">
-                  <div className="flex justify-between">
-                    <span className="text-sm text-gray-500">Customer Name</span>
-                    <span className="text-sm text-gray-500">Phone Number</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-sm font-medium text-gray-900">
-                      {order.customerName}
-                    </span>
-                    <span className="text-sm font-medium text-gray-900">
-                      {order.contactNumber}
-                    </span>
-                  </div>
-
-                  <div className="pt-4">
-                    <div className="text-sm text-gray-500 mb-1">
-                      Facebook Account Name
-                    </div>
-                    <div className="text-sm font-medium text-gray-900">
-                      {order.facebookName}
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Delivery Section */}
-              <div className="bg-white rounded-lg shadow-sm border py-10 px-6">
-                <h2 className="text-lg font-semibold text-gray-900 mb-8 border-b pb-4">
-                  Delivery
-                </h2>
-
-                <div className="space-y-8">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="flex flex-col gap-2">
-                      <span className="text-sm text-gray-500">
-                        Delivery Type
-                      </span>
-                      <span className="text-sm font-medium text-gray-900">
-                        {order.deliveryType}
-                      </span>
-                    </div>
-                    <div className="flex flex-col gap-2">
-                      <span className="text-sm text-gray-500">
-                        Delivery Service
-                      </span>
-                      <span className="text-sm font-medium text-gray-900">
-                        {order.deliveryServiceName}
-                      </span>
-                    </div>
-                  </div>
-
+        <div>
+          <form className="space-y-6">
+            <div className="flex flex-col md:flex-row gap-20">
+              <div className="space-y-6 w-full md:w-2/3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-10">
+                  {/* Customer Name */}
                   <div>
-                    <div className="text-sm text-gray-500 mb-1">Address</div>
-                    <div className="text-sm text-gray-900">{order.address}</div>
+                    <label htmlFor="stockName" className="label">
+                      Customer Name
+                    </label>
+                    <input
+                      type="text"
+                      id="stockName"
+                      name="stockName"
+                      readOnly
+                      value={order.customerName}
+                      className="input-box"
+                    />
+                  </div>
+
+                  {/* Facebook Account */}
+                  <div>
+                    <label htmlFor="stockName" className="label">
+                      Facebook Account
+                    </label>
+                    <input
+                      type="text"
+                      id="stockName"
+                      name="stockName"
+                      readOnly
+                      value={order.facebookName}
+                      className="input-box"
+                    />
+                  </div>
+                </div>
+
+                <div className=" grid grid-cols-1 gap-10">
+                  {/* Customer Address */}
+                  <div>
+                    <label htmlFor="address" className="label">
+                      Address
+                    </label>
+                    <textarea
+                      id="address"
+                      name="address"
+                      readOnly
+                      value={order.address}
+                      className="input-box"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-10">
+                  {/* Customer Name */}
+                  <div>
+                    <label htmlFor="contactNumber" className="label">
+                      Phone Number
+                    </label>
+                    <input
+                      type="text"
+                      id="contactNumber"
+                      name="contactNumber"
+                      readOnly
+                      value={order.contactNumber}
+                      className="input-box"
+                    />
+                  </div>
+
+                  {/* Facebook Account */}
+                  <div>
+                    <label htmlFor="Payment Type" className="label">
+                      Payment Type
+                    </label>
+                    <input
+                      type="text"
+                      id="Payment Type"
+                      name="Payment Type"
+                      readOnly
+                      value={order.paymentType}
+                      className="input-box"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-10">
+                  {/* Customer Name */}
+                  <div>
+                    <label htmlFor="deliveryType" className="label">
+                      Delivery Type
+                    </label>
+                    <input
+                      type="text"
+                      id="deliveryType"
+                      name="deliveryType"
+                      readOnly
+                      value={order.delivery.deliveryType}
+                      className="input-box"
+                    />
+                  </div>
+
+                  {/* Facebook Account */}
+                  <div>
+                    <label htmlFor="Delivery Service" className="label">
+                      Delivery Service
+                    </label>
+                    <input
+                      type="text"
+                      id="Delivery Service"
+                      name="Delivery Service"
+                      readOnly
+                      value={order.delivery.deliveryServiceName}
+                      className="input-box"
+                    />
                   </div>
                 </div>
               </div>
-            </div>
+              {/* Image Upload */}
+              <div className="w-full md:w-1/3">
+                <label className="label">Payment ScreenShot</label>
 
-            {/* Payment Section */}
-            <div className="bg-white rounded-lg shadow-sm border p-6">
-              <div className="flex items-center justify-between mb-8 border-b pb-4">
-                <h2 className="text-lg font-semibold text-gray-900">Payment</h2>
-              </div>
+                {/* Form Image Previews */}
 
-              <div className="space-y-6">
-                <div>
-                  <div className="text-sm text-gray-500 mb-1">Payment Type</div>
-                  <div className="text-sm font-medium text-gray-900">
-                    {order.paymentType}
-                  </div>
-                </div>
-
-                <div>
-                  <div className="text-sm text-gray-500 mb-5">
-                    Payment Screenshot
-                  </div>
-                  <div className=" max-w-xs mx-auto">
+                <div className="mt-4 w-full">
+                  <div className="rounded-lg overflow-hidden bg-gray-100">
                     <img
-                      src={order.paymentImage.url}
-                      alt="Payment Screenshot"
-                      className=""
+                      src={order.paymentImage.url || "/placeholder.svg"}
+                      alt="paymentImage"
+                      className="w-full h-full object-cover"
                     />
                   </div>
                 </div>
               </div>
             </div>
+          </form>
 
-            {/* Order Section */}
-            <div className="bg-white rounded-lg shadow-sm border p-6">
-              <div className="flex justify-between items-center mb-8 border-b pb-4">
-                <h2 className="text-lg font-semibold text-gray-900">Order</h2>
+          {/* Order Section */}
+          <div className="bg-white rounded-lg shadow-sm border p-6 mt-10">
+            <div className="flex justify-between items-center mb-8 pb-4">
+              <div className="flex items-center gap-4">
+                <h2 className="header">Order Receipt</h2>
                 <span
                   className={`px-3 py-1 text-xs font-medium rounded-full ${
                     order.deliveryStatus === "Delivered"
@@ -215,95 +272,88 @@ export default function OrderDetails() {
                 </span>
               </div>
 
-              <div className="w-full h-[500px] mx-auto font-sans relative">
-                {/* Header */}
-                <div className="grid grid-cols-3 gap-4 pb-4 mb-6 border-b border-gray-200">
-                  <div className="text-gray-600 text-sm font-medium">Items</div>
-                  <div className="text-gray-600 text-sm font-medium text-center">
-                    Quantity
-                  </div>
-                  <div className="text-gray-600 text-sm font-medium text-right">
-                    Price
-                  </div>
-                </div>
+              {/* Print Button */}
+              <button
+                className="bg-orange-500 hover:bg-orange-600 text-white font-medium py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-colors"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handlePrintPDF(printData);
+                }}
+                disabled={isGenerating}
+                size="sm"
+              >
+                {isGenerating ? (
+                  <>
+                    <Download className="w-4 h-4" />
+                    <span className="myanmar-text">Waiting...</span>
+                  </>
+                ) : (
+                  <>
+                    <Printer className="w-4 h-4" />
+                    <span className="myanmar-text">Print</span>
+                  </>
+                )}
+              </button>
+            </div>
 
-                {/* Item Row */}
-                {order?.orderInfo?.map((item) => (
-                  <div
-                    className="grid grid-cols-3 gap-4 mb-8"
-                    key={item.saleCode}
-                    onClick={() => {
-                      setIsOpen(true);
-                      setProduct(item);
-                    }}
-                  >
-                    <div className="text-gray-900 text-sm font-medium">
-                      {item.name}
-                    </div>
-                    <div className="text-gray-900 text-sm text-center">
-                      {item.quantity}
-                    </div>
-                    <div className="text-gray-900 text-sm text-right">
-                      {(item.price * item.quantity).toLocaleString()} MMK
-                    </div>
-                  </div>
-                ))}
+            <div className="w-full h-auto mx-auto font-sans relative">
+              {/* Header */}
+              <div className="grid grid-cols-3 gap-4 pb-4 mb-6 border-b border-gray-200">
+                <div className="label">Items</div>
+                <div className="label text-center">Quantity</div>
+                <div className="label text-right">Price</div>
+              </div>
 
+              {/* Item Row */}
+              {order?.orderInfo?.map((item) => (
                 <div
-                  style={{
-                    position: "absolute",
-                    bottom: 0,
-                    width: "100%",
+                  className="grid grid-cols-3 gap-4 mb-8"
+                  key={item.saleCode}
+                  onClick={() => {
+                    setIsOpen(true);
+                    setProduct(item);
+                    setIsEditOpen(false);
                   }}
                 >
-                  {/* Total Section */}
-                  <div className="border-t border-gray-200 pt-4 mb-6">
-                    <div className="flex justify-between items-center">
-                      <div className="text-gray-900 text-lg font-semibold">
-                        Total
-                      </div>
-                      <div className="text-gray-900 text-lg font-semibold">
-                        {order.totalAmount.toLocaleString()} MMK
-                      </div>
+                  <div className="text-gray-900 text-sm font-medium">
+                    {item.name}
+                  </div>
+                  <div className="text-gray-900 text-sm text-center">
+                    {item.quantity}
+                  </div>
+                  <div className="text-gray-900 text-sm text-right">
+                    {(item.price * item.quantity).toLocaleString()} MMK
+                  </div>
+                </div>
+              ))}
+
+              <div>
+                {/* Total Section */}
+                <div className="border-t border-gray-200 pt-4 mb-6">
+                  <div className="flex justify-between items-center">
+                    <div className="text-gray-900 text-lg font-semibold">
+                      Total
+                    </div>
+                    <div className="text-gray-900 text-lg font-semibold">
+                      {order.totalAmount.toLocaleString()} MMK
                     </div>
                   </div>
-
-                  {/* Print Button */}
-                  <button
-                    className="w-full bg-orange-500 hover:bg-orange-600 text-white font-medium py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-colors"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handlePrintPDF(printData);
-                    }}
-                    disabled={isGenerating}
-                    size="sm"
-                  >
-                    {isGenerating ? (
-                      <>
-                        <Download className="w-4 h-4" />
-                        <span className="myanmar-text">Waiting...</span>
-                      </>
-                    ) : (
-                      <>
-                        <Printer className="w-4 h-4" />
-                        <span className="myanmar-text">Print</span>
-                      </>
-                    )}
-                  </button>
                 </div>
               </div>
             </div>
           </div>
         </div>
+      </div>
+      {isOpen && (
+        <UpdateModel
+          isOpen={isOpen}
+          isEditOpen={isEditOpen}
+          onClose={handleClose}
+          product={product}
+          orderId={id}
+          onSubmit={getOrder}
+        />
       )}
-
-      <UpdateModel
-        isOpen={isOpen}
-        onClose={handleClose}
-        product={product}
-        orderId={id}
-        onSubmit={getOrder}
-      />
     </div>
   );
 }

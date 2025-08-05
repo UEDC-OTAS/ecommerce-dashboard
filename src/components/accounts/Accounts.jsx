@@ -10,7 +10,7 @@ function Accounts() {
 
   const fetchUsers = async () => {
     const res = await getAllUsers();
-    console.log(res.data);
+    // console.log(res.data);
     setUsers(res.data);
   };
 
@@ -36,7 +36,7 @@ function Accounts() {
         </div>
       </div>
 
-      <AccountTable users={users} />
+      <AccountTable users={users} refetch={fetchUsers} />
 
       <AddStaffModal
         isOpen={isModalOpen}

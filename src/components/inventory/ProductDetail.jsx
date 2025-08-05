@@ -14,6 +14,7 @@ const ProductDetail = () => {
   const [errors, setErrors] = useState({});
   const [dragActive, setDragActive] = useState(false);
   const [deleteModal, setDeleteModal] = useState(false);
+  const [inputValue, setInputValue] = useState("");
   const [formData, setFormData] = useState({
     stockName: "",
     stockCode: "",
@@ -26,6 +27,8 @@ const ProductDetail = () => {
     isDeliverable: true,
     images: [],
   });
+  const isConfirmButtonDisabled = inputValue !== formData.stockName;
+
   // console.log(typeof formData.quantity);
   const getProductDetail = async (id) => {
     const response = await getAProducts(id);
@@ -279,6 +282,7 @@ const ProductDetail = () => {
     // console.log(res);
     if (res.code === 200) {
       handleClose();
+      setDeleteModal(false);
     }
   };
 
@@ -801,31 +805,54 @@ const ProductDetail = () => {
       </form>
 
       {deleteModal && (
-        <div className="fixed inset-0 z-50 overflow-y-auto bg-black/50 flex items-center justify-center">
-          <div className="space-y-6 flex flex-col gap-2 p-10 bg-white rounded-lg flex items-center justify-center">
-            <p className="text-[28px] font-medium">
-              Remove Stock From Inventory ?
-            </p>
-            <div className="border border-gray-300 p-4 rounded-lg">
-              <Trash2 className="w-10 h-10 text-red-500" />
-            </div>
-            <span className="text-[#121212] text-[16px] max-w-md text-center">
-              The selected stock will be removed from the UEDC Inventory and
-              will not be possible to recover later.
-            </span>
-            <div className="flex gap-6">
-              <button
-                onClick={() => setDeleteModal(false)}
-                className="bg-[#E9590033] text-[#E95900] px-4 py-2 rounded-lg"
-              >
-                Later
-              </button>
-              <button
-                onClick={handleDelete}
-                className="bg-primary text-white px-4 py-2 rounded-lg"
-              >
-                Remove
-              </button>
+        <div className="fixed inset-0 flex items-center justify-center z-50">
+          <div
+            className="absolute inset-0 bg-black opacity-50"
+            // onClick={onClose}
+          ></div>
+          <div className="h-screen flex justify-center items-center z-100">
+            <div className="bg-white p-6 rounded-lg w-[500px] absolute z-100 opacity-100">
+              <div className="text-red-600 font-bold text-sm uppercase mb-2">
+                Danger Zone
+              </div>
+              <h2 className="text-2xl font-bold mb-4">Deleting is permanent</h2>
+              <p className="text-gray-700 mb-4">
+                Deleting the stock will permanently erase all associated data
+                from the Inventory.
+              </p>
+              <p className="text-gray-700 mb-6">
+                To confirm this action, please type the stock name{" "}
+                <span className="font-bold text-red-600">
+                  {formData.stockName}
+                </span>
+              </p>
+              <input
+                type="text"
+                placeholder="Enter Stock Name for confirmation"
+                className="w-full p-3 border border-gray-300 rounded-lg mb-6 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+              />
+              <div className="flex justify-end space-x-4">
+                <button
+                  onClick={() => setDeleteModal(false)}
+                  className="px-5 py-2.5 bg-gray-100 text-gray-800 rounded-lg hover:bg-gray-200 transition-colors duration-200"
+                >
+                  Never mind
+                </button>
+                <button
+                  onClick={handleDelete}
+                  disabled={inputValue !== formData.stockName}
+                  className={`px-5 py-2.5 rounded-lg flex items-center space-x-2 transition-colors duration-200 ${
+                    inputValue !== formData.stockName
+                      ? "bg-red-300 cursor-not-allowed"
+                      : "bg-red-600 text-white hover:bg-red-700"
+                  }`}
+                >
+                  <Trash2 className="w-5 h-5" />
+                  <span>Delete Stock</span>
+                </button>
+              </div>
             </div>
           </div>
         </div>

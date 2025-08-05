@@ -5,6 +5,7 @@ import getAOrder from "../../api/orderApi/getAOrder";
 import { useNavigate } from "react-router-dom";
 import chgOrderStatus from "../../api/orderApi/chgOrderStatus";
 import deleteOrder from "../../api/orderApi/DeleteOrder";
+import DeleteConfirmationModal from "../accounts/DeleteModal";
 
 const OrderTable = ({
   orders,
@@ -20,6 +21,9 @@ const OrderTable = ({
   const [activeTab, setActiveTab] = useState("Pending Orders");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [deleteModal, setDeleteModal] = useState(false);
+  const [inputValue, setInputValue] = useState("");
+  const [deleteOrderId, setDeleteOrderId] = useState(null);
 
   const tabs = ["Pending Orders", "Confirm Orders", "Cancel Orders"];
 
@@ -38,6 +42,7 @@ const OrderTable = ({
 
     if (res.code === 200) {
       refreshOrders();
+      setDeleteModal(false);
     }
   };
 
@@ -170,7 +175,11 @@ const OrderTable = ({
 
                         {order.snapshotData.deliveryStatus === "cancelled" && (
                           <button
-                            onClick={() => handleDelete(order._id)}
+                            onClick={() => {
+                              setSelectedOrder(order);
+                              setDeleteOrderId(order._id);
+                              setDeleteModal(true);
+                            }}
                             className="bg-red-600 hover:bg-red-700 text-white p-3 rounded-lg transition-colors"
                             title=""
                           >
@@ -259,6 +268,62 @@ const OrderTable = ({
           </div>
         </div>
       </div>
+
+      {deleteModal && (
+        <div className="fixed inset-0 flex items-center justify-center z-50">
+          <div
+            className="absolute inset-0 bg-black opacity-50"
+            // onClick={onClose}
+          ></div>
+          <div className="h-screen flex justify-center items-center z-100">
+            <div className="bg-white p-6 rounded-lg w-[500px] absolute z-100 opacity-100">
+              <div className="text-red-600 font-bold text-sm uppercase mb-2">
+                Danger Zone
+              </div>
+              <h2 className="text-2xl font-bold mb-4">Deleting is permanent</h2>
+              <p className="text-gray-700 mb-4">
+                Deleting the order will permanently erase all associated data
+                from the Inventory.
+              </p>
+              <p className="text-gray-700 mb-6">
+                To confirm this action, please type the order name{" "}
+                <span className="font-bold text-red-600">
+                  {selectedOrder?.snapshotData.customerName}
+                </span>
+              </p>
+              <input
+                type="text"
+                placeholder="Enter Order Name for confirmation"
+                className="w-full p-3 border border-gray-300 rounded-lg mb-6 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+              />
+              <div className="flex justify-end space-x-4">
+                <button
+                  onClick={() => setDeleteModal(false)}
+                  className="px-5 py-2.5 bg-gray-100 text-gray-800 rounded-lg hover:bg-gray-200 transition-colors duration-200"
+                >
+                  Never mind
+                </button>
+                <button
+                  onClick={() => handleDelete(deleteOrderId)}
+                  disabled={
+                    inputValue !== selectedOrder?.snapshotData.customerName
+                  }
+                  className={`px-5 py-2.5 rounded-lg flex items-center space-x-2 transition-colors duration-200 ${
+                    inputValue !== selectedOrder?.snapshotData.customerName
+                      ? "bg-red-300 cursor-not-allowed"
+                      : "bg-red-600 text-white hover:bg-red-700"
+                  }`}
+                >
+                  <Trash2 className="w-5 h-5" />
+                  <span>Delete Order</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -62,7 +62,7 @@ const AddStaffModal = ({ isOpen, onClose, onSubmit }) => {
   };
 
   const handleAddStock = async (stockData) => {
-    console.log("Adding new stock:", stockData);
+    // console.log("Adding new stock:", stockData);
     const data = {
       username: stockData.username,
       password: stockData.password,
@@ -155,10 +155,10 @@ const AddStaffModal = ({ isOpen, onClose, onSubmit }) => {
               >
                 <option value="">Select Department</option>
                 <option value="admin">Admin</option>
-                <option value="Inventory">Inventory</option>
-                <option value="Finance">Finance</option>
-                <option value="Delivery">Delivery</option>
-                <option value="Customer Support">Customer Support</option>
+                <option value="inventory">Inventory</option>
+                <option value="finance">Finance</option>
+                <option value="delivery">Delivery</option>
+                <option value="customer-support">Customer Support</option>
               </select>
               {errors.role && (
                 <p className="mt-1 text-sm text-red-600">{errors.role}</p>

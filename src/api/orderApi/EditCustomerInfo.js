@@ -1,14 +1,11 @@
 import axios from "../../axios";
 import { toast } from "sonner";
 
-const updateOrderQuantity = async ({ orderId, data, id }) => {
-  const toastId = toast.loading("Updating quantity...");
+const EditCustomerInfo = async ({ orderId, data }) => {
+  const toastId = toast.loading("Updating Customer Info...");
   try {
-    const response = await axios.patch(
-      `api/v1/order/${orderId}/item/${id}`,
-      data
-    );
-    toast.success("Quantity updated successfully!", {
+    const response = await axios.patch(`api/v1/order/detail/${orderId}`, data);
+    toast.success("Customer Info updated successfully!", {
       id: toastId,
       autoClose: 500, // Auto-close the toast after 5 seconds
     });
@@ -21,4 +18,4 @@ const updateOrderQuantity = async ({ orderId, data, id }) => {
   }
 };
 
-export default updateOrderQuantity;
+export default EditCustomerInfo;

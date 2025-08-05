@@ -44,6 +44,14 @@ body {
   @apply py-2 px-4 bg-[#FFFBEB] text-[#682D03] font-semibold rounded-xl shadow-md;
 }
 
+.label {
+  @apply block text-[20px] rubik font-medium text-gray-700 mb-2;
+}
+
+.input-box {
+  @apply w-full px-3 py-2 border rounded-lg text-sm focus:outline-none;
+}
+
 @layer utilities {
   .no-spinner {
     /* For Chrome, Safari, Edge, Opera */
