@@ -10,7 +10,6 @@ const handleLogin = async (data) => {
       id: toastId,
       autoClose: 200, // Auto-close the toast after 5 seconds
     });
-
     return response.data;
   } catch (error) {
     toast.error(`${error.response.data.message}`, {

@@ -29,7 +29,7 @@ const ProductDetail = () => {
   // console.log(typeof formData.quantity);
   const getProductDetail = async (id) => {
     const response = await getAProducts(id);
-    console.log("response", response);
+    // console.log("response", response);
     setProduct(response);
   };
 

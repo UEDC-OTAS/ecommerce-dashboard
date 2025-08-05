@@ -8,6 +8,8 @@ import { FaCalendarAlt } from "react-icons/fa";
 import "react-date-range/dist/styles.css"; // main style file
 import "react-date-range/dist/theme/default.css"; // theme css file
 import io from "socket.io-client";
+import SearchBar from "../utli/SearchBar";
+import searchOrder from "../../api/orderApi/SearchOrder";
 
 const socket = io.connect(import.meta.env.VITE_APP_API, {
   transports: ["websocket"],
@@ -141,6 +143,18 @@ function GetAllOrder() {
     setActivePage(page);
   };
 
+  const searchFunction = async (name) => {
+    const response = await searchOrder(name);
+    const orderArray = response.data.map((item) => {
+      return {
+        _id: item._id,
+        snapshotData: { ...item },
+      };
+    });
+    console.log("orderArray", orderArray);
+    setOrders(orderArray);
+  };
+
   useEffect(() => {
     requestNotificationPermission();
     getOrders();
@@ -153,7 +167,7 @@ function GetAllOrder() {
     });
 
     socket.on("orderFinalized", (data) => {
-      console.log("data", data);
+      // console.log("data", data);
       playNotificationSound();
       const newOrders = new Date(data.snapshotData.updatedAt);
       const orderDateWithMs = new Date(newOrders.getTime() + msToAdd);
@@ -186,7 +200,7 @@ function GetAllOrder() {
     });
 
     socket.on("orderStatusUpdated", (data) => {
-      console.log("data", data);
+      // console.log("data", data);
       if (activeTab === "pending") {
         const handleRemove = (value) => {
           setOrders((prev) => prev.filter((item) => item._id !== value));
@@ -196,7 +210,7 @@ function GetAllOrder() {
     });
 
     socket.on("orderSoftDeleted", (data) => {
-      console.log("data", data);
+      // console.log("data", data);
       if (activeTab === "cancelled") {
         const handleRemove = (value) => {
           setOrders((prev) => prev.filter((item) => item._id !== value));
@@ -219,12 +233,19 @@ function GetAllOrder() {
         <h1 className="header">Orders</h1>
 
         <div className="flex items-center gap-10">
+          <div className="w-[400px]">
+            <SearchBar
+              onSearch={(name) => (!name ? getOrders() : null)}
+              placeholder="Search Product with name or Product Code"
+              onClick={searchFunction}
+            />
+          </div>
           <button
             onClick={() => {
               setShowDatePicker(!showDatePicker);
               // console.log(showDatePicker);
             }}
-            className="button button-color text-color border border-primary transition-all duration-300 "
+            className="button button-color text-color border border-primary transition-all duration-300 w-[180px]"
           >
             <FaCalendarAlt className="text-color" />
             {format(date, "MMMM d,yyyy")}

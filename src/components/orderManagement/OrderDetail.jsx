@@ -11,6 +11,7 @@ export default function OrderDetails() {
   const { id } = useParams();
   // console.log(order);
   const [product, setProduct] = useState(null);
+
   const [order, setOrder] = useState(null);
   const [printData, setPrintData] = useState(null);
   const [isGenerating, setIsGenerating] = useState(null);
@@ -19,6 +20,7 @@ export default function OrderDetails() {
     const response = await getAOrder(id);
 
     if (response.code === 200) {
+      // console.log("response", response);
       setOrder(response.data.snapshotData);
       setPrintData(response.data);
     }

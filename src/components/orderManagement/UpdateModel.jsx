@@ -17,14 +17,14 @@ const UpdateModel = ({ isOpen, onClose, onSubmit, product, orderId }) => {
   }, [product]);
 
   const handleSubmit = async () => {
-    console.log("quantity", quantity);
+    // console.log("quantity", quantity);
     const data = {
       newQuantity: quantity,
     };
     const res = await updateOrderQuantity({
       orderId: orderId,
       data: data,
-      id: product.stockId,
+      id: product._id,
     });
 
     if (res.code === 200) {

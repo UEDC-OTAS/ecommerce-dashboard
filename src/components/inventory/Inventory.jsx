@@ -28,6 +28,20 @@ function Inventory() {
     setIsQuantityModalOpen(true);
   };
 
+  const updateStockQuantity = (data) => {
+    // console.log("data", data);
+    setProducts((prevProducts) =>
+      prevProducts.map((product) => {
+        const update = data.snapshotData.orderInfo.find(
+          (u) => u.saleCode === product.saleCode
+        );
+        return update
+          ? { ...product, stock: update.currentStockQuantity }
+          : product;
+      })
+    );
+  };
+
   // const searchFunction = async (name) => {
   //   if (!name) {
   //     getProducts();
@@ -62,18 +76,11 @@ function Inventory() {
 
     socket.on("orderFinalized", (data) => {
       // console.log("orderFinalized", data);
-      setProducts((prevProducts) => {
-        const updatedProducts = prevProducts.map((product) => {
-          if (product.saleCode === data.saleCode) {
-            return {
-              ...product,
-              stock: data.snapshotData.orderInfo.currentStockQuantity,
-            };
-          }
-          return product;
-        });
-        return updatedProducts;
-      });
+      updateStockQuantity(data);
+    });
+
+    socket.on("orderStatusUpdated", (data) => {
+      updateStockQuantity(data);
     });
 
     socket.on("stockUpdated", (data) => {
@@ -92,6 +99,7 @@ function Inventory() {
       socket.off("stockCreated");
       socket.off("stockUpdated");
       socket.off("orderFinalized");
+      socket.off("orderStatusUpdated");
     };
   }, []);
 

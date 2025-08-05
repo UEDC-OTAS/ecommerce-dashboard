@@ -18,7 +18,7 @@ const LoginPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const res = await handleLogin({ username, password });
-    console.log(res);
+    // console.log(res);
 
     if (res.code === 200) {
       const user = {
