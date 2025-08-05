@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { CgProfile } from "react-icons/cg";
 import { MdOutlineSupportAgent } from "react-icons/md";
 import {
@@ -15,23 +15,33 @@ import {
 import logo from "../assets/uedc.png";
 
 function Navbar() {
+  const username = JSON.parse(localStorage.getItem("uedc-user"))?.name;
+  const role = JSON.parse(localStorage.getItem("uedc-user"))?.role;
+  console.log(role);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isDesktopExpanded, setIsDesktopExpanded] = useState(false);
   const location = useLocation();
-
+  const navigate = useNavigate();
   const navItems = [
-    { path: "/", icon: Package, label: "Inventory" },
-    { path: "/orders", icon: ShoppingCart, label: "Order" },
-    { path: "/delivery", icon: Truck, label: "Delivery" },
+    { path: "/", icon: Package, label: "Inventory", role: "inventory" },
+    { path: "/orders", icon: ShoppingCart, label: "Order", role: "order" },
+    { path: "/delivery", icon: Truck, label: "Delivery", role: "delivery" },
     {
       path: "/support",
       icon: MdOutlineSupportAgent,
       label: "Customer Support",
+      role: "customer-support",
     },
-    { path: "/accs", icon: CgProfile, label: "Account" },
+    { path: "/accs", icon: CgProfile, label: "Account", role: "admin" },
   ];
 
   const isActive = (path) => location.pathname === path;
+
+  const handleLogout = () => {
+    localStorage.removeItem("uedc-user");
+    localStorage.removeItem("uedc-token");
+    navigate("/login");
+  };
 
   return (
     <>
@@ -74,21 +84,23 @@ function Navbar() {
               const Icon = item.icon;
               return (
                 <li key={item.path}>
-                  <Link
-                    to={item.path}
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className={`
-                      flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200
-                      ${
-                        isActive(item.path)
-                          ? "bg-orange-500 text-white shadow-lg"
-                          : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
-                      }
+                  {role === "admin" || role === item.role ? (
+                    <Link
+                      to={item.path}
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className={`
+                        flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200
+                        ${
+                          isActive(item.path)
+                            ? "bg-orange-500 text-white shadow-lg"
+                            : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+                        }
                     `}
-                  >
-                    <Icon size={20} />
-                    <span className="font-medium">{item.label}</span>
-                  </Link>
+                    >
+                      <Icon size={20} />
+                      <span className="font-medium">{item.label}</span>
+                    </Link>
+                  ) : null}
                 </li>
               );
             })}
@@ -102,11 +114,14 @@ function Navbar() {
               <User size={20} className="text-gray-600" />
             </div>
             <div>
-              <p className="text-sm font-medium text-gray-900">Nwe Nwe Lin</p>
-              <p className="text-xs text-gray-500">Finance</p>
+              <p className="text-sm font-medium text-gray-900">{username}</p>
+              <p className="text-xs text-gray-500">{role}</p>
             </div>
           </div>
-          <button className="flex items-center space-x-2 w-full px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
+          <button
+            onClick={handleLogout}
+            className="flex items-center space-x-2 w-full px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+          >
             <LogOut size={16} />
             <span>Logout</span>
           </button>
@@ -153,31 +168,34 @@ function Navbar() {
                 const Icon = item.icon;
                 return (
                   <li key={item.path}>
-                    <Link
-                      to={item.path}
-                      className={`
+                    {role === "admin" || role === item.role ? (
+                      <Link
+                        to={item.path}
+                        className={`
                         flex items-center px-3 py-3 rounded-lg transition-all duration-300 relative group
                         ${
                           isActive(item.path)
                             ? "bg-orange-500 text-white shadow-lg "
                             : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
                         }
+ 
                       `}
-                    >
-                      <Icon size={20} className="flex-shrink-0" />
-                      {isDesktopExpanded && (
-                        <span className="ml-3 font-medium whitespace-nowrap">
-                          {item.label}
-                        </span>
-                      )}
+                      >
+                        <Icon size={20} className="flex-shrink-0" />
+                        {isDesktopExpanded && (
+                          <span className="ml-3 font-medium whitespace-nowrap">
+                            {item.label}
+                          </span>
+                        )}
 
-                      {/* Tooltip for collapsed state */}
-                      {!isDesktopExpanded && (
-                        <div className="absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
-                          {item.label}
-                        </div>
-                      )}
-                    </Link>
+                        {/* Tooltip for collapsed state */}
+                        {!isDesktopExpanded && (
+                          <div className="absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
+                            {item.label}
+                          </div>
+                        )}
+                      </Link>
+                    ) : null}
                   </li>
                 );
               })}
@@ -194,10 +212,10 @@ function Navbar() {
               {isDesktopExpanded && (
                 <div className="ml-3">
                   <p className="text-sm font-medium text-gray-900 whitespace-nowrap">
-                    Nwe Nwe Lin
+                    {username}
                   </p>
                   <p className="text-xs text-gray-500 whitespace-nowrap">
-                    Finance
+                    {role}
                   </p>
                 </div>
               )}
@@ -205,7 +223,10 @@ function Navbar() {
 
             {/* Logout Button */}
             <div className="p-3 pt-0">
-              <button className="flex items-center w-full px-3 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-lg transition-colors group relative">
+              <button
+                className="flex items-center w-full px-3 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-lg transition-colors group relative"
+                onClick={handleLogout}
+              >
                 <LogOut size={16} className="flex-shrink-0" />
                 {isDesktopExpanded && (
                   <span className="ml-3 whitespace-nowrap">Logout</span>
