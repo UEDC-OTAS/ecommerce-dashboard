@@ -9,6 +9,7 @@ import AddStockModal from "../components/inventory/AddProductModal";
 import AddProduct from "../components/inventory/AddProduct";
 import ProductDetail from "../components/inventory/ProductDetail";
 import Accounts from "../components/accounts/Accounts";
+import NewOrders from "../components/orderManagement/NewOrders";
 function Home() {
   return (
     <>
@@ -19,6 +20,7 @@ function Home() {
             <Route path="/" element={<Inventory />} />
             <Route path="/add-stock" element={<AddProduct />} />
             <Route path="/stock/:id" element={<ProductDetail />} />
+            <Route path="/new-order" element={<NewOrders />} />
             <Route path="/orders" element={<GetAllOrder />} />
             <Route path="/order/:id" element={<OrderDetail />} />
             <Route path="/delivery" element={<DeliveryPage />} />

@@ -82,7 +82,7 @@ function OrderInfo({ selectedOrder, refreshOrders, handleClose }) {
           </div>
 
           {order.deliveryStatus !== "confirm" && (
-            <div className="py-5 flex justify-between items-center sticky bottom-0">
+            <div className="py-5 bg-white flex justify-between items-center sticky bottom-0">
               <button
                 className="flex-1 border border-gray-200 p-2 rounded-lg text-primary hover:bg-gray-100 text-[16px]"
                 onClick={() => {

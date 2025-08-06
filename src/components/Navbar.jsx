@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { CgProfile } from "react-icons/cg";
 import { MdOutlineSupportAgent } from "react-icons/md";
+import { ClockPlus } from "lucide-react";
 import {
   Package,
   ShoppingCart,
@@ -24,6 +25,13 @@ function Navbar() {
   const navigate = useNavigate();
   const navItems = [
     { path: "/", icon: Package, label: "Inventory", role: "inventory" },
+
+    {
+      path: "/new-order",
+      icon: ClockPlus,
+      label: "New Order",
+      role: "order",
+    },
     { path: "/orders", icon: ShoppingCart, label: "Order", role: "order" },
     { path: "/delivery", icon: Truck, label: "Delivery", role: "delivery" },
     {

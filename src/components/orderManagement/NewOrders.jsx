@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import getAllOrders from "../../api/orderApi/getAllOrders";
-import OrderTable from "./OrderTable";
 import OrderInfo from "./OrderInfo";
 import { format } from "date-fns";
 import { Calendar } from "react-date-range";
@@ -11,25 +10,21 @@ import io from "socket.io-client";
 import SearchBar from "../utli/SearchBar";
 import searchOrder from "../../api/orderApi/SearchOrder";
 import { toast } from "sonner";
+import NewOrderTable from "./NewOrderTable";
 
 const socket = io.connect(import.meta.env.VITE_APP_API, {
   transports: ["websocket"],
   secure: true,
 });
 
-function GetAllOrder() {
+function NewOrders() {
   const today = new Date();
   const [loading, setLoading] = useState(false);
-  const [showDatePicker, setShowDatePicker] = useState(false);
-  const [date, setDate] = useState(
-    sessionStorage.getItem("choseDate")
-      ? new Date(sessionStorage.getItem("choseDate"))
-      : today
-  );
   const [orders, setOrders] = useState([]);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [activeTab, setActiveTab] = useState("pending");
   const [activePage, setActivePage] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
   const [notificationPermission, setNotificationPermission] = useState(
     typeof window !== "undefined" && "Notification" in window
       ? Notification.permission
@@ -79,11 +74,8 @@ function GetAllOrder() {
     }
   };
 
-  // console.log("orderDay", orderDateWithMs);
-
   // Show browser notification
   const showNotification = (ticket, name) => {
-    // console.log(ticket);
     if (typeof window !== "undefined" && notificationPermission === "granted") {
       const notification = new Notification(
         name ? name : "New Support Ticket",
@@ -109,15 +101,11 @@ function GetAllOrder() {
   const getOrders = async () => {
     setLoading(true);
     const response = await getAllOrders(activeTab, activePage);
-    // console.log("response", response);
+
     if (response.code === 200) {
       setLoading(false);
-      const filteredOrders = response.data.filter((item) => {
-        const orderDate = new Date(item.snapshotData.createdAt);
-        const formattedOrderDate = format(orderDate, "yyyy-MM-dd");
-        return formattedOrderDate === format(date, "yyyy-MM-dd");
-      });
-      setOrders(filteredOrders);
+      setTotalCount(response.totalCount);
+      setOrders(response.data);
     }
   };
 
@@ -151,16 +139,13 @@ function GetAllOrder() {
         snapshotData: { ...item },
       };
     });
-    console.log("orderArray", orderArray);
     setOrders(orderArray);
   };
 
   useEffect(() => {
     requestNotificationPermission();
     getOrders();
-  }, [activeTab, date]);
-
-  console.log("daa", new Date("2025-08-06T15:15:19.167Z"));
+  }, [activeTab]);
 
   useEffect(() => {
     // Connection established
@@ -170,7 +155,6 @@ function GetAllOrder() {
 
     socket.on("orderFinalized", (data) => {
       toast.success("New Order Arrived");
-      console.log("data", data);
       playNotificationSound();
       const formattedOrderDate = format(
         data.snapshotData.createdAt,
@@ -206,18 +190,7 @@ function GetAllOrder() {
     });
 
     socket.on("orderStatusUpdated", (data) => {
-      // console.log("data", data);
       if (activeTab === "pending") {
-        const handleRemove = (value) => {
-          setOrders((prev) => prev.filter((item) => item._id !== value));
-        };
-        handleRemove(data.orderId);
-      }
-    });
-
-    socket.on("orderSoftDeleted", (data) => {
-      // console.log("data", data);
-      if (activeTab === "cancelled") {
         const handleRemove = (value) => {
           setOrders((prev) => prev.filter((item) => item._id !== value));
         };
@@ -229,14 +202,13 @@ function GetAllOrder() {
     return () => {
       socket.off("orderFinalized");
       socket.off("orderStatusUpdated");
-      socket.off("orderSoftDeleted");
     };
   }, []);
 
   return (
     <div className="px-4">
       <div className="flex items-center justify-between ">
-        <h1 className="header">Orders Management</h1>
+        <h1 className="header">New Orders</h1>
 
         <div className="flex items-center gap-10">
           <div className="w-[400px]">
@@ -246,32 +218,8 @@ function GetAllOrder() {
               onClick={searchFunction}
             />
           </div>
-          <button
-            onClick={() => {
-              setShowDatePicker(!showDatePicker);
-              // console.log(showDatePicker);
-            }}
-            className="button button-color text-color border border-primary transition-all duration-300 w-[180px]"
-          >
-            <FaCalendarAlt className="text-color" />
-            {format(date, "MMMM d,yyyy")}
-          </button>
         </div>
       </div>
-
-      {/* Date Range Picker */}
-      {showDatePicker && (
-        <div className="mb-4 bg-white rounded-lg shadow-md absolute right-0 z-10">
-          <Calendar
-            date={date}
-            onChange={(date) => {
-              setDate(date);
-              sessionStorage.setItem("choseDate", date.toISOString());
-              setShowDatePicker(false);
-            }}
-          />
-        </div>
-      )}
 
       <div className="flex">
         <div
@@ -279,13 +227,14 @@ function GetAllOrder() {
             selectedOrder ? "w-2/3" : "w-full"
           }`}
         >
-          <OrderTable
+          <NewOrderTable
             orders={orders}
             passOrder={passOrder}
             activeOrder={selectedOrder}
             passTab={passTab}
             loading={loading}
             passPage={passPage}
+            totalCount={totalCount}
             refreshOrders={() => {
               getOrders();
               setSelectedOrder(null);
@@ -314,4 +263,4 @@ function GetAllOrder() {
   );
 }
 
-export default GetAllOrder;
+export default NewOrders;
