@@ -10,6 +10,7 @@ import "react-date-range/dist/theme/default.css"; // theme css file
 import io from "socket.io-client";
 import SearchBar from "../utli/SearchBar";
 import searchOrder from "../../api/orderApi/SearchOrder";
+import { toast } from "sonner";
 
 const socket = io.connect(import.meta.env.VITE_APP_API, {
   transports: ["websocket"],
@@ -111,12 +112,16 @@ function GetAllOrder() {
     console.log("response", response);
     if (response.code === 200) {
       setLoading(false);
-      const filteredOrders = response.data.filter((item) => {
+      const filteredOrders = response.data.filter((item, index) => {
         const orderDate = new Date(item.snapshotData.createdAt);
-        const orderDateWithMs = new Date(orderDate.getTime() + msToAdd);
-        const formattedOrderDate = format(orderDateWithMs, "yyyy-MM-dd");
+        console.log(`orderDate - ${index}`, orderDate);
+        // const orderDateWithMs = new Date(orderDate.getTime() + msToAdd);
+        const formattedOrderDate = format(orderDate, "yyyy-MM-dd");
+        console.log(`formattedOrderDate - ${index}`, formattedOrderDate);
+        console.log(`date - ${index}`, format(date, "yyyy-MM-dd"));
         return formattedOrderDate === format(date, "yyyy-MM-dd");
       });
+      console.log("filteredOrders", filteredOrders);
       setOrders(filteredOrders);
     }
   };
@@ -167,11 +172,15 @@ function GetAllOrder() {
     });
 
     socket.on("orderFinalized", (data) => {
-      // console.log("data", data);
+      console.log(
+        "choseDate",
+        format(sessionStorage.getItem("choseDate"), "yyyy-MM-dd")
+      );
+
       playNotificationSound();
-      const newOrders = new Date(data.snapshotData.updatedAt);
-      const orderDateWithMs = new Date(newOrders.getTime() + msToAdd);
-      const formattedOrderDate = format(orderDateWithMs, "yyyy-MM-dd");
+      const newOrders = new Date(data.snapshotData.createdAt);
+      // const orderDateWithMs = new Date(newOrders.getTime() + msToAdd);
+      const formattedOrderDate = format(newOrders, "yyyy-MM-dd");
       if (
         formattedOrderDate ===
         format(sessionStorage.getItem("choseDate"), "yyyy-MM-dd")
@@ -186,6 +195,7 @@ function GetAllOrder() {
               updatedOrders[index] = data;
               return updatedOrders;
             } else {
+              toast.success("New Order");
               // Add new order
               return [data, ...prev];
             }
@@ -193,9 +203,11 @@ function GetAllOrder() {
           // }
         } else {
           showNotification(data.snapshotData, "New Order");
+          toast.success("New Order");
         }
       } else {
         showNotification(data.snapshotData, "New Order");
+        toast.success("New Order");
       }
     });
 

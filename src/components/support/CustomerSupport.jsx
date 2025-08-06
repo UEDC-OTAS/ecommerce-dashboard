@@ -90,7 +90,7 @@ const CustomerSupport = () => {
 
   const getTickets = async () => {
     const response = await getAllTickets();
-    // console.log("response", response.data);
+    console.log("response", response.data);
     setTickets(response.data.reverse());
   };
 
@@ -310,7 +310,9 @@ const CustomerSupport = () => {
                     </td>
                     <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
                       <div className="flex items-center space-x-2">
-                        <span>{ticket.customerName}</span>
+                        <span>
+                          {ticket?.customerName || ticket?.facebookName}
+                        </span>
                       </div>
                     </td>
                     <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
