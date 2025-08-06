@@ -109,19 +109,14 @@ function GetAllOrder() {
   const getOrders = async () => {
     setLoading(true);
     const response = await getAllOrders(activeTab, activePage);
-    console.log("response", response);
+    // console.log("response", response);
     if (response.code === 200) {
       setLoading(false);
-      const filteredOrders = response.data.filter((item, index) => {
+      const filteredOrders = response.data.filter((item) => {
         const orderDate = new Date(item.snapshotData.createdAt);
-        console.log(`orderDate - ${index}`, orderDate);
-        // const orderDateWithMs = new Date(orderDate.getTime() + msToAdd);
         const formattedOrderDate = format(orderDate, "yyyy-MM-dd");
-        console.log(`formattedOrderDate - ${index}`, formattedOrderDate);
-        console.log(`date - ${index}`, format(date, "yyyy-MM-dd"));
         return formattedOrderDate === format(date, "yyyy-MM-dd");
       });
-      console.log("filteredOrders", filteredOrders);
       setOrders(filteredOrders);
     }
   };
@@ -172,15 +167,11 @@ function GetAllOrder() {
     });
 
     socket.on("orderFinalized", (data) => {
-      console.log(
-        "choseDate",
-        format(sessionStorage.getItem("choseDate"), "yyyy-MM-dd")
-      );
-
       playNotificationSound();
-      const newOrders = new Date(data.snapshotData.createdAt);
-      // const orderDateWithMs = new Date(newOrders.getTime() + msToAdd);
-      const formattedOrderDate = format(newOrders, "yyyy-MM-dd");
+      const formattedOrderDate = format(
+        data.snapshotData.createdAt,
+        "yyyy-MM-dd"
+      );
       if (
         formattedOrderDate ===
         format(sessionStorage.getItem("choseDate"), "yyyy-MM-dd")

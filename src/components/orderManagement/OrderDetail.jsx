@@ -122,7 +122,7 @@ export default function OrderDetails() {
         <div>
           <form className="space-y-6">
             <div className="flex flex-col md:flex-row gap-20">
-              <div className="space-y-6 w-full md:w-2/3">
+              <div className="space-y-10 w-full md:w-2/3">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-10">
                   {/* Customer Name */}
                   <div>
@@ -156,7 +156,7 @@ export default function OrderDetails() {
                 </div>
 
                 <div className=" grid grid-cols-1 gap-10">
-                  {/* Customer Address */}
+                  {/* Address */}
                   <div>
                     <label htmlFor="address" className="label">
                       Address
@@ -172,7 +172,7 @@ export default function OrderDetails() {
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-10">
-                  {/* Customer Name */}
+                  {/* phone number */}
                   <div>
                     <label htmlFor="contactNumber" className="label">
                       Phone Number
@@ -187,7 +187,7 @@ export default function OrderDetails() {
                     />
                   </div>
 
-                  {/* Facebook Account */}
+                  {/* payment type */}
                   <div>
                     <label htmlFor="Payment Type" className="label">
                       Payment Type
@@ -204,7 +204,7 @@ export default function OrderDetails() {
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-10">
-                  {/* Customer Name */}
+                  {/* delivery type */}
                   <div>
                     <label htmlFor="deliveryType" className="label">
                       Delivery Type
@@ -219,38 +219,73 @@ export default function OrderDetails() {
                     />
                   </div>
 
-                  {/* Facebook Account */}
-                  <div>
-                    <label htmlFor="Delivery Service" className="label">
-                      Delivery Service
-                    </label>
-                    <input
-                      type="text"
-                      id="Delivery Service"
-                      name="Delivery Service"
-                      readOnly
-                      value={order.delivery.deliveryServiceName}
-                      className="input-box"
-                    />
-                  </div>
+                  {/* delivery service */}
+                  {order.delivery.deliveryType === "delivery-service" ? (
+                    <div>
+                      <label htmlFor="Delivery Service" className="label">
+                        Delivery Service
+                      </label>
+                      <input
+                        type="text"
+                        id="Delivery Service"
+                        name="Delivery Service"
+                        readOnly
+                        value={order.delivery.deliveryServiceName}
+                        className="input-box"
+                      />
+                    </div>
+                  ) : (
+                    <div>
+                      <label htmlFor="Delivery Service" className="label">
+                        Car Gate Name
+                      </label>
+                      <input
+                        type="text"
+                        id="Delivery Service"
+                        name="Delivery Service"
+                        readOnly
+                        value={order?.delivery?.gateName}
+                        className="input-box"
+                      />
+                    </div>
+                  )}
+                </div>
+
+                <div className="grid grid-cols-1 gap-10">
+                  {order.delivery.deliveryType === "gate-drop-off" && (
+                    <div>
+                      <label htmlFor="Delivery Service" className="label">
+                        Car Gate Name
+                      </label>
+                      <textarea
+                        id="Delivery Service"
+                        name="Delivery Service"
+                        readOnly
+                        value={order?.delivery?.gateInfo}
+                        className="input-box"
+                      />
+                    </div>
+                  )}
                 </div>
               </div>
               {/* Image Upload */}
-              <div className="w-full md:w-1/3">
-                <label className="label">Payment ScreenShot</label>
+              {order.paymentType === "cash-down" && (
+                <div className="w-full md:w-1/3">
+                  <label className="label">Payment ScreenShot</label>
 
-                {/* Form Image Previews */}
+                  {/* Form Image Previews */}
 
-                <div className="mt-4 w-full">
-                  <div className="rounded-lg overflow-hidden bg-gray-100">
-                    <img
-                      src={order.paymentImage.url || "/placeholder.svg"}
-                      alt="paymentImage"
-                      className="w-full h-full object-cover"
-                    />
+                  <div className="mt-4 w-full">
+                    <div className="rounded-lg overflow-hidden bg-gray-100">
+                      <img
+                        src={order.paymentImage.url || "/placeholder.svg"}
+                        alt="paymentImage"
+                        className="w-full h-[600px]"
+                      />
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
             </div>
           </form>
 

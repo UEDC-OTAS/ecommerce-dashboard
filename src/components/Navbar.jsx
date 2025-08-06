@@ -17,7 +17,7 @@ import logo from "../assets/uedc.png";
 function Navbar() {
   const username = JSON.parse(localStorage.getItem("uedc-user"))?.name;
   const role = JSON.parse(localStorage.getItem("uedc-user"))?.role;
-  console.log(role);
+  // console.log(role);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isDesktopExpanded, setIsDesktopExpanded] = useState(false);
   const location = useLocation();
