@@ -15,7 +15,8 @@ const OrderTable = ({
   passTab,
   loading,
 }) => {
-  // console.log("orders", orders);
+  const role = JSON.parse(localStorage.getItem("uedc-user"))?.role;
+
   const [selectedOrder, setSelectedOrder] = useState(null);
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("Pending Orders");
@@ -173,19 +174,21 @@ const OrderTable = ({
                             </button>
                           )}
 
-                        {order.snapshotData.deliveryStatus === "cancelled" && (
-                          <button
-                            onClick={() => {
-                              setSelectedOrder(order);
-                              setDeleteOrderId(order._id);
-                              setDeleteModal(true);
-                            }}
-                            className="bg-red-600 hover:bg-red-700 text-white p-3 rounded-lg transition-colors"
-                            title=""
-                          >
-                            <Trash2 size={18} />
-                          </button>
-                        )}
+                        {order.snapshotData.deliveryStatus === "cancelled" &&
+                          role !== "customer-support" && (
+                            <button
+                              onClick={() => {
+                                setSelectedOrder(order);
+                                setDeleteOrderId(order._id);
+                                setDeleteModal(true);
+                              }}
+                              className="bg-red-600 hover:bg-red-700 text-white p-3 rounded-lg transition-colors"
+                              title=""
+                            >
+                              <Trash2 size={18} />
+                            </button>
+                          )}
+
                         <button
                           onClick={() => handleView(order._id)}
                           className="border border-gray-200 hover:bg-gray-200 text-delete p-3 rounded-lg transition-colors"

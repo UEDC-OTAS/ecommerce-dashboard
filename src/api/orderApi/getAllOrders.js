@@ -6,6 +6,7 @@ const getAllOrders = async (status) => {
     return response.data;
   } catch (error) {
     console.log(error);
+    return error.response.data;
   }
 };
 

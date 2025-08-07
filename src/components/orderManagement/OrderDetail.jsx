@@ -2,17 +2,20 @@ import { Download, Printer } from "lucide-react";
 import { useEffect, useState } from "react";
 import getAOrder from "../../api/orderApi/getAOrder";
 import { useParams, useNavigate } from "react-router-dom";
-import { generatePDF } from "./PdfGenerator";
+import getReceiptImage from "../../api/receipt/getReceiptIamge";
 import UpdateModel from "./UpdateModel";
 import chgOrderStatus from "../../api/orderApi/chgOrderStatus";
 import { MdArrowBack } from "react-icons/md";
+import Loading from "../utli/Loading";
 
 export default function OrderDetails() {
+  const role = JSON.parse(localStorage.getItem("uedc-user"))?.role;
+
   const navigate = useNavigate();
   const { id } = useParams();
   const [product, setProduct] = useState(null);
   const [order, setOrder] = useState(null);
-  const [printData, setPrintData] = useState(null);
+
   const [isGenerating, setIsGenerating] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
@@ -20,12 +23,37 @@ export default function OrderDetails() {
     const response = await getAOrder(id);
 
     if (response.code === 200) {
-      // console.log("response", response);
       setOrder(response.data.snapshotData);
-      setPrintData(response.data);
+    } else if (response.code === 403) {
+      navigate("/unauthorized");
     }
   };
-  // console.log("isEditOpen", isEditOpen);
+
+  const handlePrintClick = (voucherImageUrl) => {
+    // Create a new window
+    const printWindow = window.open("", "_blank");
+
+    // Create the HTML content for the new window
+    const htmlContent = `
+      <html>
+        <head>
+          <title>Print Voucher</title>
+          <style>
+            /* Optional: Add styles to ensure the image fits the page */
+            body { margin: 0; }
+            img { max-width: 100%; height: auto; }
+          </style>
+        </head>
+        <body>
+          <img src="${voucherImageUrl}" onload="window.print(); window.close();" />
+        </body>
+      </html>
+    `;
+
+    // Write the HTML content to the new window
+    printWindow.document.write(htmlContent);
+    printWindow.document.close(); // Close the document to finish writing
+  };
 
   const chgStatus = async (status) => {
     const orderId = id;
@@ -43,28 +71,17 @@ export default function OrderDetails() {
     getOrder();
   }, []);
 
-  const handlePrintPDF = async (order) => {
-    setIsGenerating(order.orderId);
-    try {
-      await generatePDF(order);
-    } catch (error) {
-      // console.error("PDF generation failed:", error);
-      alert("Failed to generate PDF. Please try again.");
-    } finally {
-      setIsGenerating(null);
+  const handlePrintPDF = async () => {
+    const res = await getReceiptImage(id);
+    if (res.code === 201) {
+      handlePrintClick(res.data.receiptImage.cdnUrl);
     }
   };
 
   // console.log(order);
 
   if (!order) {
-    return (
-      <div className="h-[calc(100vh-100px)] flex items-center justify-center">
-        <div className="flex items-center justify-center">
-          <div className="animate-spin rounded-full h-24 w-24 border-b-2 border-primary"></div>
-        </div>
-      </div>
-    );
+    return <Loading />;
   }
 
   return (
@@ -75,48 +92,49 @@ export default function OrderDetails() {
             <MdArrowBack size={24} onClick={() => navigate("/orders")} />
             <h1 className="header">Order Details</h1>
           </div>
+          {role !== "customer-support" && (
+            <div className="flex gap-2 items-center">
+              {order.deliveryStatus !== "cancelled" && (
+                <button
+                  className="flex items-center gap-2 mr-4 border border-gray-200 px-4 py-3    rounded-lg text-primary hover:bg-gray-100 text-[16px]"
+                  onClick={() => {
+                    chgStatus("cancelled");
+                  }}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    height="18px"
+                    viewBox="0 -960 960 960"
+                    width="24px"
+                    fill="#E95900"
+                  >
+                    <path d="m760-183-85 84-56-56 84-85-84-85 56-56 85 84 85-84 56 56-84 85 84 85-56 56-85-84ZM240-80q-50 0-85-35t-35-85v-120h120v-560h600v415q-19-7-39-10.5t-41-3.5v-321H320v480h214q-7 19-10.5 39t-3.5 41H200v40q0 17 11.5 28.5T240-160h294q8 23 20 43t28 37H240Zm120-520v-80h360v80H360Zm0 120v-80h360v80H360Zm174 320H200h334Z" />
+                  </svg>
+                  Order Cancel
+                </button>
+              )}
 
-          <div className="flex gap-2 items-center">
-            {order.deliveryStatus !== "cancelled" && (
               <button
-                className="flex items-center gap-2 mr-4 border border-gray-200 px-4 py-3    rounded-lg text-primary hover:bg-gray-100 text-[16px]"
+                className="flex items-center gap-2 mr-4 bg-primary px-4 py-3 rounded-lg text-white hover:bg-primary/80"
                 onClick={() => {
-                  chgStatus("cancelled");
+                  setIsOpen(true);
+                  setIsEditOpen(true);
+                  setProduct(order);
                 }}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  height="18px"
+                  height="24px"
                   viewBox="0 -960 960 960"
                   width="24px"
-                  fill="#E95900"
+                  fill="#fff"
                 >
-                  <path d="m760-183-85 84-56-56 84-85-84-85 56-56 85 84 85-84 56 56-84 85 84 85-56 56-85-84ZM240-80q-50 0-85-35t-35-85v-120h120v-560h600v415q-19-7-39-10.5t-41-3.5v-321H320v480h214q-7 19-10.5 39t-3.5 41H200v40q0 17 11.5 28.5T240-160h294q8 23 20 43t28 37H240Zm120-520v-80h360v80H360Zm0 120v-80h360v80H360Zm174 320H200h334Z" />
+                  <path d="M480-240Zm-320 80v-112q0-34 17.5-62.5T224-378q62-31 126-46.5T480-440q37 0 73 4.5t72 14.5l-67 68q-20-3-39-5t-39-2q-56 0-111 13.5T260-306q-9 5-14.5 14t-5.5 20v32h240v80H160Zm400 40v-123l221-220q9-9 20-13t22-4q12 0 23 4.5t20 13.5l37 37q8 9 12.5 20t4.5 22q0 11-4 22.5T903-340L683-120H560Zm300-263-37-37 37 37ZM620-180h38l121-122-18-19-19-18-122 121v38Zm141-141-19-18 37 37-18-19ZM480-480q-66 0-113-47t-47-113q0-66 47-113t113-47q66 0 113 47t47 113q0 66-47 113t-113 47Zm0-80q33 0 56.5-23.5T560-640q0-33-23.5-56.5T480-720q-33 0-56.5 23.5T400-640q0 33 23.5 56.5T480-560Zm0-80Z" />
                 </svg>
-                Order Cancel
+                Edit Customer Info
               </button>
-            )}
-
-            <button
-              className="flex items-center gap-2 mr-4 bg-primary px-4 py-3 rounded-lg text-white hover:bg-primary/80"
-              onClick={() => {
-                setIsOpen(true);
-                setIsEditOpen(true);
-                setProduct(order);
-              }}
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                height="24px"
-                viewBox="0 -960 960 960"
-                width="24px"
-                fill="#fff"
-              >
-                <path d="M480-240Zm-320 80v-112q0-34 17.5-62.5T224-378q62-31 126-46.5T480-440q37 0 73 4.5t72 14.5l-67 68q-20-3-39-5t-39-2q-56 0-111 13.5T260-306q-9 5-14.5 14t-5.5 20v32h240v80H160Zm400 40v-123l221-220q9-9 20-13t22-4q12 0 23 4.5t20 13.5l37 37q8 9 12.5 20t4.5 22q0 11-4 22.5T903-340L683-120H560Zm300-263-37-37 37 37ZM620-180h38l121-122-18-19-19-18-122 121v38Zm141-141-19-18 37 37-18-19ZM480-480q-66 0-113-47t-47-113q0-66 47-113t113-47q66 0 113 47t47 113q0 66-47 113t-113 47Zm0-80q33 0 56.5-23.5T560-640q0-33-23.5-56.5T480-720q-33 0-56.5 23.5T400-640q0 33 23.5 56.5T480-560Zm0-80Z" />
-              </svg>
-              Edit Customer Info
-            </button>
-          </div>
+            </div>
+          )}
         </div>
 
         <div>
@@ -280,7 +298,7 @@ export default function OrderDetails() {
                       <img
                         src={order.paymentImage.url || "/placeholder.svg"}
                         alt="paymentImage"
-                        className="w-full h-[600px]"
+                        className="w-full max-h-[600px]"
                       />
                     </div>
                   </div>
@@ -310,12 +328,9 @@ export default function OrderDetails() {
               {/* Print Button */}
               <button
                 className="bg-orange-500 hover:bg-orange-600 text-white font-medium py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-colors"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handlePrintPDF(printData);
+                onClick={() => {
+                  handlePrintPDF();
                 }}
-                disabled={isGenerating}
-                size="sm"
               >
                 {isGenerating ? (
                   <>

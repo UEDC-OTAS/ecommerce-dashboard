@@ -7,16 +7,12 @@ const NewOrderTable = ({
   orders,
   passOrder,
   activeOrder,
-  refreshOrders,
   passTab,
   totalCount,
   loading,
 }) => {
-  //   console.log("orders", orders);
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("Pending Orders");
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(10);
   const tabs = ["Pending Orders"];
 
   const handleView = (id) => {

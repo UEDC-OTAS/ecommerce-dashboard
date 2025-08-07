@@ -5,7 +5,7 @@ const getAllTickets = async () => {
     const response = await axios.get("api/v1/support");
     return response.data;
   } catch (error) {
-    console.log(error);
+    return error.response.data;
   }
 };
 

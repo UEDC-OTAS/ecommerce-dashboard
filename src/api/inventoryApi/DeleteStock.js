@@ -13,6 +13,7 @@ const deleteStock = async (id) => {
     }
     return response.data;
   } catch (error) {
+    console.log(error);
     toast.error(`Failed to delete product: ${error.response.data.message}`, {
       id: toastId,
       autoClose: 500, // Auto-close the toast after 5 seconds

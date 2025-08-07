@@ -3,8 +3,17 @@ import uploadReceipt from "../../api/deliveryApi/uploadReceipt";
 import axios from "axios";
 import { IoCloseCircleOutline } from "react-icons/io5";
 import chgOrderStatus from "../../api/orderApi/chgOrderStatus";
+import Loading from "../utli/Loading";
 
-function DeliReciept({ selectedOrder, refreshOrders, receipt, onClose }) {
+function DeliReciept({
+  selectedOrder,
+  refreshOrders,
+  receipt,
+  onClose,
+  loading,
+}) {
+  // console.log("receipt", receipt);
+  const role = JSON.parse(localStorage.getItem("uedc-user"))?.role;
   const [formData, setFormData] = useState({
     images: [],
     trackingLink: "",
@@ -74,7 +83,6 @@ function DeliReciept({ selectedOrder, refreshOrders, receipt, onClose }) {
     data.append("deliveryReceiptImage", formData.images[0].file);
     data.append("parcelTrackingLink", formData.trackingLink);
     const response = await uploadReceipt({ data: data, id: selectedOrder });
-    console.log(response);
     if (response.code === 201) {
       await chgStatus(selectedOrder, "completed");
       refreshOrders();
@@ -90,8 +98,12 @@ function DeliReciept({ selectedOrder, refreshOrders, receipt, onClose }) {
     refreshOrders();
   };
 
+  if (loading) {
+    return <Loading />;
+  }
+
   return (
-    <div className="p-5 mt-5 ms-5 h-[calc(100vh-100px)] border border-gray-300 rounded-xl flex flex-col justify-between overflow-y-auto">
+    <div className="p-5 mt-5 ms-5 h-[calc(100vh-60px)] border border-gray-300 rounded-xl flex flex-col justify-between overflow-y-auto">
       <div>
         <div className="flex items-center justify-between mb-5 border-b border-gray-300 pb-5">
           <h1 className="header">Delivery Detail</h1>
@@ -216,8 +228,8 @@ function DeliReciept({ selectedOrder, refreshOrders, receipt, onClose }) {
         )}
       </div>
 
-      {receipt.length === 0 && (
-        <div className="flex items-center justify-end gap-5 pt-5 sticky bottom-0">
+      {receipt.length === 0 && role !== "customer-support" && (
+        <div className="flex items-center bg-white justify-end gap-5 py-5 sticky bottom-0">
           <button
             className="flex-1 bg-primary text-white p-2 rounded-md"
             onClick={() => handleConfirm()}

@@ -3,15 +3,21 @@ import AccountTable from "./AccountTable";
 import getAllUsers from "../../api/accountApi/getAlluser";
 import { useEffect, useState } from "react";
 import AddStaffModal from "./AddStaffModal";
+import { useNavigate } from "react-router-dom";
 
 function Accounts() {
+  const navigate = useNavigate();
   const [users, setUsers] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const fetchUsers = async () => {
     const res = await getAllUsers();
-    // console.log(res.data);
-    setUsers(res.data);
+    console.log(res);
+    if (res.code === 200) {
+      setUsers(res.data);
+    } else if (res.code === 403) {
+      navigate("/unauthorized");
+    }
   };
 
   useEffect(() => {

@@ -1,16 +1,12 @@
 import { useEffect, useState } from "react";
 import getAllOrders from "../../api/orderApi/getAllOrders";
 import OrderInfo from "./OrderInfo";
-import { format } from "date-fns";
-import { Calendar } from "react-date-range";
-import { FaCalendarAlt } from "react-icons/fa";
-import "react-date-range/dist/styles.css"; // main style file
-import "react-date-range/dist/theme/default.css"; // theme css file
 import io from "socket.io-client";
 import SearchBar from "../utli/SearchBar";
 import searchOrder from "../../api/orderApi/SearchOrder";
 import { toast } from "sonner";
 import NewOrderTable from "./NewOrderTable";
+import { useNavigate } from "react-router-dom";
 
 const socket = io.connect(import.meta.env.VITE_APP_API, {
   transports: ["websocket"],
@@ -18,7 +14,8 @@ const socket = io.connect(import.meta.env.VITE_APP_API, {
 });
 
 function NewOrders() {
-  const today = new Date();
+  const navigate = useNavigate();
+  const role = JSON.parse(localStorage.getItem("uedc-user"))?.role;
   const [loading, setLoading] = useState(false);
   const [orders, setOrders] = useState([]);
   const [selectedOrder, setSelectedOrder] = useState(null);
@@ -30,8 +27,6 @@ function NewOrders() {
       ? Notification.permission
       : "denied"
   );
-
-  const msToAdd = (4 * 60 + 22) * 60 * 1000; // 15,720,000 ms
 
   // Request notification permission
   const requestNotificationPermission = async () => {
@@ -117,23 +112,21 @@ function NewOrders() {
     }
   };
 
-  const passTab = (tab) => {
-    if (tab === "Pending Orders") {
-      setActiveTab("pending");
-    } else if (tab === "Confirm Orders") {
-      setActiveTab("confirmed");
-    } else if (tab === "Cancel Orders") {
-      setActiveTab("cancelled");
-    }
+  const increateTotalCount = () => {
+    setTotalCount((prev) => prev + 1);
   };
 
-  const passPage = (page) => {
-    setActivePage(page);
+  const decreateTotalCount = () => {
+    setTotalCount((prev) => prev - 1);
   };
 
   const searchFunction = async (name) => {
     const response = await searchOrder(name);
-    const orderArray = response.data.map((item) => {
+    const filteredOrders = response.data.filter((item) => {
+      return item.deliveryStatus === "pending";
+    });
+
+    const orderArray = filteredOrders.map((item) => {
       return {
         _id: item._id,
         snapshotData: { ...item },
@@ -143,59 +136,49 @@ function NewOrders() {
   };
 
   useEffect(() => {
+    console.log("work");
+    if (role === "customer-support") {
+      navigate("/unauthorized");
+    }
+  }, []);
+
+  useEffect(() => {
     requestNotificationPermission();
     getOrders();
   }, [activeTab]);
 
   useEffect(() => {
-    // Connection established
-    socket.on("connect", () => {
-      console.log("Connected to socket.io server");
-    });
-
     socket.on("orderFinalized", (data) => {
+      console.log("orderFinalized", data.snapshotData.deliveryStatus);
       toast.success("New Order Arrived");
       playNotificationSound();
-      const formattedOrderDate = format(
-        data.snapshotData.createdAt,
-        "yyyy-MM-dd"
-      );
-      if (
-        formattedOrderDate ===
-        format(sessionStorage.getItem("choseDate"), "yyyy-MM-dd")
-      ) {
-        if (activeTab === "pending") {
-          // if (activePage === 1) {
-          setOrders((prev) => {
-            const index = prev.findIndex((order) => order._id === data._id);
-            if (index !== -1) {
-              // Replace existing order
-              const updatedOrders = [...prev];
-              updatedOrders[index] = data;
-              return updatedOrders;
-            } else {
-              // Add new order
-              return [data, ...prev];
-            }
-          });
-          // }
-        } else {
-          showNotification(data.snapshotData, "New Order Arrived");
-          toast.success("New Order Arrived");
-        }
-      } else {
-        showNotification(data.snapshotData, "New Order Arrived");
-        toast.success("New Order Arrived");
+
+      if (data.snapshotData.deliveryStatus === "pending") {
+        setOrders((prev) => {
+          const index = prev.findIndex((order) => order._id === data._id);
+          if (index !== -1) {
+            // Replace existing order
+            const updatedOrders = [...prev];
+            updatedOrders[index] = data;
+            return updatedOrders;
+          } else {
+            // Add new order
+            console.log("totalCount", totalCount);
+            increateTotalCount();
+            return [data, ...prev];
+          }
+        });
       }
     });
 
     socket.on("orderStatusUpdated", (data) => {
-      if (activeTab === "pending") {
-        const handleRemove = (value) => {
-          setOrders((prev) => prev.filter((item) => item._id !== value));
-        };
-        handleRemove(data.orderId);
-      }
+      console.log("orderStatusUpdated", data);
+
+      const handleRemove = (value) => {
+        setOrders((prev) => prev.filter((item) => item._id !== value));
+      };
+      handleRemove(data.orderId);
+      decreateTotalCount();
     });
 
     // Cleanup
@@ -231,9 +214,7 @@ function NewOrders() {
             orders={orders}
             passOrder={passOrder}
             activeOrder={selectedOrder}
-            passTab={passTab}
             loading={loading}
-            passPage={passPage}
             totalCount={totalCount}
             refreshOrders={() => {
               getOrders();

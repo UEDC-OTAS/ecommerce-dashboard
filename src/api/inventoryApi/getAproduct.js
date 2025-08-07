@@ -10,6 +10,7 @@ const getAProducts = async (id) => {
     }
   } catch (error) {
     console.log(error);
+    return error.response.data;
   }
 };
 

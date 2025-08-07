@@ -28,7 +28,17 @@ const LoginPage = () => {
       setAuthToken(res.token);
       localStorage.setItem("uedc-user", JSON.stringify(user));
       sessionStorage.setItem("uedc-token", res.token);
-      navigate("/");
+      if (user.role === "admin") {
+        navigate("/");
+      } else if (user.role === "finance") {
+        navigate("/new-order");
+      } else if (user.role === "delivery") {
+        navigate("/delivery");
+      } else if (user.role === "customer-support") {
+        navigate("/support");
+      } else if (user.role === "inventory") {
+        navigate("/");
+      }
     }
   };
 

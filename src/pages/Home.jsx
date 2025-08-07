@@ -10,6 +10,7 @@ import AddProduct from "../components/inventory/AddProduct";
 import ProductDetail from "../components/inventory/ProductDetail";
 import Accounts from "../components/accounts/Accounts";
 import NewOrders from "../components/orderManagement/NewOrders";
+import UnauthorizedPage from "../components/utli/401Page";
 function Home() {
   return (
     <>
@@ -26,6 +27,7 @@ function Home() {
             <Route path="/delivery" element={<DeliveryPage />} />
             <Route path="/support" element={<CustomerSupport />} />
             <Route path="/accs" element={<Accounts />} />
+            <Route path="/unauthorized" element={<UnauthorizedPage />} />
           </Routes>
         </div>
       </div>

@@ -24,21 +24,40 @@ function Navbar() {
   const location = useLocation();
   const navigate = useNavigate();
   const navItems = [
-    { path: "/", icon: Package, label: "Inventory", role: "inventory" },
+    {
+      path: "/",
+      icon: Package,
+      label: "Inventory",
+      role: "inventory",
+      secondaryRole: "customer-support",
+    },
 
     {
       path: "/new-order",
       icon: ClockPlus,
       label: "New Order",
-      role: "order",
+      role: "finance",
     },
-    { path: "/orders", icon: ShoppingCart, label: "Order", role: "order" },
-    { path: "/delivery", icon: Truck, label: "Delivery", role: "delivery" },
+    {
+      path: "/orders",
+      icon: ShoppingCart,
+      label: "Order",
+      role: "finance",
+      secondaryRole: "customer-support",
+    },
+    {
+      path: "/delivery",
+      icon: Truck,
+      label: "Delivery",
+      role: "delivery",
+      secondaryRole: "customer-support",
+    },
     {
       path: "/support",
       icon: MdOutlineSupportAgent,
       label: "Customer Support",
       role: "customer-support",
+      secondaryRole: "customer-support",
     },
     { path: "/accs", icon: CgProfile, label: "Account", role: "admin" },
   ];
@@ -176,7 +195,9 @@ function Navbar() {
                 const Icon = item.icon;
                 return (
                   <li key={item.path}>
-                    {role === "admin" || role === item.role ? (
+                    {role === "admin" ||
+                    role === item.secondaryRole ||
+                    role === item.role ? (
                       <Link
                         to={item.path}
                         className={`

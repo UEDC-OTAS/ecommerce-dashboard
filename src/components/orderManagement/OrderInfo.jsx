@@ -3,14 +3,23 @@ import chgOrderStatus from "../../api/orderApi/chgOrderStatus";
 import { useEffect, useState } from "react";
 import getAOrder from "../../api/orderApi/getAOrder";
 import { ImCancelCircle } from "react-icons/im";
+import Loading from "../utli/Loading";
 
 function OrderInfo({ selectedOrder, refreshOrders, handleClose }) {
+  const role = JSON.parse(localStorage.getItem("uedc-user"))?.role;
+  // console.log(role);
+  const [loading, setLoading] = useState(false);
   const [order, setOrder] = useState(null);
 
   const getOrder = async () => {
+    setLoading(true);
     const response = await getAOrder(selectedOrder);
-    console.log("response", response);
-    setOrder(response.data);
+    if (response.code === 200) {
+      setOrder(response.data);
+    } else if (response.code === 403) {
+      navigate("/unauthorized");
+    }
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -40,6 +49,11 @@ function OrderInfo({ selectedOrder, refreshOrders, handleClose }) {
       refreshOrders();
     }
   };
+
+  if (loading) {
+    return <Loading />;
+  }
+
   return (
     <div className="mt-10 mx-5 border border-gray-200 rounded-lg px-5 shadow-md pt-5">
       <div className="flex items-center justify-between">
@@ -81,27 +95,28 @@ function OrderInfo({ selectedOrder, refreshOrders, handleClose }) {
             )}
           </div>
 
-          {order.deliveryStatus !== "confirm" && (
-            <div className="py-5 bg-white flex justify-between items-center sticky bottom-0">
-              <button
-                className="flex-1 border border-gray-200 p-2 rounded-lg text-primary hover:bg-gray-100 text-[16px]"
-                onClick={() => {
-                  chgStatus(order._id, "cancelled");
-                }}
-              >
-                Order Cancel
-              </button>
-              <button
-                className="flex-1 bg-primary p-2 rounded-lg text-white hover:bg-primary/80 text-[16px]"
-                onClick={() => {
-                  // confirmOrder(order._id, order.snapshotData.contactId);
-                  chgStatus(order._id, "confirmed");
-                }}
-              >
-                Confirm Order
-              </button>
-            </div>
-          )}
+          {order.deliveryStatus !== "confirm" &&
+            role !== "customer-support" && (
+              <div className="py-5 bg-white flex justify-between items-center sticky bottom-0">
+                <button
+                  className="flex-1 border border-gray-200 p-2 rounded-lg text-primary hover:bg-gray-100 text-[16px]"
+                  onClick={() => {
+                    chgStatus(order._id, "cancelled");
+                  }}
+                >
+                  Order Cancel
+                </button>
+                <button
+                  className="flex-1 bg-primary p-2 rounded-lg text-white hover:bg-primary/80 text-[16px]"
+                  onClick={() => {
+                    confirmOrder(order._id, order.snapshotData.contactId);
+                    chgStatus(order._id, "confirmed");
+                  }}
+                >
+                  Confirm Order
+                </button>
+              </div>
+            )}
         </div>
       )}
     </div>

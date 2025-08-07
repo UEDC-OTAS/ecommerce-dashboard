@@ -30,81 +30,6 @@ function GetAllOrder() {
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [activeTab, setActiveTab] = useState("pending");
   const [activePage, setActivePage] = useState(1);
-  const [notificationPermission, setNotificationPermission] = useState(
-    typeof window !== "undefined" && "Notification" in window
-      ? Notification.permission
-      : "denied"
-  );
-
-  const msToAdd = (4 * 60 + 22) * 60 * 1000; // 15,720,000 ms
-
-  // Request notification permission
-  const requestNotificationPermission = async () => {
-    if (typeof window !== "undefined" && "Notification" in window) {
-      const permission = await Notification.requestPermission();
-      setNotificationPermission(permission);
-      return permission;
-    }
-    return "denied";
-  };
-
-  // Play notification sound
-  const playNotificationSound = () => {
-    try {
-      // Create audio context for notification sound
-      const audioContext = new (window.AudioContext ||
-        window.webkitAudioContext)();
-
-      // Create a simple beep sound
-      const oscillator = audioContext.createOscillator();
-      const gainNode = audioContext.createGain();
-
-      oscillator.connect(gainNode);
-      gainNode.connect(audioContext.destination);
-
-      oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
-      oscillator.frequency.setValueAtTime(600, audioContext.currentTime + 0.1);
-      oscillator.frequency.setValueAtTime(800, audioContext.currentTime + 0.2);
-
-      gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-      gainNode.gain.exponentialRampToValueAtTime(
-        0.01,
-        audioContext.currentTime + 0.3
-      );
-
-      oscillator.start(audioContext.currentTime);
-      oscillator.stop(audioContext.currentTime + 0.3);
-    } catch (error) {
-      // console.log("Could not play notification sound:", error);
-    }
-  };
-
-  // console.log("orderDay", orderDateWithMs);
-
-  // Show browser notification
-  const showNotification = (ticket, name) => {
-    // console.log(ticket);
-    if (typeof window !== "undefined" && notificationPermission === "granted") {
-      const notification = new Notification(
-        name ? name : "New Support Ticket",
-        {
-          body: `From: ${ticket.customerName}`,
-          tag: "support-ticket",
-        }
-      );
-
-      notification.onclick = () => {
-        window.focus();
-        notification.close();
-        setFilter("unseen");
-      };
-
-      // Auto close after 10 seconds
-      setTimeout(() => {
-        notification.close();
-      }, 5000);
-    }
-  };
 
   const getOrders = async () => {
     setLoading(true);
@@ -118,6 +43,8 @@ function GetAllOrder() {
         return formattedOrderDate === format(date, "yyyy-MM-dd");
       });
       setOrders(filteredOrders);
+    } else if (response.code === 403) {
+      navigate("/unauthorized");
     }
   };
 
@@ -145,64 +72,26 @@ function GetAllOrder() {
 
   const searchFunction = async (name) => {
     const response = await searchOrder(name);
-    const orderArray = response.data.map((item) => {
+    const filterOrder = response.data.filter((item) => {
+      return item.deliveryStatus === activeTab;
+    });
+    const orderArray = filterOrder.map((item) => {
       return {
         _id: item._id,
         snapshotData: { ...item },
       };
     });
-    console.log("orderArray", orderArray);
     setOrders(orderArray);
   };
 
   useEffect(() => {
-    requestNotificationPermission();
     getOrders();
   }, [activeTab, date]);
-
-  console.log("daa", new Date("2025-08-06T15:15:19.167Z"));
 
   useEffect(() => {
     // Connection established
     socket.on("connect", () => {
       console.log("Connected to socket.io server");
-    });
-
-    socket.on("orderFinalized", (data) => {
-      toast.success("New Order Arrived");
-      console.log("data", data);
-      playNotificationSound();
-      const formattedOrderDate = format(
-        data.snapshotData.createdAt,
-        "yyyy-MM-dd"
-      );
-      if (
-        formattedOrderDate ===
-        format(sessionStorage.getItem("choseDate"), "yyyy-MM-dd")
-      ) {
-        if (activeTab === "pending") {
-          // if (activePage === 1) {
-          setOrders((prev) => {
-            const index = prev.findIndex((order) => order._id === data._id);
-            if (index !== -1) {
-              // Replace existing order
-              const updatedOrders = [...prev];
-              updatedOrders[index] = data;
-              return updatedOrders;
-            } else {
-              // Add new order
-              return [data, ...prev];
-            }
-          });
-          // }
-        } else {
-          showNotification(data.snapshotData, "New Order Arrived");
-          toast.success("New Order Arrived");
-        }
-      } else {
-        showNotification(data.snapshotData, "New Order Arrived");
-        toast.success("New Order Arrived");
-      }
     });
 
     socket.on("orderStatusUpdated", (data) => {
@@ -227,7 +116,6 @@ function GetAllOrder() {
 
     // Cleanup
     return () => {
-      socket.off("orderFinalized");
       socket.off("orderStatusUpdated");
       socket.off("orderSoftDeleted");
     };

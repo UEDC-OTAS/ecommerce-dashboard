@@ -9,12 +9,31 @@ function DeliveryPage() {
   const [orders, setOrders] = useState([]);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [receipt, setReceipt] = useState(null);
-  const [activeTab, setActiveTab] = useState("pending");
+  const [activeTab, setActiveTab] = useState("confirmed");
   const [activePage, setActivePage] = useState(1);
+  const [loading, setLoading] = useState(false);
 
   const getOrders = async () => {
+    setLoading(true);
     const response = await getAllOrders(activeTab, activePage);
-    setOrders(response);
+    setOrders(response.data);
+    setLoading(false);
+  };
+
+  const getReceipt = async (id) => {
+    // console.log("work");
+    setLoading(true);
+    const response = await axios.get(`api/v1/delivery-receipt`);
+    // console.log("response", response);
+    if (response.data.code === 200) {
+      const filteredReceipt = response.data.data.filter(
+        (receipt) => receipt.orderId === id
+      );
+      setReceipt(filteredReceipt);
+      setTimeout(() => {
+        setLoading(false);
+      }, 500);
+    }
   };
 
   const passOrder = (orderId) => {
@@ -26,20 +45,11 @@ function DeliveryPage() {
     }
   };
 
-  const getReceipt = async (id) => {
-    const response = await axios.get(`api/v1/delivery-receipt`);
-    // if (response.code === 200) {
-    const filteredReceipt = response.data.data.filter(
-      (receipt) => receipt.orderId === id
-    );
-    setReceipt(filteredReceipt);
-    // console.log("receipt", filteredReceipt);
-    // }
-  };
+  // console.log("receipt", receipt);
 
   const passTab = (tab) => {
     if (tab === "Pending") {
-      setActiveTab("pending");
+      setActiveTab("confirmed");
     } else if (tab === "On-delivery") {
       setActiveTab("on-delivery");
     } else if (tab === "Delivered") {
@@ -47,15 +57,9 @@ function DeliveryPage() {
     }
   };
 
-  // console.log("activeTab", activeTab);
-
   const passPage = (page) => {
     setActivePage(page);
   };
-
-  useEffect(() => {
-    getReceipt();
-  }, []);
 
   useEffect(() => {
     getOrders();
@@ -84,6 +88,7 @@ function DeliveryPage() {
               setSelectedOrder(null);
               getOrders();
             }}
+            loading={loading}
             passTab={passTab}
             passPage={passPage}
           />
@@ -101,6 +106,7 @@ function DeliveryPage() {
                 setSelectedOrder(null);
                 getOrders();
               }}
+              loading={loading}
               receipt={receipt}
               onClose={() => setSelectedOrder(null)}
             />
