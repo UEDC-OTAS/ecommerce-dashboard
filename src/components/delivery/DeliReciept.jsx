@@ -233,7 +233,7 @@ function DeliReciept({
         <div className="flex items-center bg-white justify-end gap-5 py-5 sticky bottom-0">
           <button
             className="flex-1 bg-primary text-white p-2 rounded-md"
-            onClick={() => handleConfirm()}
+            onClick={() => onClose()}
           >
             Cancel
           </button>

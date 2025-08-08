@@ -273,7 +273,7 @@ export default function OrderDetails() {
                   {order.delivery.deliveryType === "gate-drop-off" && (
                     <div>
                       <label htmlFor="Delivery Service" className="label">
-                        Car Gate Name
+                        Car Gate Info
                       </label>
                       <textarea
                         id="Delivery Service"

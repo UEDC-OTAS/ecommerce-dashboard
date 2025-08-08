@@ -1,17 +1,13 @@
 import { useState } from "react";
 import { Trash2 } from "lucide-react"; // Importing the trash icon from lucide-react
 
-export default function DeleteConfirmationModal({
-  staffName = "Su Hnin Wai",
-  isOpen,
-  onClose,
-}) {
+export default function DeleteConfirmationModal({ isOpen, onClose, user }) {
   const [inputValue, setInputValue] = useState("");
-  const isConfirmButtonDisabled = inputValue !== staffName;
+  const isConfirmButtonDisabled = inputValue !== user?.username;
 
   const handleDelete = () => {
-    if (inputValue === staffName) {
-      alert(`Deleting account for ${staffName}!`);
+    if (inputValue === user?.username) {
+      alert(`Deleting account for ${user?.username}!`);
       // In a real application, you would typically trigger an API call here
     } else {
       alert("Please type the correct staff name to confirm.");
@@ -43,7 +39,7 @@ export default function DeleteConfirmationModal({
           </p>
           <p className="text-gray-700 mb-6">
             To confirm this action, please type the staff name{" "}
-            <span className="font-bold text-red-600">{staffName}</span>
+            <span className="font-bold text-red-600">{user?.username}</span>
           </p>
           <input
             type="text"
