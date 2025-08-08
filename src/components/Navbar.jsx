@@ -32,6 +32,7 @@ function Navbar() {
   const [isDesktopExpanded, setIsDesktopExpanded] = useState(false);
   const { newOrderCount, setNewOrderCount, messageCount, setMessageCount } =
     useContext(NumberContext);
+  console.log("messageCount", messageCount, "newOrderCount", newOrderCount);
   const location = useLocation();
   const navigate = useNavigate();
   const navItems = [
@@ -112,11 +113,13 @@ function Navbar() {
 
     if (role === "customer-support" || role === "admin") {
       socket.on("newCustomerSupportTicket", (data) => {
-        // console.log("data", data);
+        console.log("messageCount", messageCount);
         setMessageCount((prev) => prev + 1);
       });
     }
   }, []);
+
+  console.log("messageCount", messageCount);
 
   return (
     <>
@@ -245,10 +248,12 @@ function Navbar() {
                   <li key={item.path} className="relative">
                     {role === "admin" ||
                     role === item.secondaryRole ||
-                    role === item.role ? (
-                      <Link
-                        to={item.path}
-                        className={`
+                    role === item.role
+                      ? (console.log("item", item),
+                        (
+                          <Link
+                            to={item.path}
+                            className={`
                         flex items-center px-3 py-3 rounded-lg transition-all duration-300 relative group
                         ${
                           isActive(item.path)
@@ -257,38 +262,45 @@ function Navbar() {
                         }
  
                       `}
-                      >
-                        <Icon size={20} className="flex-shrink-0" />
-                        {isDesktopExpanded && (
-                          <span className="ml-3 font-medium whitespace-nowrap">
-                            {item.label}
-                          </span>
-                        )}
+                          >
+                            <Icon size={20} className="flex-shrink-0" />
+                            {isDesktopExpanded && (
+                              <span className="ml-3 font-medium whitespace-nowrap">
+                                {item.label}
+                              </span>
+                            )}
 
-                        {/* Tooltip for collapsed state */}
-                        {!isDesktopExpanded && (
-                          <div className="absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
-                            {item.label}
-                          </div>
-                        )}
-                      </Link>
-                    ) : null}
-                    {item.newOrderCount > 0 && item.newOrderCount <= 9 && (
-                      <span
-                        className={`absolute bottom-7 right-0 left-8 inline-flex items-center justify-center  px-[12px] py-[3px] text-xs font-medium  rounded-full ${
-                          location.pathname === "/new-order"
-                            ? "bg-white text-primary"
-                            : "bg-primary text-white"
-                        }`}
-                      >
-                        {item.newOrderCount}
-                      </span>
-                    )}
-                    {item.newOrderCount > 9 && (
-                      <span className="absolute bottom-7 right-0 left-8 inline-flex items-center justify-center  px-[12px] py-[3px] text-xs font-medium bg-white text-primary rounded-full">
-                        9+
-                      </span>
-                    )}
+                            {/* Tooltip for collapsed state */}
+                            {!isDesktopExpanded && (
+                              <div className="absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
+                                {item.label}
+                              </div>
+                            )}
+                          </Link>
+                        ))
+                      : null}
+                    <div
+                      className={`${
+                        item.path === "/new-order" ? "block" : "hidden"
+                      }`}
+                    >
+                      {item.newOrderCount > 0 && item.newOrderCount <= 9 && (
+                        <span
+                          className={`absolute bottom-7 right-0 left-8 inline-flex items-center justify-center  px-[12px] py-[3px] text-xs font-medium  rounded-full ${
+                            location.pathname === "/new-order"
+                              ? "bg-white text-primary"
+                              : "bg-primary text-white"
+                          }`}
+                        >
+                          {item.newOrderCount}
+                        </span>
+                      )}
+                      {item.newOrderCount > 9 && (
+                        <span className="absolute bottom-7 right-0 left-8 inline-flex items-center justify-center  px-[12px] py-[3px] text-xs font-medium bg-white text-primary rounded-full">
+                          9+
+                        </span>
+                      )}
+                    </div>
 
                     {item.messageCount > 0 && item.messageCount <= 9 && (
                       <span
