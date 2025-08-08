@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { CgProfile } from "react-icons/cg";
 import { MdOutlineSupportAgent } from "react-icons/md";
@@ -14,13 +14,26 @@ import {
   LogOut,
 } from "lucide-react";
 import logo from "../assets/uedc.png";
+import { useContext } from "react";
+import { NumberContext } from "../context/NumberContext";
+import getAllOrders from "../api/orderApi/getAllOrders";
+import io from "socket.io-client";
+import { toast } from "sonner";
+
+const socket = io.connect(import.meta.env.VITE_APP_API, {
+  transports: ["websocket"],
+  secure: true,
+});
 
 function Navbar() {
   const username = JSON.parse(localStorage.getItem("uedc-user"))?.name;
   const role = JSON.parse(localStorage.getItem("uedc-user"))?.role;
-  // console.log(role);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isDesktopExpanded, setIsDesktopExpanded] = useState(false);
+  const { newOrderCount, setNewOrderCount, messageCount, setMessageCount } =
+    useContext(NumberContext);
+
+  console.log(newOrderCount, messageCount);
   const location = useLocation();
   const navigate = useNavigate();
   const navItems = [
@@ -37,6 +50,7 @@ function Navbar() {
       icon: ClockPlus,
       label: "New Order",
       role: "finance",
+      newOrderCount,
     },
     {
       path: "/orders",
@@ -58,6 +72,7 @@ function Navbar() {
       label: "Customer Support",
       role: "customer-support",
       secondaryRole: "customer-support",
+      messageCount,
     },
     { path: "/accs", icon: CgProfile, label: "Account", role: "admin" },
   ];
@@ -69,6 +84,26 @@ function Navbar() {
     localStorage.removeItem("uedc-token");
     navigate("/login");
   };
+
+  const getNewOrderCount = async () => {
+    const response = await getAllOrders("pending");
+    if (response.code === 200) {
+      // setOrders(response.data);
+      // console.log(response.totalCount);
+      setNewOrderCount(response.totalCount);
+    }
+  };
+
+  useEffect(() => {
+    getNewOrderCount();
+    if (role !== "inventory" && role !== "delivery") {
+      socket.on("orderFinalized", (data) => {
+        if (data.snapshotData.deliveryStatus === "pending") {
+          setNewOrderCount((prev) => prev + 1);
+        }
+      });
+    }
+  }, []);
 
   return (
     <>
@@ -167,8 +202,8 @@ function Navbar() {
       <div className="hidden lg:block">
         <div
           className={`
-          fixed left-0 px-2 top-0 h-full bg-white border-r border-gray-200 z-40 transition-all duration-300 ease-in-out shadow-lg
-          ${isDesktopExpanded ? "w-64" : "w-16"}
+          fixed left-0 px-4 top-0 h-full bg-white border-r border-gray-200 z-40 transition-all duration-300 ease-in-out shadow-lg
+          ${isDesktopExpanded ? "w-64" : "w-18"}
         `}
         >
           {/* Menu Toggle Button */}
@@ -194,7 +229,7 @@ function Navbar() {
               {navItems.map((item) => {
                 const Icon = item.icon;
                 return (
-                  <li key={item.path}>
+                  <li key={item.path} className="relative">
                     {role === "admin" ||
                     role === item.secondaryRole ||
                     role === item.role ? (
@@ -225,6 +260,39 @@ function Navbar() {
                         )}
                       </Link>
                     ) : null}
+                    {item.newOrderCount > 0 && item.newOrderCount <= 9 && (
+                      <span
+                        className={`absolute bottom-7 right-0 left-8 inline-flex items-center justify-center  px-[12px] py-[3px] text-xs font-medium  rounded-full ${
+                          location.pathname === "/new-order"
+                            ? "bg-white text-primary"
+                            : "bg-primary text-white"
+                        }`}
+                      >
+                        {item.newOrderCount}
+                      </span>
+                    )}
+                    {item.newOrderCount > 9 && (
+                      <span className="absolute bottom-7 right-0 left-8 inline-flex items-center justify-center  px-[12px] py-[3px] text-xs font-medium bg-white text-primary rounded-full">
+                        9+
+                      </span>
+                    )}
+
+                    {item.messageCount > 0 && item.messageCount <= 9 && (
+                      <span
+                        className={`absolute bottom-7 right-0 left-8 inline-flex items-center justify-center  px-[12px] py-[3px] text-xs font-medium  rounded-full ${
+                          location.pathname === "/support"
+                            ? "bg-white text-primary"
+                            : "bg-primary text-white"
+                        }`}
+                      >
+                        {item.messageCount}
+                      </span>
+                    )}
+                    {item.messageCount > 9 && (
+                      <span className="absolute bottom-7 right-0 left-8 inline-flex items-center justify-center  px-[12px] py-[3px] text-xs font-medium bg-white text-primary rounded-full">
+                        9+
+                      </span>
+                    )}
                   </li>
                 );
               })}

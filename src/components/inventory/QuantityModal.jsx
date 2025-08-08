@@ -141,6 +141,7 @@ const QuantityModal = ({ isOpen, onClose, onSubmit, product }) => {
               type="text"
               id="stockName"
               name="stockName"
+              readOnly
               value={product?.name}
               onChange={handleInputChange}
               placeholder="Enter Stock Name"
@@ -165,6 +166,7 @@ const QuantityModal = ({ isOpen, onClose, onSubmit, product }) => {
               type="text"
               id="stockCode"
               name="stockCode"
+              readOnly
               value={product?.saleCode}
               onChange={handleInputChange}
               placeholder="Enter Stock Code"

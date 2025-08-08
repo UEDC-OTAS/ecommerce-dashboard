@@ -4,6 +4,7 @@ import SearchBar from "../utli/SearchBar";
 import DeliveryTable from "./DeliveryTable";
 import DeliReciept from "./DeliReciept";
 import axios from "./../../axios";
+import searchOrder from "../../api/orderApi/SearchOrder";
 
 function DeliveryPage() {
   const [orders, setOrders] = useState([]);
@@ -18,6 +19,20 @@ function DeliveryPage() {
     const response = await getAllOrders(activeTab, activePage);
     setOrders(response.data);
     setLoading(false);
+  };
+
+  const searchFunction = async (name) => {
+    const response = await searchOrder(name);
+    const filterOrder = response.data.filter((item) => {
+      return item.deliveryStatus === activeTab;
+    });
+    const orderArray = filterOrder.map((item) => {
+      return {
+        _id: item._id,
+        snapshotData: { ...item },
+      };
+    });
+    setOrders(orderArray);
   };
 
   const getReceipt = async (id) => {
@@ -70,7 +85,11 @@ function DeliveryPage() {
         <h1 className="header">Delivery</h1>
         <div className="flex items-center gap-10">
           <div className="w-[400px]">
-            <SearchBar placeholder="Search Order with name or Product Code" />
+            <SearchBar
+              onSearch={(name) => (!name ? getOrders() : null)}
+              placeholder="Search Product with name or Product Code"
+              onClick={searchFunction}
+            />
           </div>
         </div>
       </div>

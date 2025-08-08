@@ -7,6 +7,8 @@ import searchOrder from "../../api/orderApi/SearchOrder";
 import { toast } from "sonner";
 import NewOrderTable from "./NewOrderTable";
 import { useNavigate } from "react-router-dom";
+import { useContext } from "react";
+import { NumberContext } from "../../context/NumberContext";
 
 const socket = io.connect(import.meta.env.VITE_APP_API, {
   transports: ["websocket"],
@@ -20,8 +22,11 @@ function NewOrders() {
   const [orders, setOrders] = useState([]);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [activeTab, setActiveTab] = useState("pending");
-  const [activePage, setActivePage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
+
+  const { setNewOrderCount, newOrderCount } = useContext(NumberContext);
+  console.log("ordernew", newOrderCount);
+
   const [notificationPermission, setNotificationPermission] = useState(
     typeof window !== "undefined" && "Notification" in window
       ? Notification.permission
@@ -69,38 +74,15 @@ function NewOrders() {
     }
   };
 
-  // Show browser notification
-  const showNotification = (ticket, name) => {
-    if (typeof window !== "undefined" && notificationPermission === "granted") {
-      const notification = new Notification(
-        name ? name : "New Support Ticket",
-        {
-          body: `From: ${ticket.customerName}`,
-          tag: "support-ticket",
-        }
-      );
-
-      notification.onclick = () => {
-        window.focus();
-        notification.close();
-        setFilter("unseen");
-      };
-
-      // Auto close after 10 seconds
-      setTimeout(() => {
-        notification.close();
-      }, 5000);
-    }
-  };
-
   const getOrders = async () => {
     setLoading(true);
-    const response = await getAllOrders(activeTab, activePage);
+    const response = await getAllOrders(activeTab);
 
     if (response.code === 200) {
       setLoading(false);
       setTotalCount(response.totalCount);
       setOrders(response.data);
+      setNewOrderCount(response.totalCount);
     }
   };
 
@@ -114,10 +96,12 @@ function NewOrders() {
 
   const increateTotalCount = () => {
     setTotalCount((prev) => prev + 1);
+    // setNewOrderCount((prev) => prev + 1);
   };
 
   const decreateTotalCount = () => {
     setTotalCount((prev) => prev - 1);
+    setNewOrderCount((prev) => prev - 1);
   };
 
   const searchFunction = async (name) => {
@@ -145,6 +129,7 @@ function NewOrders() {
   useEffect(() => {
     requestNotificationPermission();
     getOrders();
+    // setNewOrderCount(0);
   }, [activeTab]);
 
   useEffect(() => {
@@ -162,8 +147,6 @@ function NewOrders() {
             updatedOrders[index] = data;
             return updatedOrders;
           } else {
-            // Add new order
-            console.log("totalCount", totalCount);
             increateTotalCount();
             return [data, ...prev];
           }

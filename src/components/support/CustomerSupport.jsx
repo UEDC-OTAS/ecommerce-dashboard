@@ -4,6 +4,8 @@ import updateTicket from "../../api/support/UpdateTicket";
 import { MdOutlineMarkChatRead } from "react-icons/md";
 import { RiCustomerService2Fill } from "react-icons/ri";
 import io from "socket.io-client";
+import { useContext } from "react";
+import { NumberContext } from "../../context/NumberContext";
 
 const socket = io.connect(import.meta.env.VITE_APP_API, {
   transports: ["websocket"],
@@ -14,13 +16,15 @@ const CustomerSupport = () => {
   const [tickets, setTickets] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
-  const [selectedTicket, setSelectedTicket] = useState(null);
   const [filter, setFilter] = useState("unseen");
   const [notificationPermission, setNotificationPermission] = useState(
     typeof window !== "undefined" && "Notification" in window
       ? Notification.permission
       : "denied"
   );
+
+  const { messageCount, setMessageCount } = useContext(NumberContext);
+  console.log("messageCount", messageCount);
 
   // Request notification permission
   const requestNotificationPermission = async () => {
@@ -90,8 +94,13 @@ const CustomerSupport = () => {
 
   const getTickets = async () => {
     const response = await getAllTickets();
-    console.log("response", response.data);
-    setTickets(response.data.reverse());
+    console.log("response", response);
+    if (response.code === 200) {
+      setTickets(response.data.reverse());
+      setMessageCount(
+        response.data.filter((t) => !t.hasSeen && !t.hasSolved).length
+      );
+    }
   };
 
   const chgStatusTicket = async (id, data) => {
@@ -108,6 +117,7 @@ const CustomerSupport = () => {
     socket.on("newCustomerSupportTicket", (data) => {
       // console.log("newCustomerSupportTicket", data);
       setTickets((prevTickets) => [data, ...prevTickets]);
+      setMessageCount((prevCount) => prevCount + 1);
       // Play notification sound
       if (typeof window !== "undefined") {
         // playNotificationSound();
@@ -121,11 +131,10 @@ const CustomerSupport = () => {
 
   useEffect(() => {
     socket.on("customerSupportTicketUpdated", (data) => {
+      setMessageCount((prevCount) => prevCount - 1);
       // console.log("customerSupportTicketUpdated", data);
       setTickets((prevTickets) =>
-        prevTickets.map((ticket) =>
-          ticket.ticketId === data.ticketId ? data : ticket
-        )
+        prevTickets.map((ticket) => (ticket._id === data._id ? data : ticket))
       );
       // Play notification sound
       if (typeof window !== "undefined") {
@@ -300,8 +309,6 @@ const CustomerSupport = () => {
                   <tr
                     key={ticket._id}
                     className={`${
-                      selectedTicket === ticket._id ? "bg-blue-100" : ""
-                    } ${
                       !ticket.hasSeen ? "bg-blue-50" : ""
                     } hover:bg-gray-50 transition-colors`}
                   >
