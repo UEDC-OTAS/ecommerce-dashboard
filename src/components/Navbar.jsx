@@ -81,7 +81,7 @@ function Navbar() {
   const handleLogout = () => {
     localStorage.removeItem("uedc-user");
     localStorage.removeItem("uedc-token");
-    navigate("/login");
+    window.location.href = "/login";
   };
 
   const getNewOrderCount = async () => {
@@ -97,6 +97,8 @@ function Navbar() {
     const response = await getAllTickets();
     const haveUnseen = response.data.filter((t) => !t.hasSeen && !t.hasSolved);
     setMessageCount(haveUnseen.length);
+    console.log("haveUnseen", haveUnseen);
+    console.log("messageCount in Function", messageCount);
   };
 
   useEffect(() => {
@@ -105,6 +107,7 @@ function Navbar() {
 
     if (role !== "inventory" && role !== "delivery") {
       socket.on("orderFinalized", (data) => {
+        console.log("data", data);
         if (data.snapshotData.deliveryStatus === "pending") {
           setNewOrderCount((prev) => prev + 1);
         }
@@ -248,12 +251,10 @@ function Navbar() {
                   <li key={item.path} className="relative">
                     {role === "admin" ||
                     role === item.secondaryRole ||
-                    role === item.role
-                      ? (console.log("item", item),
-                        (
-                          <Link
-                            to={item.path}
-                            className={`
+                    role === item.role ? (
+                      <Link
+                        to={item.path}
+                        className={`
                         flex items-center px-3 py-3 rounded-lg transition-all duration-300 relative group
                         ${
                           isActive(item.path)
@@ -262,23 +263,22 @@ function Navbar() {
                         }
  
                       `}
-                          >
-                            <Icon size={20} className="flex-shrink-0" />
-                            {isDesktopExpanded && (
-                              <span className="ml-3 font-medium whitespace-nowrap">
-                                {item.label}
-                              </span>
-                            )}
+                      >
+                        <Icon size={20} className="flex-shrink-0" />
+                        {isDesktopExpanded && (
+                          <span className="ml-3 font-medium whitespace-nowrap">
+                            {item.label}
+                          </span>
+                        )}
 
-                            {/* Tooltip for collapsed state */}
-                            {!isDesktopExpanded && (
-                              <div className="absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
-                                {item.label}
-                              </div>
-                            )}
-                          </Link>
-                        ))
-                      : null}
+                        {/* Tooltip for collapsed state */}
+                        {!isDesktopExpanded && (
+                          <div className="absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
+                            {item.label}
+                          </div>
+                        )}
+                      </Link>
+                    ) : null}
                     <div
                       className={`${
                         item.path === "/new-order" ? "block" : "hidden"
