@@ -7,6 +7,7 @@ const UpdateModel = ({ isOpen, onClose, isPasswordOpen, onSubmit, user }) => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [department, setDepartment] = useState("");
+  // console.log(department);
 
   const handleClose = () => {
     onClose();
@@ -115,7 +116,7 @@ const UpdateModel = ({ isOpen, onClose, isPasswordOpen, onSubmit, user }) => {
               <select
                 id="role"
                 name="role"
-                value={user?.role || ""}
+                value={department || user?.role}
                 onChange={(e) => setDepartment(e.target.value)}
                 className={`
               w-full px-3 py-2 border rounded-lg text-sm

@@ -279,44 +279,50 @@ function Navbar() {
                         )}
                       </Link>
                     ) : null}
-                    <div
-                      className={`${
-                        item.path === "/new-order" ? "block" : "hidden"
-                      }`}
-                    >
-                      {item.newOrderCount > 0 && item.newOrderCount <= 9 && (
-                        <span
-                          className={`absolute bottom-7 right-0 left-8 inline-flex items-center justify-center  px-[12px] py-[3px] text-xs font-medium  rounded-full ${
-                            location.pathname === "/new-order"
-                              ? "bg-white text-primary"
-                              : "bg-primary text-white"
-                          }`}
-                        >
-                          {item.newOrderCount}
-                        </span>
-                      )}
-                      {item.newOrderCount > 9 && (
-                        <span className="absolute bottom-7 right-0 left-8 inline-flex items-center justify-center  px-[12px] py-[3px] text-xs font-medium bg-white text-primary rounded-full">
-                          9+
-                        </span>
-                      )}
-                    </div>
-
-                    {item.messageCount > 0 && item.messageCount <= 9 && (
-                      <span
-                        className={`absolute bottom-7 right-0 left-8 inline-flex items-center justify-center  px-[12px] py-[3px] text-xs font-medium  rounded-full ${
-                          location.pathname === "/support"
-                            ? "bg-white text-primary"
-                            : "bg-primary text-white"
+                    {!isDesktopExpanded && (
+                      <div
+                        className={`${
+                          item.path === "/new-order" ? "" : "hidden"
                         }`}
                       >
-                        {item.messageCount}
-                      </span>
+                        {item.newOrderCount > 0 && item.newOrderCount <= 9 && (
+                          <span
+                            className={`absolute bottom-7 right-0 left-8 inline-flex items-center justify-center  px-[12px] py-[3px] text-xs font-medium  rounded-full ${
+                              location.pathname === "/new-order"
+                                ? "bg-white text-primary"
+                                : "bg-primary text-white"
+                            }`}
+                          >
+                            {item.newOrderCount}
+                          </span>
+                        )}
+                        {item.newOrderCount > 9 && (
+                          <span className="absolute bottom-7 right-0 left-8 inline-flex items-center justify-center  px-[12px] py-[3px] text-xs font-medium bg-white text-primary rounded-full">
+                            9+
+                          </span>
+                        )}
+                      </div>
                     )}
-                    {item.messageCount > 9 && (
-                      <span className="absolute bottom-7 right-0 left-8 inline-flex items-center justify-center  px-[12px] py-[3px] text-xs font-medium bg-white text-primary rounded-full">
-                        9+
-                      </span>
+
+                    {!isDesktopExpanded && (
+                      <div>
+                        {item.messageCount > 0 && item.messageCount <= 9 && (
+                          <span
+                            className={`absolute bottom-7 right-0 left-8 inline-flex items-center justify-center  px-[12px] py-[3px] text-xs font-medium  rounded-full ${
+                              location.pathname === "/support"
+                                ? "bg-white text-primary"
+                                : "bg-primary text-white"
+                            }`}
+                          >
+                            {item.messageCount}
+                          </span>
+                        )}
+                        {item.messageCount > 9 && (
+                          <span className="absolute bottom-7 right-0 left-8 inline-flex items-center justify-center  px-[12px] py-[3px] text-xs font-medium bg-white text-primary rounded-full">
+                            9+
+                          </span>
+                        )}
+                      </div>
                     )}
                   </li>
                 );
