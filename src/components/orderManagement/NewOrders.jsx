@@ -25,7 +25,7 @@ function NewOrders() {
   const [totalCount, setTotalCount] = useState(0);
 
   const { setNewOrderCount, newOrderCount } = useContext(NumberContext);
-  console.log("ordernew", newOrderCount);
+  // console.log("ordernew", newOrderCount);
 
   const [notificationPermission, setNotificationPermission] = useState(
     typeof window !== "undefined" && "Notification" in window
@@ -83,6 +83,8 @@ function NewOrders() {
       setTotalCount(response.totalCount);
       setOrders(response.data);
       setNewOrderCount(response.totalCount);
+    } else if (response.code === 403) {
+      navigate("/unauthorized");
     }
   };
 
@@ -120,7 +122,7 @@ function NewOrders() {
   };
 
   useEffect(() => {
-    console.log("work");
+    // console.log("work");
     if (role === "customer-support") {
       navigate("/unauthorized");
     }
@@ -134,7 +136,7 @@ function NewOrders() {
 
   useEffect(() => {
     socket.on("orderFinalized", (data) => {
-      console.log("orderFinalized", data.snapshotData.deliveryStatus);
+      // console.log("orderFinalized", data.snapshotData.deliveryStatus);
       toast.success("New Order Arrived");
       playNotificationSound();
 
@@ -155,7 +157,7 @@ function NewOrders() {
     });
 
     socket.on("orderStatusUpdated", (data) => {
-      console.log("orderStatusUpdated", data);
+      // console.log("orderStatusUpdated", data);
 
       const handleRemove = (value) => {
         setOrders((prev) => prev.filter((item) => item._id !== value));

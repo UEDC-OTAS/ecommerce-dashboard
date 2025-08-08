@@ -24,7 +24,7 @@ const CustomerSupport = () => {
   );
 
   const { messageCount, setMessageCount } = useContext(NumberContext);
-  console.log("messageCount", messageCount);
+  // console.log("messageCount", messageCount);
 
   // Request notification permission
   const requestNotificationPermission = async () => {
@@ -94,7 +94,7 @@ const CustomerSupport = () => {
 
   const getTickets = async () => {
     const response = await getAllTickets();
-    console.log("response", response);
+    // console.log("response", response);
     if (response.code === 200) {
       setTickets(response.data.reverse());
       setMessageCount(
@@ -117,7 +117,6 @@ const CustomerSupport = () => {
     socket.on("newCustomerSupportTicket", (data) => {
       // console.log("newCustomerSupportTicket", data);
       setTickets((prevTickets) => [data, ...prevTickets]);
-      setMessageCount((prevCount) => prevCount + 1);
       // Play notification sound
       if (typeof window !== "undefined") {
         // playNotificationSound();

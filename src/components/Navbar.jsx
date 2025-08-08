@@ -18,7 +18,7 @@ import { useContext } from "react";
 import { NumberContext } from "../context/NumberContext";
 import getAllOrders from "../api/orderApi/getAllOrders";
 import io from "socket.io-client";
-import { toast } from "sonner";
+import getAllTickets from "../api/support/GetAllTicket";
 
 const socket = io.connect(import.meta.env.VITE_APP_API, {
   transports: ["websocket"],
@@ -32,8 +32,6 @@ function Navbar() {
   const [isDesktopExpanded, setIsDesktopExpanded] = useState(false);
   const { newOrderCount, setNewOrderCount, messageCount, setMessageCount } =
     useContext(NumberContext);
-
-  console.log(newOrderCount, messageCount);
   const location = useLocation();
   const navigate = useNavigate();
   const navItems = [
@@ -94,13 +92,28 @@ function Navbar() {
     }
   };
 
+  const getMessageCount = async () => {
+    const response = await getAllTickets();
+    const haveUnseen = response.data.filter((t) => !t.hasSeen && !t.hasSolved);
+    setMessageCount(haveUnseen.length);
+  };
+
   useEffect(() => {
     getNewOrderCount();
+    getMessageCount();
+
     if (role !== "inventory" && role !== "delivery") {
       socket.on("orderFinalized", (data) => {
         if (data.snapshotData.deliveryStatus === "pending") {
           setNewOrderCount((prev) => prev + 1);
         }
+      });
+    }
+
+    if (role === "customer-support" || role === "admin") {
+      socket.on("newCustomerSupportTicket", (data) => {
+        // console.log("data", data);
+        setMessageCount((prev) => prev + 1);
       });
     }
   }, []);
