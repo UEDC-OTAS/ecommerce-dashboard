@@ -4,7 +4,6 @@ import updateProduct from "../../api/inventoryApi/UpdateProduct";
 import deleteStock from "../../api/inventoryApi/DeleteStock";
 import { useParams, useNavigate } from "react-router-dom";
 import getAProducts from "../../api/inventoryApi/getAproduct";
-import { IoIosCloseCircleOutline } from "react-icons/io";
 import { MdArrowBack } from "react-icons/md";
 
 const ProductDetail = () => {
@@ -17,6 +16,7 @@ const ProductDetail = () => {
   const [dragActive, setDragActive] = useState(false);
   const [deleteModal, setDeleteModal] = useState(false);
   const [inputValue, setInputValue] = useState("");
+  const [deleteCode, setDeleteCode] = useState("");
   const [formData, setFormData] = useState({
     stockName: "",
     stockCode: "",
@@ -279,8 +279,8 @@ const ProductDetail = () => {
   };
 
   const handleDelete = async () => {
-    // console.log(product.code);
-    const res = await deleteStock(product.stockCode);
+    console.log(deleteCode);
+    const res = await deleteStock(deleteCode);
     // console.log(res);
     if (res.code === 200) {
       handleClose();
@@ -561,15 +561,15 @@ const ProductDetail = () => {
               {/* Sale Code */}
               <div>
                 <label
-                  htmlFor="stockName"
+                  htmlFor="saleCode"
                   className="block text-sm font-medium text-gray-700 mb-2"
                 >
                   Sale Code
                 </label>
                 <input
                   type="text"
-                  id="stockName"
-                  name="stockName"
+                  id="saleCode"
+                  name="saleCode"
                   value={formData.saleCode || ""}
                   onChange={handleInputChange}
                   placeholder="Enter Sale Code"
@@ -783,7 +783,11 @@ const ProductDetail = () => {
           <div className="flex flex-col sm:flex-row gap-3 pt-4 justify-end">
             <button
               type="button"
-              onClick={() => setDeleteModal(true)}
+              onClick={() => {
+                setDeleteModal(true);
+                // console.log(product.saleCode);
+                setDeleteCode(product.saleCode);
+              }}
               className="flex gap-2 px-4 py-2 text-sm font-medium text-red-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-200 transition-colors"
             >
               <Trash2 className="w-4 h-4" />
