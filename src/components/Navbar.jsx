@@ -97,8 +97,8 @@ function Navbar() {
     const response = await getAllTickets();
     const haveUnseen = response.data.filter((t) => !t.hasSeen && !t.hasSolved);
     setMessageCount(haveUnseen.length);
-    console.log("haveUnseen", haveUnseen);
-    console.log("messageCount in Function", messageCount);
+    // console.log("haveUnseen", haveUnseen);
+    // console.log("messageCount in Function", messageCount);
   };
 
   useEffect(() => {
@@ -107,7 +107,7 @@ function Navbar() {
 
     if (role !== "inventory" && role !== "delivery") {
       socket.on("orderFinalized", (data) => {
-        console.log("data", data);
+        // console.log("data", data);
         if (data.snapshotData.deliveryStatus === "pending") {
           setNewOrderCount((prev) => prev + 1);
         }
@@ -116,13 +116,13 @@ function Navbar() {
 
     if (role === "customer-support" || role === "admin") {
       socket.on("newCustomerSupportTicket", (data) => {
-        console.log("messageCount", messageCount);
+        // console.log("messageCount", messageCount);
         setMessageCount((prev) => prev + 1);
       });
     }
   }, []);
 
-  console.log("messageCount", messageCount);
+  // console.log("messageCount", messageCount);
 
   return (
     <>

@@ -17,8 +17,10 @@ function DeliveryPage() {
   const getOrders = async () => {
     setLoading(true);
     const response = await getAllOrders(activeTab, activePage);
-    setOrders(response.data);
-    setLoading(false);
+    if (response.code === 200) {
+      setOrders(response.data);
+      setLoading(false);
+    }
   };
 
   const searchFunction = async (name) => {

@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
 import chgOrderStatus from "../../api/orderApi/chgOrderStatus";
+import { RxCross2 } from "react-icons/rx";
+import { useNavigate } from "react-router-dom";
+import { Eye } from "lucide-react";
 
 const DeliveryTable = ({
   orders,
@@ -10,6 +13,7 @@ const DeliveryTable = ({
   loading,
 }) => {
   // console.log("orders", orders);
+  const navigate = useNavigate();
   const role = JSON.parse(localStorage.getItem("uedc-user"))?.role;
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
@@ -31,6 +35,10 @@ const DeliveryTable = ({
     if (res.code === 200) {
       refreshOrders();
     }
+  };
+
+  const handleView = (orderId) => {
+    navigate(`/delivery/${orderId}`);
   };
 
   return (
@@ -71,6 +79,9 @@ const DeliveryTable = ({
               </th>
               <th className="px-4 py-4 text-left text-xs font-medium text-black uppercase tracking-wider">
                 Phone
+              </th>
+              <th className="px-4 py-4 text-left text-xs font-medium text-black uppercase tracking-wider">
+                Products
               </th>
               <th className="px-4 py-4 text-left text-xs font-medium text-black uppercase tracking-wider">
                 Deli Type
@@ -119,6 +130,18 @@ const DeliveryTable = ({
                       <span>{order?.snapshotData?.contactNumber}</span>
                     </td>
                     <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {order?.snapshotData?.orderInfo?.map((product) => (
+                        <div
+                          className="flex space-x-2 items-center"
+                          key={product._id}
+                        >
+                          <span>{product.name}</span>
+                          <RxCross2 size={12} />
+                          <span>{product.quantity}</span>
+                        </div>
+                      ))}
+                    </td>
+                    <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
                       <span className="piller">
                         {order?.snapshotData?.delivery.deliveryServiceName}
                       </span>
@@ -131,6 +154,13 @@ const DeliveryTable = ({
 
                     <td className="px-4 py-4 whitespace-nowrap text-sm font-medium">
                       <div className="flex space-x-2">
+                        <button
+                          onClick={() => handleView(order._id)}
+                          className="border-2 border-gray-800 hover:bg-gray-200 py-3 px-4  rounded-lg transition-colors"
+                          title="View"
+                        >
+                          <Eye size={18} />
+                        </button>
                         {order?.snapshotData?.deliveryStatus !==
                           "confirmed" && (
                           <button

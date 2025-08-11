@@ -11,6 +11,7 @@ import ProductDetail from "../components/inventory/ProductDetail";
 import Accounts from "../components/accounts/Accounts";
 import NewOrders from "../components/orderManagement/NewOrders";
 import UnauthorizedPage from "../components/utli/401Page";
+import DeliveryDetail from "../components/delivery/DeliveryDetail";
 function Home() {
   return (
     <>
@@ -25,6 +26,7 @@ function Home() {
             <Route path="/orders" element={<GetAllOrder />} />
             <Route path="/order/:id" element={<OrderDetail />} />
             <Route path="/delivery" element={<DeliveryPage />} />
+            <Route path="/delivery/:id" element={<DeliveryDetail />} />
             <Route path="/support" element={<CustomerSupport />} />
             <Route path="/accs" element={<Accounts />} />
             <Route path="/unauthorized" element={<UnauthorizedPage />} />

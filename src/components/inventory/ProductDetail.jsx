@@ -408,6 +408,7 @@ const ProductDetail = () => {
               </label>
               <textarea
                 id="stockDescription"
+                rows={6}
                 name="stockDescription"
                 value={formData.stockDescription || ""}
                 onChange={handleInputChange}
