@@ -317,6 +317,7 @@ const AddProduct = () => {
               </label>
               <textarea
                 id="stockDescription"
+                rows={4}
                 name="stockDescription"
                 value={formData.stockDescription}
                 onChange={handleInputChange}

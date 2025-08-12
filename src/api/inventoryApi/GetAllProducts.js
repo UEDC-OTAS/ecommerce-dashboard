@@ -2,7 +2,7 @@ import axios from "../../axios";
 
 const getAllProducts = async () => {
   try {
-    const response = await axios.get("api/v1/stock");
+    const response = await axios.get("api/v1/stock?isDeleted=false");
     return response.data;
   } catch (error) {
     console.log(error);
