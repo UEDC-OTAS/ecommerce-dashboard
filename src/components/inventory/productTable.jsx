@@ -2,7 +2,7 @@ import { EyeIcon } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-const ProductTable = ({ products, sentQuantityModal }) => {
+const ProductTable = ({ products, sentQuantityModal, loading }) => {
   const role = JSON.parse(localStorage.getItem("uedc-user"))?.role;
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
@@ -155,77 +155,88 @@ const ProductTable = ({ products, sentQuantityModal }) => {
               </th>
             </tr>
           </thead>
-          {currentProducts.length > 0 ? (
-            <tbody className="bg-white divide-y divide-gray-200">
-              {currentProducts.map((product, index) => (
-                <tr key={product._id}>
-                  <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {index + 1}
-                  </td>
-                  <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {product.name}
-                  </td>
-                  <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {product.saleCode}
-                  </td>
-                  <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {product.stock}
-                  </td>
-                  <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
-                    <span>{product.price.toLocaleString()} MMK</span>
-                  </td>
-                  <td className="px-4 py-4 whitespace-nowrap">
-                    <span className="inline-flex text-xs font-semibold ">
-                      {product.stock > 10 ? (
-                        <span className="bg-green-100 text-green-800 rounded-full px-2 py-1">
-                          In Stock
-                        </span>
-                      ) : (
-                        <span className="bg-red-100 text-red-800 rounded-full px-2 py-1">
-                          Out of Stock
-                        </span>
-                      )}
-                    </span>
-                  </td>
-                  <td className="px-4 py-4 whitespace-nowrap text-sm font-medium">
-                    <div className="flex space-x-2">
-                      {role !== "customer-support" && (
-                        <button
-                          onClick={() => getQuantityModal(product)}
-                          className="bg-primary hover:bg-primary/80 text-white p-3 rounded-lg transition-colors"
-                          title="Edit"
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            height="18px"
-                            viewBox="0 -960 960 960"
-                            width="18px"
-                            fill="#fff"
-                          >
-                            <path d="M216-720h528l-34-40H250l-34 40Zm184 270 80-40 80 40v-190H400v190ZM200-120q-33 0-56.5-23.5T120-200v-499q0-14 4.5-27t13.5-24l50-61q11-14 27.5-21.5T250-840h460q18 0 34.5 7.5T772-811l50 61q9 11 13.5 24t4.5 27v139q-21 0-41.5 3T760-545v-95H640v205l-77 77-83-42-160 80v-320H200v440h280v80H200Zm440-520h120-120Zm-440 0h363-363Zm360 520v-123l221-220q9-9 20-13t22-4q12 0 23 4.5t20 13.5l37 37q8 9 12.5 20t4.5 22q0 11-4 22.5T903-340L683-120H560Zm300-263-37-37 37 37ZM620-180h38l121-122-18-19-19-18-122 121v38Zm141-141-19-18 37 37-18-19Z" />
-                          </svg>
-                        </button>
-                      )}
-
-                      <button
-                        onClick={() => navigate(`/stock/${product._id}`)}
-                        className="bg-[#FBDECC] hover:bg-gray-200 text-black p-3 rounded-lg transition-colors"
-                        title="Info"
-                      >
-                        <EyeIcon className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          ) : (
+          {loading ? (
             <tbody>
               <tr>
-                <td colSpan={7} className="text-center py-10">
-                  No products found
+                <td colSpan={7} className="px-4 py-8 text-center text-gray-500">
+                  loading...
                 </td>
               </tr>
+            </tbody>
+          ) : (
+            <tbody className="bg-white divide-y divide-gray-200">
+              {currentProducts.length > 0 &&
+                currentProducts.map((product, index) => (
+                  <tr key={product._id}>
+                    <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {index + 1}
+                    </td>
+                    <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {product.name}
+                    </td>
+                    <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {product.saleCode}
+                    </td>
+                    <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {product.stock}
+                    </td>
+                    <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
+                      <span>{product.price.toLocaleString()} MMK</span>
+                    </td>
+                    <td className="px-4 py-4 whitespace-nowrap">
+                      <span className="inline-flex text-xs font-semibold ">
+                        {product.stock > 10 ? (
+                          <span className="bg-green-100 text-green-800 rounded-full px-2 py-1">
+                            In Stock
+                          </span>
+                        ) : (
+                          <span className="bg-red-100 text-red-800 rounded-full px-2 py-1">
+                            Out of Stock
+                          </span>
+                        )}
+                      </span>
+                    </td>
+                    <td className="px-4 py-4 whitespace-nowrap text-sm font-medium">
+                      <div className="flex space-x-2">
+                        {role !== "customer-support" && (
+                          <button
+                            onClick={() => getQuantityModal(product)}
+                            className="bg-primary hover:bg-primary/80 text-white p-3 rounded-lg transition-colors"
+                            title="Edit"
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              height="18px"
+                              viewBox="0 -960 960 960"
+                              width="18px"
+                              fill="#fff"
+                            >
+                              <path d="M216-720h528l-34-40H250l-34 40Zm184 270 80-40 80 40v-190H400v190ZM200-120q-33 0-56.5-23.5T120-200v-499q0-14 4.5-27t13.5-24l50-61q11-14 27.5-21.5T250-840h460q18 0 34.5 7.5T772-811l50 61q9 11 13.5 24t4.5 27v139q-21 0-41.5 3T760-545v-95H640v205l-77 77-83-42-160 80v-320H200v440h280v80H200Zm440-520h120-120Zm-440 0h363-363Zm360 520v-123l221-220q9-9 20-13t22-4q12 0 23 4.5t20 13.5l37 37q8 9 12.5 20t4.5 22q0 11-4 22.5T903-340L683-120H560Zm300-263-37-37 37 37ZM620-180h38l121-122-18-19-19-18-122 121v38Zm141-141-19-18 37 37-18-19Z" />
+                            </svg>
+                          </button>
+                        )}
+
+                        <button
+                          onClick={() => navigate(`/stock/${product._id}`)}
+                          className="bg-[#FBDECC] hover:bg-gray-200 text-black p-3 rounded-lg transition-colors"
+                          title="Info"
+                        >
+                          <EyeIcon className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              {currentProducts.length === 0 && (
+                <tr>
+                  <td
+                    colSpan={7}
+                    className="px-4 py-8 text-center text-gray-500"
+                  >
+                    No products found
+                  </td>
+                </tr>
+              )}
             </tbody>
           )}
         </table>

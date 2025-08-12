@@ -714,14 +714,14 @@ const ProductDetail = () => {
 
             {/* Form Image Previews */}
             {formData.images.length > 0 && (
-              <div className="mt-4 w-full">
+              <div className="mt-4 w-full flex flex-wrap gap-5">
                 {formData.images.map((image) => (
-                  <div key={image._id} className="relative group">
+                  <div key={image._id} className="relative group w-48 h-48">
                     <div className="rounded-lg overflow-hidden bg-gray-100">
                       <img
                         src={image.url || "/placeholder.svg"}
                         alt={formData.stockName}
-                        className="w-full h-full object-cover"
+                        className="w-48 h-48 object-cover"
                       />
                     </div>
 
@@ -733,11 +733,6 @@ const ProductDetail = () => {
                     >
                       ×
                     </button> */}
-
-                    {/* Image Info */}
-                    <div className="mt-1 text-xs text-gray-500 truncate">
-                      {image.name}
-                    </div>
                   </div>
                 ))}
               </div>
@@ -745,9 +740,9 @@ const ProductDetail = () => {
 
             {/* Local Image Previews */}
             {localImages.length > 0 && (
-              <div className="mt-4 w-full">
+              <div className="mt-4 w-full flex flex-wrap gap-5">
                 {localImages.map((image) => (
-                  <div key={image.id} className="relative group">
+                  <div key={image.id} className="relative group w-48 h-48 ">
                     <div className="aspect-square rounded-lg overflow-hidden bg-gray-100">
                       <img
                         src={image.preview}
@@ -768,11 +763,6 @@ const ProductDetail = () => {
                     >
                       ×
                     </button>
-
-                    {/* Image Info */}
-                    <div className="mt-1 text-xs text-gray-500 truncate">
-                      {image.name}
-                    </div>
                   </div>
                 ))}
               </div>

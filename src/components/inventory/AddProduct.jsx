@@ -18,7 +18,7 @@ const AddProduct = () => {
     isDeliverable: true,
     images: [],
   });
-
+  // const defaultImage = logo;
   const [errors, setErrors] = useState({});
   const [dragActive, setDragActive] = useState(false);
 
@@ -215,7 +215,9 @@ const AddProduct = () => {
     data.append("isDeliverable", stockData.isDeliverable);
     // Assuming you only upload the first image for now
     if (stockData.images.length > 0) {
-      data.append("url", stockData.images[0].file);
+      stockData.images.forEach((img) => {
+        data.append("url", img.file);
+      });
     }
 
     const res = await addProduct(data);
@@ -632,6 +634,7 @@ const AddProduct = () => {
                 <input
                   type="file"
                   accept="image/*"
+                  multiple
                   onChange={(e) => handleImageUpload(e.target.files)}
                   className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                 />
@@ -662,10 +665,10 @@ const AddProduct = () => {
 
             {/* Image Previews */}
             {formData.images.length > 0 && (
-              <div className="mt-4 w-full">
+              <div className="mt-4 w-full flex flex-wrap gap-5">
                 {formData.images.map((image) => (
-                  <div key={image.id} className="relative group">
-                    <div className="aspect-square rounded-lg overflow-hidden bg-gray-100">
+                  <div key={image.id} className="relative group w-48 h-48">
+                    <div className="aspect-square rounded-lg overflow-hidden bg-gray-100 ">
                       <img
                         src={image.preview || "/placeholder.svg"}
                         alt={image.name}

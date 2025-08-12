@@ -15,16 +15,19 @@ const socket = io.connect(import.meta.env.VITE_APP_API, {
 function Inventory() {
   const navigate = useNavigate();
   const role = JSON.parse(localStorage.getItem("uedc-user"))?.role;
-
+  const [loading, setLoading] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [quantityModalOpen, setIsQuantityModalOpen] = useState(false);
   const [products, setProducts] = useState([]);
   const getProducts = async () => {
+    setLoading(true);
     const response = await getAllProducts();
 
     if (response.code === 200) {
       setProducts(response.data.reverse());
+      setLoading(false);
     } else if (response.code === 403) {
+      setLoading(false);
       navigate("/unauthorized");
     }
   };
@@ -142,6 +145,7 @@ function Inventory() {
       </div>
       <ProductTable
         products={products}
+        loading={loading}
         // sentproductDetail={getProductDetail}
         sentQuantityModal={getQuantityModal}
       />
