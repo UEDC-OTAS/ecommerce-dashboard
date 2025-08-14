@@ -33,6 +33,7 @@ const ProductTable = ({ products, sentQuantityModal, loading }) => {
     "Toilets",
     "Powerbanks",
     "Flooring",
+    "Other",
   ];
 
   // Function to toggle the dropdown visibility

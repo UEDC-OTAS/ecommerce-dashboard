@@ -75,6 +75,7 @@ const AddProduct = () => {
       "80000mah and above",
     ],
     Flooring: ["SPC", "Parquet", "Vinyl"],
+    Other: ["Other"],
   };
 
   const handleInputChange = (e) => {
