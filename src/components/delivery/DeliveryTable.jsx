@@ -12,7 +12,7 @@ const DeliveryTable = ({
   passPage,
   loading,
 }) => {
-  // console.log("orders", orders);
+  console.log("orders", orders);
   const navigate = useNavigate();
   const role = JSON.parse(localStorage.getItem("uedc-user"))?.role;
   const [currentPage, setCurrentPage] = useState(1);
@@ -142,9 +142,16 @@ const DeliveryTable = ({
                       ))}
                     </td>
                     <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
-                      <span className="piller">
-                        {order?.snapshotData?.delivery.deliveryServiceName}
-                      </span>
+                      {order?.snapshotData?.delivery?.deliveryType ===
+                      "gate-drop-off" ? (
+                        <span className="piller">
+                          {order?.snapshotData?.delivery.gateName}
+                        </span>
+                      ) : (
+                        <span className="piller">
+                          {order?.snapshotData?.delivery.deliveryServiceName}
+                        </span>
+                      )}
                     </td>
                     <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
                       <span className="piller">
