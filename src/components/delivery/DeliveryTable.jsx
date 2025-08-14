@@ -118,7 +118,7 @@ const DeliveryTable = ({
                 currentOrders?.map((order, index) => (
                   <tr key={order._id} className="h-20">
                     <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {index + 1}
+                      {currentPage * itemsPerPage - itemsPerPage + index + 1}
                     </td>
                     <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
                       {order?.snapshotData?.customerName}

@@ -170,7 +170,7 @@ const ProductTable = ({ products, sentQuantityModal, loading }) => {
                 currentProducts.map((product, index) => (
                   <tr key={product._id}>
                     <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {index + 1}
+                      {currentPage * itemsPerPage - itemsPerPage + index + 1}
                     </td>
                     <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
                       {product.name}
