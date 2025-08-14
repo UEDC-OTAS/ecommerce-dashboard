@@ -240,8 +240,8 @@ const ProductDetail = () => {
   const handleUpdateStock = async (stockData) => {
     const data = {
       name: stockData.stockName,
-      code: stockData.stockCode,
       saleCode: stockData.saleCode,
+      productCode: stockData.stockCode,
       isDeliverable: stockData.isDeliverable,
       description: stockData.stockDescription,
       category: stockData.stockCategory,
