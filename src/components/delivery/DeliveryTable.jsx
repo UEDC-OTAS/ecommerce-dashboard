@@ -142,7 +142,10 @@ const DeliveryTable = ({
                       ))}
                     </td>
                     <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {order?.snapshotData?.delivery?.deliveryType ===
+                      <span className="piller">
+                        {order?.snapshotData?.delivery.deliveryType}
+                      </span>
+                      {/* {order?.snapshotData?.delivery?.deliveryType ===
                       "gate-drop-off" ? (
                         <span className="piller">
                           {order?.snapshotData?.delivery.gateName}
@@ -151,7 +154,7 @@ const DeliveryTable = ({
                         <span className="piller">
                           {order?.snapshotData?.delivery.deliveryServiceName}
                         </span>
-                      )}
+                      )} */}
                     </td>
                     <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
                       <span className="piller">
