@@ -10,7 +10,7 @@ const ProductTable = ({ products, sentQuantityModal, loading }) => {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const filteredProducts = products.filter((product) => {
-    if (selectedCategory === "All") {
+    if (selectedCategory === "All Category") {
       return true;
     }
     return product.category === selectedCategory.toLowerCase();
@@ -20,21 +20,7 @@ const ProductTable = ({ products, sentQuantityModal, loading }) => {
     sentQuantityModal(product);
   };
 
-  const tabs = [
-    "All",
-    "Speakers",
-    "Bathroom-Fittings",
-    "Tiles",
-    "Aircoolers/Fans",
-    "Home-Electronics",
-    "Wall-Decoration",
-    "Kitchen-Electronics",
-    "Doors",
-    "Toilets",
-    "Powerbanks",
-    "Flooring",
-    "Other",
-  ];
+  const tabs = ["All Category"];
 
   // Function to toggle the dropdown visibility
   const toggleDropdown = () => {
@@ -60,69 +46,11 @@ const ProductTable = ({ products, sentQuantityModal, loading }) => {
               setSelectedCategory(tab);
               setIsDropdownOpen(false);
             }}
-            className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-colors ${
-              selectedCategory === tab
-                ? "text-primary border-b-2 border-primary"
-                : "text-gray-600 hover:text-gray-800 hover:bg-gray-50"
-            }`}
+            className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-colors text-primary border-b-2 border-primary`}
           >
             {tab}
           </button>
         ))}
-
-        <div className="relative flex-shrink-0">
-          <button
-            onClick={toggleDropdown}
-            className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-colors flex items-center whitespace-nowrap
-                ${
-                  isDropdownOpen
-                    ? "  text-primary"
-                    : "text-gray-600 hover:text-gray-800 hover:bg-gray-50"
-                }`}
-          >
-            Other Categories
-            {/* Dropdown icon */}
-            <svg
-              className={`ml-2 h-4 w-4 transform transition-transform ${
-                isDropdownOpen ? "rotate-180" : "rotate-0"
-              }`}
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-            >
-              <path
-                fillRule="evenodd"
-                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                clipRule="evenodd"
-              />
-            </svg>
-          </button>
-
-          {/* Dropdown menu */}
-          {isDropdownOpen && (
-            <div
-              className="absolute w-48 bg-white rounded-md shadow-lg py-1 ring-1 ring-black ring-opacity-5 focus:outline-none"
-              style={{ zIndex: 50 }}
-            >
-              {dropdownTabs.map((tab) => (
-                <button
-                  key={tab}
-                  onClick={() => {
-                    setSelectedCategory(tab);
-                    setIsDropdownOpen(false);
-                  }}
-                  className={`block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 ${
-                    selectedCategory === tab
-                      ? "text-primary border-b-2 border-primary"
-                      : "text-gray-600 hover:text-gray-800 hover:bg-gray-50"
-                  }`}
-                >
-                  {tab}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
       </div>
 
       {/* Table */}
@@ -166,7 +94,12 @@ const ProductTable = ({ products, sentQuantityModal, loading }) => {
             </tbody>
           ) : (
             <tbody className="bg-white divide-y divide-gray-200">
-              {currentProducts.length > 0 &&
+              <tr>
+                <td colSpan={7} className="px-4 py-8 text-center text-gray-500">
+                  No products found
+                </td>
+              </tr>
+              {/* {currentProducts.length > 0 &&
                 currentProducts.map((product, index) => (
                   <tr key={product._id}>
                     <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
@@ -237,7 +170,7 @@ const ProductTable = ({ products, sentQuantityModal, loading }) => {
                     No products found
                   </td>
                 </tr>
-              )}
+              )} */}
             </tbody>
           )}
         </table>
