@@ -2,6 +2,7 @@ import { Route, Routes } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Inventory from "../components/inventory/Inventory";
 import AddProduct from "../components/inventory/AddProduct";
+import GetAllProduct from "../components/inventory/GetAllProduct";
 
 function Home() {
   return (
@@ -12,6 +13,7 @@ function Home() {
           <Routes>
             <Route path="/" element={<Inventory />} />
             <Route path="/add-stock" element={<AddProduct />} />
+            <Route path="/all-products/:id" element={<GetAllProduct />} />
           </Routes>
         </div>
       </div>

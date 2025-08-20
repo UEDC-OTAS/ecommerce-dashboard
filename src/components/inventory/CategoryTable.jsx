@@ -167,7 +167,9 @@ const CategoryTable = ({ category, loading }) => {
                           <span>Edit Price</span>
                         </button>
                         <button
-                          onClick={() => router.push(`/stock/${product._id}`)}
+                          onClick={() =>
+                            navigate(`/all-products/${product.category}`)
+                          }
                           className="button border border-primary text-primary hover:bg-primary hover:text-white"
                           title="View Stock"
                         >

@@ -3,24 +3,25 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const ProductTable = ({ products, sentQuantityModal, loading }) => {
-  const role = JSON.parse(localStorage.getItem("uedc-user"))?.role;
+  console.log("products", products);
+  // const role = JSON.parse(localStorage.getItem("uedc-user"))?.role;
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
-  const [selectedCategory, setSelectedCategory] = useState("All");
+  const [selectedCategory, setSelectedCategory] = useState("In Stock");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const filteredProducts = products.filter((product) => {
-    if (selectedCategory === "All Category") {
-      return true;
-    }
-    return product.category === selectedCategory.toLowerCase();
-  });
+  // const filteredProducts = products.filter((product) => {
+  //   if (selectedCategory === "All Category") {
+  //     return true;
+  //   }
+  //   return product.category === selectedCategory.toLowerCase();
+  // });
 
   const getQuantityModal = async (product) => {
     sentQuantityModal(product);
   };
 
-  const tabs = ["All Category"];
+  const tabs = ["In Stock", "Pre Order"];
 
   // Function to toggle the dropdown visibility
   const toggleDropdown = () => {
@@ -30,31 +31,51 @@ const ProductTable = ({ products, sentQuantityModal, loading }) => {
   const visibleTabs = tabs.slice(0, 6);
   const dropdownTabs = tabs.slice(6);
 
-  const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
+  const totalPages = Math.ceil(products.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  const currentProducts = filteredProducts.slice(startIndex, endIndex);
+  const currentProducts = products.slice(startIndex, endIndex);
 
   return (
     <div className="w-full mx-auto pt-6">
-      {/* Tabs */}
-      <div className="flex gap-2 mb-6 border-b border-gray-200 rubik">
-        {visibleTabs.map((tab) => (
-          <button
-            key={tab}
-            onClick={() => {
-              setSelectedCategory(tab);
-              setIsDropdownOpen(false);
-            }}
-            className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-colors text-primary border-b-2 border-primary`}
+      <div className="flex items-center justify-between">
+        {/* Tabs */}
+        <div className="flex gap-2 mb-6 border-b border-gray-200 rubik">
+          {visibleTabs.map((tab) => (
+            <button
+              key={tab}
+              onClick={() => {
+                setSelectedCategory(tab);
+                setIsDropdownOpen(false);
+              }}
+              className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-colors duration-300 text-primary  ${
+                selectedCategory === tab
+                  ? "border-b-2 border-primary"
+                  : "opacity-30"
+              }`}
+            >
+              {tab}
+            </button>
+          ))}
+        </div>
+
+        {/* button */}
+        <button className="button bg-primary text-white hover:bg-primary/80 transition-all duration-300">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            height="16px"
+            viewBox="0 -960 960 960"
+            width="16px"
+            fill="currentColor"
           >
-            {tab}
-          </button>
-        ))}
+            <path d="M640-640h120-120Zm-440 0h338-18 14-334Zm16-80h528l-34-40H250l-34 40Zm184 270 80-40 80 40v-190H400v190Zm182 330H200q-33 0-56.5-23.5T120-200v-499q0-14 4.5-27t13.5-24l50-61q11-14 27.5-21.5T250-840h460q18 0 34.5 7.5T772-811l50 61q9 11 13.5 24t4.5 27v196q-19-7-39-11t-41-4v-122H640v153q-35 20-61 49.5T538-371l-58-29-160 80v-320H200v440h334q8 23 20 43t28 37Zm138 0v-120H600v-80h120v-120h80v120h120v80H800v120h-80Z" />
+          </svg>
+          <span className="text-[14px]">Add Product</span>
+        </button>
       </div>
 
       {/* Table */}
-      <div className="overflow-x-auto bg-white rounded-lg shadow overflow-y-auto h-[calc(100vh-230px)]">
+      <div className="overflow-x-auto bg-white rounded-lg shadow overflow-y-auto w-[calc(100vw-70px)] lg:w-auto h-[calc(100vh-230px)]">
         <table className="w-full table-auto">
           <thead
             className="bg-gray-50 border-b border-gray-200"
@@ -73,9 +94,9 @@ const ProductTable = ({ products, sentQuantityModal, loading }) => {
               <th className="px-4 py-4 text-left text-xs font-medium text-black uppercase tracking-wider">
                 Quantity
               </th>
-              <th className="px-4 py-4 text-left text-xs font-medium text-black uppercase tracking-wider">
+              {/* <th className="px-4 py-4 text-left text-xs font-medium text-black uppercase tracking-wider">
                 Price
-              </th>
+              </th> */}
               <th className="px-4 py-4 text-left text-xs font-medium text-black uppercase tracking-wider">
                 Status
               </th>
@@ -94,12 +115,7 @@ const ProductTable = ({ products, sentQuantityModal, loading }) => {
             </tbody>
           ) : (
             <tbody className="bg-white divide-y divide-gray-200">
-              <tr>
-                <td colSpan={7} className="px-4 py-8 text-center text-gray-500">
-                  No products found
-                </td>
-              </tr>
-              {/* {currentProducts.length > 0 &&
+              {currentProducts.length > 0 &&
                 currentProducts.map((product, index) => (
                   <tr key={product._id}>
                     <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
@@ -109,53 +125,49 @@ const ProductTable = ({ products, sentQuantityModal, loading }) => {
                       {product.name}
                     </td>
                     <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {product.saleCode}
+                      {product.productCode}
                     </td>
                     <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {product.stock}
+                      {product.retailQuantity}
                     </td>
                     <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
-                      <span>{product.price.toLocaleString()} MMK</span>
+                      {product.retailQuantity < 10 ? (
+                        <span className="piller bg-danger text-dangerText">
+                          Out of Stock
+                        </span>
+                      ) : (
+                        <span className="piller bg-success text-successText">
+                          Stock Available
+                        </span>
+                      )}
                     </td>
-                    <td className="px-4 py-4 whitespace-nowrap">
-                      <span className="inline-flex text-xs font-semibold ">
-                        {product.stock > 10 ? (
-                          <span className="bg-green-100 text-green-800 rounded-full px-2 py-1">
-                            In Stock
-                          </span>
-                        ) : (
-                          <span className="bg-red-100 text-red-800 rounded-full px-2 py-1">
-                            Out of Stock
-                          </span>
-                        )}
-                      </span>
-                    </td>
+
                     <td className="px-4 py-4 whitespace-nowrap text-sm font-medium">
-                      <div className="flex space-x-2">
-                        {role !== "customer-support" && (
-                          <button
-                            onClick={() => getQuantityModal(product)}
-                            className="bg-primary hover:bg-primary/80 text-white p-3 rounded-lg transition-colors"
-                            title="Edit"
+                      <div className="flex space-x-5">
+                        <button
+                          onClick={() => getQuantityModal(product)}
+                          className="button border border-primary text-primary hover:bg-primary hover:text-white"
+                          title="Edit"
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            height="18px"
+                            viewBox="0 -960 960 960"
+                            width="18px"
+                            fill="currentColor"
                           >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              height="18px"
-                              viewBox="0 -960 960 960"
-                              width="18px"
-                              fill="#fff"
-                            >
-                              <path d="M216-720h528l-34-40H250l-34 40Zm184 270 80-40 80 40v-190H400v190ZM200-120q-33 0-56.5-23.5T120-200v-499q0-14 4.5-27t13.5-24l50-61q11-14 27.5-21.5T250-840h460q18 0 34.5 7.5T772-811l50 61q9 11 13.5 24t4.5 27v139q-21 0-41.5 3T760-545v-95H640v205l-77 77-83-42-160 80v-320H200v440h280v80H200Zm440-520h120-120Zm-440 0h363-363Zm360 520v-123l221-220q9-9 20-13t22-4q12 0 23 4.5t20 13.5l37 37q8 9 12.5 20t4.5 22q0 11-4 22.5T903-340L683-120H560Zm300-263-37-37 37 37ZM620-180h38l121-122-18-19-19-18-122 121v38Zm141-141-19-18 37 37-18-19Z" />
-                            </svg>
-                          </button>
-                        )}
+                            <path d="M216-720h528l-34-40H250l-34 40Zm184 270 80-40 80 40v-190H400v190ZM200-120q-33 0-56.5-23.5T120-200v-499q0-14 4.5-27t13.5-24l50-61q11-14 27.5-21.5T250-840h460q18 0 34.5 7.5T772-811l50 61q9 11 13.5 24t4.5 27v139q-21 0-41.5 3T760-545v-95H640v205l-77 77-83-42-160 80v-320H200v440h280v80H200Zm440-520h120-120Zm-440 0h363-363Zm360 520v-123l221-220q9-9 20-13t22-4q12 0 23 4.5t20 13.5l37 37q8 9 12.5 20t4.5 22q0 11-4 22.5T903-340L683-120H560Zm300-263-37-37 37 37ZM620-180h38l121-122-18-19-19-18-122 121v38Zm141-141-19-18 37 37-18-19Z" />
+                          </svg>
+                          <span> Edit Qty</span>
+                        </button>
 
                         <button
                           onClick={() => navigate(`/stock/${product._id}`)}
-                          className="bg-[#FBDECC] hover:bg-gray-200 text-black p-3 rounded-lg transition-colors"
-                          title="Info"
+                          className="button border border-primary text-primary hover:bg-primary hover:text-white"
+                          title="View"
                         >
                           <EyeIcon className="w-4 h-4" />
+                          <span>View</span>
                         </button>
                       </div>
                     </td>
@@ -170,7 +182,7 @@ const ProductTable = ({ products, sentQuantityModal, loading }) => {
                     No products found
                   </td>
                 </tr>
-              )} */}
+              )}
             </tbody>
           )}
         </table>
@@ -194,8 +206,8 @@ const ProductTable = ({ products, sentQuantityModal, loading }) => {
 
         <div className="flex items-center space-x-4">
           <span className="text-sm text-gray-700">
-            {startIndex + 1} - {Math.min(endIndex, filteredProducts.length)} of{" "}
-            {filteredProducts.length} Orders
+            {startIndex + 1} - {Math.min(endIndex, products.length)} of{" "}
+            {products.length} Orders
           </span>
 
           <div className="flex items-center space-x-2">
