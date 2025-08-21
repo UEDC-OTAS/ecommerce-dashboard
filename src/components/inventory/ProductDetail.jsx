@@ -7,10 +7,12 @@ import getAProducts from "../../api/inventoryApi/getAproduct";
 import Loading from "../utli/Loading";
 import { useParams } from "react-router-dom";
 import { MdOutlineEdit } from "react-icons/md";
+import deleteStock from "../../api/inventoryApi/DeleteStock";
 
 const ProductDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [porductId, setProductId] = useState(null);
   const [formData, setFormData] = useState({
     productName: "",
     productCode: "",
@@ -32,6 +34,16 @@ const ProductDetail = () => {
   const [wholesalePrices, setWholesalePrices] = useState([]);
   const [loading, setLoading] = useState(false);
 
+  const deleteProduct = async (productId) => {
+    try {
+      const response = await deleteStock(productId);
+      if (response.status === "success") {
+        navigate("/");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
   const validateField = (name, value) => {
     const requiredFields = [
       "productName",
@@ -232,6 +244,7 @@ const ProductDetail = () => {
       });
       setWholesalePrices(response.data.wholeSale);
       setUploadedImages(response.data.images);
+      setProductId(response.data._id);
       setLoading(false);
     } else if (response.status === "error") {
       setLoading(false);
@@ -703,7 +716,11 @@ const ProductDetail = () => {
 
         {/* Bottom Buttons */}
         <div className="flex justify-end gap-3 mt-8 pt-6 border-t border-gray-200">
-          <button type="button" className="button bg-danger text-red-500">
+          <button
+            onClick={() => deleteProduct(porductId)}
+            type="button"
+            className="button bg-danger text-red-500"
+          >
             <span className="text-[14px]">Delete</span>
           </button>
           <button
