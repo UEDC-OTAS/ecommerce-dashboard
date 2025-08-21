@@ -60,7 +60,10 @@ const ProductTable = ({ products, sentQuantityModal, loading }) => {
         </div>
 
         {/* button */}
-        <button className="button bg-primary text-white hover:bg-primary/80 transition-all duration-300">
+        <button
+          onClick={() => navigate("/add-product")}
+          className="button bg-primary text-white hover:bg-primary/80 transition-all duration-300"
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             height="16px"
@@ -162,7 +165,9 @@ const ProductTable = ({ products, sentQuantityModal, loading }) => {
                         </button>
 
                         <button
-                          onClick={() => navigate(`/stock/${product._id}`)}
+                          onClick={() =>
+                            navigate(`/product-detail/${product.productCode}`)
+                          }
                           className="button border border-primary text-primary hover:bg-primary hover:text-white"
                           title="View"
                         >

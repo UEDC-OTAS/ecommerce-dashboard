@@ -3,9 +3,15 @@ import { X, Upload, Plus, Trash2 } from "lucide-react";
 import addProduct from "../../api/inventoryApi/AddProduct";
 import { useNavigate } from "react-router-dom";
 import getAllCategory from "../../api/inventoryApi/GetAllCategory";
+import getAProducts from "../../api/inventoryApi/getAproduct";
+import Loading from "../utli/Loading";
+import { useParams } from "react-router-dom";
+import updateProduct from "../../api/inventoryApi/UpdateProduct";
 
-const ProductForm = () => {
+const ProductDetail = () => {
+  const { id } = useParams();
   const navigate = useNavigate();
+  const [productId, setProductId] = useState(null);
   const [formData, setFormData] = useState({
     productName: "",
     productCode: "",
@@ -27,6 +33,7 @@ const ProductForm = () => {
   const [wholesalePrices, setWholesalePrices] = useState([
     { id: 1, qty: "", price: "" },
   ]);
+  const [loading, setLoading] = useState(false);
 
   const validateField = (name, value) => {
     const requiredFields = [
@@ -80,7 +87,7 @@ const ProductForm = () => {
     // setLoading(true);
     const response = await getAllCategory();
     if (response.status === "success") {
-      console.log(response.data);
+      // console.log(response.data);
       setCategoryOptions(response.data.map((category) => category.category));
       // setCategory(response.data);
       // setLoading(false);
@@ -150,39 +157,29 @@ const ProductForm = () => {
       return;
     }
 
-    console.log("Form submitted:", formData);
+    const data = {
+      name: formData.productName,
+      productCode: formData.productCode,
+      retailUnitPrice: formData.retailPrice,
+      stockQuantity: formData.totalQuantity,
+      weight: formData.weight,
+      description: formData.description,
+      category: formData.productCategory,
+      onSale: formData.storeInventory === "sellProduct" ? true : false,
+      wholeSale: wholesalePrices.map((price) => ({
+        wholeSaleQuantity: price.qty,
+        wholeSaleUnitPrice: price.price,
+      })),
+    };
 
-    const data = new FormData();
-    data.append("name", formData.productName);
-    data.append("productCode", formData.productCode);
-    data.append("retailUnitPrice", formData.retailPrice);
-    data.append("stockQuantity", formData.totalQuantity);
-    data.append("weight", formData.weight);
-    data.append("description", formData.description);
-    data.append("category", formData.productCategory);
-    data.append(
-      "onSale",
-      formData.storeInventory === "sellProduct" ? true : false
-    );
-    if (uploadedImages.length > 0) {
-      uploadedImages.forEach((img) => {
-        data.append("images", img.file);
-      });
-    }
-    wholesalePrices.forEach((price, index) => {
-      data.append(`wholeSale[${index}][wholeSaleQuantity]`, price.qty);
-      data.append(`wholeSale[${index}][wholeSaleUnitPrice]`, price.price);
-    });
-    console.log(data);
-    const res = await addProduct(data);
-    console.log(res);
+    const res = await updateProduct({ productId, data });
     if (res.status === "success") {
       navigate("/");
     }
   };
 
   const addWholesalePrice = () => {
-    const newId = Math.max(...wholesalePrices.map((w) => w.id)) + 1;
+    const newId = wholesalePrices.length + 1;
     setWholesalePrices((prev) => [...prev, { id: newId, qty: "", price: "" }]);
   };
 
@@ -210,18 +207,56 @@ const ProductForm = () => {
     category.toLowerCase().includes(formData.productCategory.toLowerCase())
   );
 
+  const getProduct = async () => {
+    setLoading(true);
+    const response = await getAProducts(id);
+    if (response.status === "success") {
+      setProductId(response.data._id);
+      setFormData({
+        productName: response.data.name,
+        productCode: response.data.productCode,
+        retailPrice: response.data.retailUnitPrice,
+        totalQuantity: response.data.stockQuantity,
+        weight: response.data.weight,
+        description: response.data.description,
+        productCategory: response.data.category,
+        storeInventory: response.data.onSale ? "sellProduct" : "buyProduct",
+        productType: response.data.onSale ? "inStock" : "outStock",
+      });
+      setWholesalePrices(
+        response.data.wholeSale.map((w) => ({
+          id: w._id,
+          qty: w.wholeSaleQuantity,
+          price: w.wholeSaleUnitPrice,
+        }))
+      );
+      setUploadedImages(response.data.images);
+      setLoading(false);
+    } else if (response.status === "error") {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
+    getProduct();
     getCategoryName();
   }, []);
+
+  if (loading) {
+    return <Loading />;
+  }
 
   return (
     <div className="mx-auto h-[calc(100vh-4px)] overflow-y-auto">
       {/* Header */}
       <div className="flex items-center justify-between p-6 border-b border-gray-200">
         <h1 className="text-xl font-semibold text-gray-900">
-          Create New Product
+          {formData.productName} Details
         </h1>
-        <button className="p-1 hover:bg-gray-100 rounded-full">
+        <button
+          onClick={() => navigate("/")}
+          className="p-1 hover:bg-gray-100 rounded-full"
+        >
           <X className="w-5 h-5 text-gray-500" />
         </button>
       </div>
@@ -249,7 +284,7 @@ const ProductForm = () => {
                   onBlur={handleBlur}
                   placeholder="Enter Product Name"
                   required
-                  className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                  className={`w-full px-3 py-2 border rounded-md focus:outline-none  ${
                     errors.productName ? "border-red-500" : "border-gray-300"
                   }`}
                 />
@@ -274,7 +309,7 @@ const ProductForm = () => {
                     onBlur={handleBlur}
                     placeholder="Enter Product Code"
                     required
-                    className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                    className={`w-full px-3 py-2 border rounded-md focus:outline-none  ${
                       errors.productCode ? "border-red-500" : "border-gray-300"
                     }`}
                   />
@@ -297,7 +332,7 @@ const ProductForm = () => {
                       onBlur={handleBlur}
                       placeholder="Enter Retail Price"
                       required
-                      className={`w-full px-3 py-2 pr-12 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                      className={`w-full px-3 py-2 pr-12 border rounded-md focus:outline-none  ${
                         errors.retailPrice
                           ? "border-red-500"
                           : "border-gray-300"
@@ -330,7 +365,7 @@ const ProductForm = () => {
                       onBlur={handleBlur}
                       placeholder="Enter Quantity"
                       required
-                      className={`w-full px-3 py-2 pr-12 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                      className={`w-full px-3 py-2 pr-12 border rounded-md focus:outline-none  ${
                         errors.totalQuantity
                           ? "border-red-500"
                           : "border-gray-300"
@@ -360,7 +395,7 @@ const ProductForm = () => {
                       onBlur={handleBlur}
                       placeholder="Enter Weight"
                       required
-                      className={`w-full px-3 py-2 pr-12 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                      className={`w-full px-3 py-2 pr-12 border rounded-md focus:outline-none  ${
                         errors.weight ? "border-red-500" : "border-gray-300"
                       }`}
                     />
@@ -387,7 +422,7 @@ const ProductForm = () => {
                   placeholder="Describe what this kind of product is"
                   rows={4}
                   required
-                  className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none ${
+                  className={`w-full px-3 py-2 border rounded-md focus:outline-none  resize-none ${
                     errors.description ? "border-red-500" : "border-gray-300"
                   }`}
                 />
@@ -489,7 +524,7 @@ const ProductForm = () => {
                     onFocus={() => setIsCategoryDropdownOpen(true)}
                     placeholder="Enter Product Category"
                     // required
-                    className={`w-full px-3 py-2 pr-10 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                    className={`w-full px-3 py-2 pr-10 border rounded-md focus:outline-none  ${
                       errors.productCategory
                         ? "border-red-500"
                         : "border-gray-300"
@@ -548,6 +583,7 @@ const ProductForm = () => {
                 <h2 className="text-lg font-medium text-gray-900">
                   Wholesale Pricing
                 </h2>
+
                 <button
                   type="button"
                   onClick={addWholesalePrice}
@@ -561,7 +597,7 @@ const ProductForm = () => {
               <div className="space-y-4">
                 {wholesalePrices.map((wholesale, index) => (
                   <div
-                    key={wholesale.id}
+                    key={index}
                     className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 border border-gray-200 rounded-lg relative"
                   >
                     {wholesalePrices.length > 1 && (
@@ -588,7 +624,7 @@ const ProductForm = () => {
                           )
                         }
                         placeholder="Eg - 10"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none "
                       />
                     </div>
                     <div>
@@ -607,9 +643,9 @@ const ProductForm = () => {
                             )
                           }
                           placeholder="Eg - 55000"
-                          className="w-full px-3 py-2 pr-12 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          className="w-full px-3 py-2 pr-12 border border-gray-300 rounded-md focus:outline-none"
                         />
-                        <span className="absolute right-3 top-2 text-sm text-gray-500">
+                        <span className="absolute right-3 top-3 text-sm text-gray-500">
                           MMK
                         </span>
                       </div>
@@ -628,47 +664,18 @@ const ProductForm = () => {
               </h2>
 
               <div className="space-y-4">
-                {/* Upload Area */}
-                {uploadedImages.length < 3 ? (
-                  <label className="block">
-                    <input
-                      type="file"
-                      multiple
-                      accept="image/*"
-                      onChange={handleImageUpload}
-                      className="hidden"
-                    />
-                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-gray-400 transition-colors cursor-pointer">
-                      <div className="flex flex-col items-center">
-                        <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-4">
-                          <Upload className="w-6 h-6 text-gray-600" />
-                        </div>
-                        <p className="text-sm font-medium text-gray-900 mb-1">
-                          Upload stock image
-                        </p>
-                        <p className="text-xs text-gray-500">
-                          Please upload an image with file size less than 10mb.
-                        </p>
-                      </div>
-                    </div>
-                  </label>
-                ) : null}
-
                 {uploadedImages.length > 0 && (
                   <div className="space-y-2">
-                    <h3 className="text-sm font-medium text-gray-700">
-                      Uploaded Images:
-                    </h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {uploadedImages.map((image) => (
                         <div
-                          key={image.id}
-                          className=" relative bg-red-500 md:h-64 lg:h-48"
+                          key={image._id}
+                          className=" relative md:h-64 lg:h-48"
                         >
                           <img
                             src={image.url || "/placeholder.svg"}
                             alt={image.name}
-                            className="w-full h-full object-cover rounded"
+                            className="w-full h-full object-cover rounded-xl"
                           />
                           {/* <div className="flex-1 min-w-0">
                             <p className="text-sm text-gray-900 truncate">
@@ -678,13 +685,13 @@ const ProductForm = () => {
                               {(image.file.size / 1024 / 1024).toFixed(2)} MB
                             </p>
                           </div> */}
-                          <button
+                          {/* <button
                             type="button"
                             onClick={() => removeImage(image.id)}
                             className="p-1 text-red-500 bg-white hover:bg-red-200 hover:text-red-600 rounded absolute top-2 right-2"
                           >
                             <Trash2 className="w-4 h-4" />
-                          </button>
+                          </button> */}
                         </div>
                       ))}
                     </div>
@@ -699,24 +706,13 @@ const ProductForm = () => {
         <div className="flex justify-end gap-3 mt-8 pt-6 border-t border-gray-200">
           <button
             type="button"
-            className="px-6 py-2 text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+            onClick={() => navigate(-1)}
+            className="button border border-primary text-primary"
           >
             <span className="text-[14px]">Cancel</span>
           </button>
-          <button
-            type="submit"
-            className="px-6 py-2 bg-gray-900 text-white rounded-md hover:bg-gray-800 transition-colors"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              height="16px"
-              viewBox="0 -960 960 960"
-              width="16px"
-              fill="currentColor"
-            >
-              <path d="M640-640h120-120Zm-440 0h338-18 14-334Zm16-80h528l-34-40H250l-34 40Zm184 270 80-40 80 40v-190H400v190Zm182 330H200q-33 0-56.5-23.5T120-200v-499q0-14 4.5-27t13.5-24l50-61q11-14 27.5-21.5T250-840h460q18 0 34.5 7.5T772-811l50 61q9 11 13.5 24t4.5 27v196q-19-7-39-11t-41-4v-122H640v153q-35 20-61 49.5T538-371l-58-29-160 80v-320H200v440h334q8 23 20 43t28 37Zm138 0v-120H600v-80h120v-120h80v120h120v80H800v120h-80Z" />
-            </svg>
-            <span className="text-[14px]">Create Stock</span>
+          <button type="submit" className="button bg-primary text-white">
+            <span className="text-[14px]">Confirm Edit</span>
           </button>
         </div>
       </form>
@@ -724,4 +720,4 @@ const ProductForm = () => {
   );
 };
 
-export default ProductForm;
+export default ProductDetail;

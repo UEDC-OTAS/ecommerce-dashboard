@@ -3,7 +3,8 @@ import Navbar from "../components/Navbar";
 import Inventory from "../components/inventory/Inventory";
 import AddProduct from "../components/inventory/AddProduct";
 import GetAllProduct from "../components/inventory/GetAllProduct";
-
+import ProductDetail from "../components/inventory/ProductDetail";
+import ProductEdit from "../components/inventory/ProductEdit";
 function Home() {
   return (
     <>
@@ -12,8 +13,10 @@ function Home() {
         <div className="flex-1 ml-0 lg:ml-16 p-4">
           <Routes>
             <Route path="/" element={<Inventory />} />
-            <Route path="/add-stock" element={<AddProduct />} />
+            <Route path="/add-product" element={<AddProduct />} />
             <Route path="/all-products/:id" element={<GetAllProduct />} />
+            <Route path="/product-detail/:id" element={<ProductDetail />} />
+            <Route path="/product-edit/:id" element={<ProductEdit />} />
           </Routes>
         </div>
       </div>
