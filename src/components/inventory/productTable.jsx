@@ -10,12 +10,6 @@ const ProductTable = ({ products, sentQuantityModal, loading }) => {
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [selectedCategory, setSelectedCategory] = useState("In Stock");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  // const filteredProducts = products.filter((product) => {
-  //   if (selectedCategory === "All Category") {
-  //     return true;
-  //   }
-  //   return product.category === selectedCategory.toLowerCase();
-  // });
 
   const getQuantityModal = async (product) => {
     sentQuantityModal(product);
@@ -131,10 +125,10 @@ const ProductTable = ({ products, sentQuantityModal, loading }) => {
                       {product.productCode}
                     </td>
                     <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {product.retailQuantity}
+                      {product.stockQuantity}
                     </td>
                     <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {product.retailQuantity < 10 ? (
+                      {product.stockQuantity < 10 ? (
                         <span className="piller bg-danger text-dangerText">
                           Out of Stock
                         </span>

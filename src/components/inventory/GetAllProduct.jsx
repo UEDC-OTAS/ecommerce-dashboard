@@ -1,19 +1,15 @@
 import { useEffect, useState } from "react";
-import SearchBar from "../utli/SearchBar";
 import ProductTable from "./productTable";
 import getAllProducts from "../../api/inventoryApi/GetAllProducts";
 import QuantityModal from "./QuantityModal";
 import { useNavigate } from "react-router-dom";
-import searchProduct from "../../api/inventoryApi/SearchProduct";
-import CategoryTable from "./CategoryTable";
-import getAllCategory from "../../api/inventoryApi/GetAllCategory";
 import { IoIosArrowForward } from "react-icons/io";
 import { useParams } from "react-router-dom";
 
 function GetAllProduct() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const role = JSON.parse(localStorage.getItem("uedc-user"))?.role;
+  // const role = JSON.parse(localStorage.getItem("uedc-user"))?.role;
   const [loading, setLoading] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [quantityModalOpen, setIsQuantityModalOpen] = useState(false);
@@ -33,6 +29,12 @@ function GetAllProduct() {
   useEffect(() => {
     getProducts();
   }, []);
+
+  const getQuantityModal = async (product) => {
+    console.log("product", product);
+    setSelectedProduct(product);
+    setIsQuantityModalOpen(true);
+  };
 
   return (
     <div className="w-full px-4">
@@ -55,18 +57,21 @@ function GetAllProduct() {
       <ProductTable
         products={products}
         loading={loading}
-        // sentQuantityModal={getQuantityModal}
+        sentQuantityModal={getQuantityModal}
       />
 
       {/* Quantity Modal */}
-      {/* <QuantityModal
+      <QuantityModal
         isOpen={quantityModalOpen}
         product={selectedProduct}
         onClose={() => {
           setIsQuantityModalOpen(false);
           getProducts();
         }}
-      /> */}
+        cancel={() => {
+          setIsQuantityModalOpen(false);
+        }}
+      />
     </div>
   );
 }

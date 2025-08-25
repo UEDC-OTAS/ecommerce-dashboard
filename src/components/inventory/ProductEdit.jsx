@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { X, Upload, Plus, Trash2 } from "lucide-react";
-import addProduct from "../../api/inventoryApi/AddProduct";
 import { useNavigate } from "react-router-dom";
 import getAllCategory from "../../api/inventoryApi/GetAllCategory";
 import getAProducts from "../../api/inventoryApi/getAproduct";
 import Loading from "../utli/Loading";
 import { useParams } from "react-router-dom";
 import updateProduct from "../../api/inventoryApi/UpdateProduct";
+import { MdOutlineEdit } from "react-icons/md";
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -440,73 +440,79 @@ const ProductDetail = () => {
                 Inventory
               </h2>
 
-              {/* Product Type */}
-              <div className="mb-4 flex justify-between items-center">
-                <label className="block text-sm font-medium text-gray-700 mb-3">
-                  Product Type
-                </label>
-                <div className="flex gap-6">
-                  <label className="flex items-center">
-                    <input
-                      type="radio"
-                      name="productType"
-                      value="inStock"
-                      checked={formData.productType === "inStock"}
-                      onChange={handleInputChange}
-                      required
-                      className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
-                    />
-                    <span className="ml-2 text-sm text-gray-700">In Stock</span>
+              <div className="flex justify-between items-center mb-4">
+                {/* Product Type */}
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-3">
+                    Product Type
                   </label>
-                  <label className="flex items-center">
-                    <input
-                      type="radio"
-                      name="productType"
-                      value="preOrder"
-                      checked={formData.productType === "preOrder"}
-                      onChange={handleInputChange}
-                      required
-                      className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
-                    />
-                    <span className="ml-2 text-sm text-gray-700">
-                      Pre Order
-                    </span>
-                  </label>
+                  <div className="flex gap-6">
+                    <label className="flex items-center">
+                      <input
+                        type="radio"
+                        name="productType"
+                        value="inStock"
+                        checked={formData.productType === "inStock"}
+                        onChange={handleInputChange}
+                        required
+                        className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                      />
+                      <span className="ml-2 text-sm text-gray-700">
+                        In Stock
+                      </span>
+                    </label>
+                    <label className="flex items-center">
+                      <input
+                        type="radio"
+                        name="productType"
+                        value="preOrder"
+                        checked={formData.productType === "preOrder"}
+                        onChange={handleInputChange}
+                        required
+                        className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                      />
+                      <span className="ml-2 text-sm text-gray-700">
+                        Pre Order
+                      </span>
+                    </label>
+                  </div>
                 </div>
-              </div>
 
-              {/* Store in Inventory */}
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-3">
-                  Store in Inventory
-                </label>
-                <div className="flex gap-6">
-                  <label className="flex items-center">
-                    <input
-                      type="radio"
-                      name="storeInventory"
-                      value="sellProduct"
-                      checked={formData.storeInventory === "sellProduct"}
-                      onChange={handleInputChange}
-                      required
-                      className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
-                    />
-                    <span className="ml-2 text-sm text-gray-700">
-                      Sell Product
-                    </span>
+                {/* Store in Inventory */}
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-3">
+                    Store in Inventory
                   </label>
-                  <label className="flex items-center">
-                    <input
-                      type="radio"
-                      name="storeInventory"
-                      value="storeIn"
-                      checked={formData.storeInventory === "storeIn"}
-                      onChange={handleInputChange}
-                      required
-                      className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
-                    />
-                    <span className="ml-2 text-sm text-gray-700">Store In</span>
-                  </label>
+                  <div className="flex gap-6">
+                    <label className="flex items-center">
+                      <input
+                        type="radio"
+                        name="storeInventory"
+                        value="sellProduct"
+                        checked={formData.storeInventory === "sellProduct"}
+                        onChange={handleInputChange}
+                        required
+                        className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                      />
+                      <span className="ml-2 text-sm text-gray-700">
+                        Sell Product
+                      </span>
+                    </label>
+                    <label className="flex items-center">
+                      <input
+                        type="radio"
+                        name="storeInventory"
+                        value="storeIn"
+                        checked={formData.storeInventory === "storeIn"}
+                        onChange={handleInputChange}
+                        required
+                        className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                      />
+                      <span className="ml-2 text-sm text-gray-700">
+                        Store In
+                      </span>
+                    </label>
+                  </div>
                 </div>
               </div>
 
@@ -712,6 +718,7 @@ const ProductDetail = () => {
             <span className="text-[14px]">Cancel</span>
           </button>
           <button type="submit" className="button bg-primary text-white">
+            <MdOutlineEdit className="w-4 h-4" />
             <span className="text-[14px]">Confirm Edit</span>
           </button>
         </div>

@@ -24,7 +24,7 @@ function Navbar() {
   const [isDesktopExpanded, setIsDesktopExpanded] = useState(false);
   const { newOrderCount, setNewOrderCount, messageCount, setMessageCount } =
     useContext(NumberContext);
-  console.log("messageCount", messageCount, "newOrderCount", newOrderCount);
+
   const location = useLocation();
   const navigate = useNavigate();
   const navItems = [
@@ -34,6 +34,7 @@ function Navbar() {
       label: "Inventory",
       role: "inventory",
       secondaryRole: "customer-support",
+      secondaryPath: "product",
     },
 
     {
@@ -68,7 +69,8 @@ function Navbar() {
     { path: "/accs", icon: CgProfile, label: "Account", role: "admin" },
   ];
 
-  const isActive = (path) => location.pathname === path;
+  const isActive = (path, secondaryPath) =>
+    location.pathname === path || location.pathname.includes(secondaryPath);
 
   const handleLogout = () => {
     localStorage.removeItem("uedc-user");
@@ -232,7 +234,7 @@ function Navbar() {
                         className={`
                         flex items-center px-3 py-3 rounded-lg transition-all duration-300 relative group
                         ${
-                          isActive(item.path)
+                          isActive(item.path, item.secondaryPath)
                             ? "bg-primary text-white shadow-lg "
                             : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
                         }

@@ -221,7 +221,10 @@ const ProductForm = () => {
         <h1 className="text-xl font-semibold text-gray-900">
           Create New Product
         </h1>
-        <button className="p-1 hover:bg-gray-100 rounded-full">
+        <button
+          onClick={() => navigate(-1)}
+          className="p-1 hover:bg-gray-100 rounded-full"
+        >
           <X className="w-5 h-5 text-gray-500" />
         </button>
       </div>
@@ -405,73 +408,79 @@ const ProductForm = () => {
                 Inventory
               </h2>
 
-              {/* Product Type */}
-              <div className="mb-4 flex justify-between items-center">
-                <label className="block text-sm font-medium text-gray-700 mb-3">
-                  Product Type
-                </label>
-                <div className="flex gap-6">
-                  <label className="flex items-center">
-                    <input
-                      type="radio"
-                      name="productType"
-                      value="inStock"
-                      checked={formData.productType === "inStock"}
-                      onChange={handleInputChange}
-                      required
-                      className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
-                    />
-                    <span className="ml-2 text-sm text-gray-700">In Stock</span>
+              <div className="flex justify-between items-center mb-4">
+                {/* Product Type */}
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-3">
+                    Product Type
                   </label>
-                  <label className="flex items-center">
-                    <input
-                      type="radio"
-                      name="productType"
-                      value="preOrder"
-                      checked={formData.productType === "preOrder"}
-                      onChange={handleInputChange}
-                      required
-                      className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
-                    />
-                    <span className="ml-2 text-sm text-gray-700">
-                      Pre Order
-                    </span>
-                  </label>
+                  <div className="flex gap-6">
+                    <label className="flex items-center">
+                      <input
+                        type="radio"
+                        name="productType"
+                        value="inStock"
+                        checked={formData.productType === "inStock"}
+                        onChange={handleInputChange}
+                        required
+                        className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                      />
+                      <span className="ml-2 text-sm text-gray-700">
+                        In Stock
+                      </span>
+                    </label>
+                    <label className="flex items-center">
+                      <input
+                        type="radio"
+                        name="productType"
+                        value="preOrder"
+                        checked={formData.productType === "preOrder"}
+                        onChange={handleInputChange}
+                        required
+                        className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                      />
+                      <span className="ml-2 text-sm text-gray-700">
+                        Pre Order
+                      </span>
+                    </label>
+                  </div>
                 </div>
-              </div>
 
-              {/* Store in Inventory */}
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-3">
-                  Store in Inventory
-                </label>
-                <div className="flex gap-6">
-                  <label className="flex items-center">
-                    <input
-                      type="radio"
-                      name="storeInventory"
-                      value="sellProduct"
-                      checked={formData.storeInventory === "sellProduct"}
-                      onChange={handleInputChange}
-                      required
-                      className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
-                    />
-                    <span className="ml-2 text-sm text-gray-700">
-                      Sell Product
-                    </span>
+                {/* Store in Inventory */}
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-3">
+                    Store in Inventory
                   </label>
-                  <label className="flex items-center">
-                    <input
-                      type="radio"
-                      name="storeInventory"
-                      value="storeIn"
-                      checked={formData.storeInventory === "storeIn"}
-                      onChange={handleInputChange}
-                      required
-                      className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
-                    />
-                    <span className="ml-2 text-sm text-gray-700">Store In</span>
-                  </label>
+                  <div className="flex gap-6">
+                    <label className="flex items-center">
+                      <input
+                        type="radio"
+                        name="storeInventory"
+                        value="sellProduct"
+                        checked={formData.storeInventory === "sellProduct"}
+                        onChange={handleInputChange}
+                        required
+                        className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                      />
+                      <span className="ml-2 text-sm text-gray-700">
+                        Sell Product
+                      </span>
+                    </label>
+                    <label className="flex items-center">
+                      <input
+                        type="radio"
+                        name="storeInventory"
+                        value="storeIn"
+                        checked={formData.storeInventory === "storeIn"}
+                        onChange={handleInputChange}
+                        required
+                        className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                      />
+                      <span className="ml-2 text-sm text-gray-700">
+                        Store In
+                      </span>
+                    </label>
+                  </div>
                 </div>
               </div>
 
@@ -699,13 +708,13 @@ const ProductForm = () => {
         <div className="flex justify-end gap-3 mt-8 pt-6 border-t border-gray-200">
           <button
             type="button"
-            className="px-6 py-2 text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+            className="button bg-white border border-gray-200 hover:bg-gray-300 transition-all duration-300"
           >
             <span className="text-[14px]">Cancel</span>
           </button>
           <button
             type="submit"
-            className="px-6 py-2 bg-gray-900 text-white rounded-md hover:bg-gray-800 transition-colors"
+            className="button bg-primary text-white hover:bg-primary/80 transition-all duration-300"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"

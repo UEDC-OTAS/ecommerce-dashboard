@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { RiMoneyDollarCircleLine } from "react-icons/ri";
 
-const CategoryTable = ({ category, loading }) => {
+const CategoryTable = ({ category, loading, sentBulkPriceModal }) => {
   console.log("category", category);
 
   const [selectedRows, setSelectedRows] = useState(new Set());
@@ -25,6 +25,11 @@ const CategoryTable = ({ category, loading }) => {
     setSelectAll(
       newSelectedRows.size === category.length && category.length > 0
     );
+  };
+
+  const getBulkPriceModal = async (stockIds) => {
+    // console.log("product", stockIds);
+    sentBulkPriceModal(stockIds);
   };
 
   const handleSelectAll = () => {
@@ -159,7 +164,7 @@ const CategoryTable = ({ category, loading }) => {
                     <td className="px-4 py-4 whitespace-nowrap text-sm font-medium">
                       <div className="flex space-x-2">
                         <button
-                          onClick={() => getQuantityModal(product)}
+                          onClick={() => getBulkPriceModal(product.stockIds)}
                           className="button border border-primary text-primary hover:bg-primary hover:text-white"
                           title="Edit"
                         >
