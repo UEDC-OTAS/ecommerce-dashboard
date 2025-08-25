@@ -19,7 +19,7 @@ import { NumberContext } from "../context/NumberContext";
 
 function Navbar() {
   const username = JSON.parse(localStorage.getItem("uedc-user"))?.name;
-  const role = JSON.parse(localStorage.getItem("uedc-user"))?.role;
+  // const role = JSON.parse(localStorage.getItem("uedc-user"))?.role;
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isDesktopExpanded, setIsDesktopExpanded] = useState(false);
   const { newOrderCount, setNewOrderCount, messageCount, setMessageCount } =
@@ -37,36 +37,36 @@ function Navbar() {
       secondaryPath: "product",
     },
 
-    {
-      path: "/new-order",
-      icon: ClockPlus,
-      label: "New Order",
-      role: "finance",
-      newOrderCount,
-    },
-    {
-      path: "/orders",
-      icon: ShoppingCart,
-      label: "Order",
-      role: "finance",
-      secondaryRole: "customer-support",
-    },
-    {
-      path: "/delivery",
-      icon: Truck,
-      label: "Delivery",
-      role: "delivery",
-      secondaryRole: "customer-support",
-    },
-    {
-      path: "/support",
-      icon: MdOutlineSupportAgent,
-      label: "Customer Support",
-      role: "customer-support",
-      secondaryRole: "customer-support",
-      messageCount,
-    },
-    { path: "/accs", icon: CgProfile, label: "Account", role: "admin" },
+    // {
+    //   path: "/new-order",
+    //   icon: ClockPlus,
+    //   label: "New Order",
+    //   role: "finance",
+    //   newOrderCount,
+    // },
+    // {
+    //   path: "/orders",
+    //   icon: ShoppingCart,
+    //   label: "Order",
+    //   role: "finance",
+    //   secondaryRole: "customer-support",
+    // },
+    // {
+    //   path: "/delivery",
+    //   icon: Truck,
+    //   label: "Delivery",
+    //   role: "delivery",
+    //   secondaryRole: "customer-support",
+    // },
+    // {
+    //   path: "/support",
+    //   icon: MdOutlineSupportAgent,
+    //   label: "Customer Support",
+    //   role: "customer-support",
+    //   secondaryRole: "customer-support",
+    //   messageCount,
+    // },
+    // { path: "/accs", icon: CgProfile, label: "Account", role: "admin" },
   ];
 
   const isActive = (path, secondaryPath) =>
@@ -128,10 +128,10 @@ function Navbar() {
       >
         {/* Mobile Logo */}
         <div className="p-6 border-b border-gray-200">
-          <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">VSOP</span>
-            </div>
+          <div className="flex items-end space-x-2">
+            {/* <div className="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center"> */}
+            {/* <span className="text-white font-bold text-sm">VSOP</span> */}
+            {/* </div> */}
           </div>
         </div>
 
@@ -142,11 +142,10 @@ function Navbar() {
               const Icon = item.icon;
               return (
                 <li key={item.path}>
-                  {role === "admin" || role === item.role ? (
-                    <Link
-                      to={item.path}
-                      onClick={() => setIsMobileMenuOpen(false)}
-                      className={`
+                  <Link
+                    to={item.path}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className={`
                         flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200
                         ${
                           isActive(item.path)
@@ -154,11 +153,10 @@ function Navbar() {
                             : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
                         }
                     `}
-                    >
-                      <Icon size={20} />
-                      <span className="font-medium">{item.label}</span>
-                    </Link>
-                  ) : null}
+                  >
+                    <Icon size={20} />
+                    <span className="font-medium">{item.label}</span>
+                  </Link>
                 </li>
               );
             })}
@@ -172,8 +170,8 @@ function Navbar() {
               <User size={20} className="text-gray-600" />
             </div>
             <div>
-              <p className="text-sm font-medium text-gray-900">{username}</p>
-              <p className="text-xs text-gray-500">{role}</p>
+              <p className="text-sm font-medium text-gray-900">Aung</p>
+              <p className="text-xs text-gray-500">Admin</p>
             </div>
           </div>
           <button
@@ -226,12 +224,9 @@ function Navbar() {
                 const Icon = item.icon;
                 return (
                   <li key={item.path} className="relative">
-                    {role === "admin" ||
-                    role === item.secondaryRole ||
-                    role === item.role ? (
-                      <Link
-                        to={item.path}
-                        className={`
+                    <Link
+                      to={item.path}
+                      className={`
                         flex items-center px-3 py-3 rounded-lg transition-all duration-300 relative group
                         ${
                           isActive(item.path, item.secondaryPath)
@@ -240,22 +235,22 @@ function Navbar() {
                         }
  
                       `}
-                      >
-                        <Icon size={20} className="flex-shrink-0" />
-                        {isDesktopExpanded && (
-                          <span className="ml-3 font-medium whitespace-nowrap">
-                            {item.label}
-                          </span>
-                        )}
+                    >
+                      <Icon size={20} className="flex-shrink-0" />
+                      {isDesktopExpanded && (
+                        <span className="ml-3 font-medium whitespace-nowrap">
+                          {item.label}
+                        </span>
+                      )}
 
-                        {/* Tooltip for collapsed state */}
-                        {!isDesktopExpanded && (
-                          <div className="absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
-                            {item.label}
-                          </div>
-                        )}
-                      </Link>
-                    ) : null}
+                      {/* Tooltip for collapsed state */}
+                      {!isDesktopExpanded && (
+                        <div className="absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
+                          {item.label}
+                        </div>
+                      )}
+                    </Link>
+
                     {!isDesktopExpanded && (
                       <div
                         className={`${
