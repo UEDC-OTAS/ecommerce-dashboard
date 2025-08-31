@@ -459,7 +459,7 @@ const ProductDetail = () => {
                 Inventory
               </h2>
 
-              <div className="flex justify-between items-center">
+              <div className="flex flex-col md:flex-row justify-between md:items-center">
                 {/* Product Type */}
                 <div className="mb-4">
                   <label className="block text-sm font-medium text-gray-700 mb-3">

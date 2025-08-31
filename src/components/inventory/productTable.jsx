@@ -1,5 +1,6 @@
 import { EyeIcon } from "lucide-react";
 import { useState } from "react";
+import { MdArrowBackIosNew, MdArrowForwardIos } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 
 const ProductTable = ({ products, sentQuantityModal, loading }) => {
@@ -56,7 +57,7 @@ const ProductTable = ({ products, sentQuantityModal, loading }) => {
         {/* button */}
         <button
           onClick={() => navigate("/add-product")}
-          className="button bg-primary text-white hover:bg-primary/80 transition-all duration-300"
+          className="button mb-5 bg-primary text-white hover:bg-primary/80 transition-all duration-300"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -67,7 +68,7 @@ const ProductTable = ({ products, sentQuantityModal, loading }) => {
           >
             <path d="M640-640h120-120Zm-440 0h338-18 14-334Zm16-80h528l-34-40H250l-34 40Zm184 270 80-40 80 40v-190H400v190Zm182 330H200q-33 0-56.5-23.5T120-200v-499q0-14 4.5-27t13.5-24l50-61q11-14 27.5-21.5T250-840h460q18 0 34.5 7.5T772-811l50 61q9 11 13.5 24t4.5 27v196q-19-7-39-11t-41-4v-122H640v153q-35 20-61 49.5T538-371l-58-29-160 80v-320H200v440h334q8 23 20 43t28 37Zm138 0v-120H600v-80h120v-120h80v120h120v80H800v120h-80Z" />
           </svg>
-          <span className="text-[14px]">Add Product</span>
+          <span className="hidden md:block text-[14px]">Add Product</span>
         </button>
       </div>
 
@@ -190,11 +191,11 @@ const ProductTable = ({ products, sentQuantityModal, loading }) => {
       {/* Pagination */}
       <div className="flex items-center justify-between mt-6">
         <div className="flex items-center space-x-2">
-          <span className="text-sm text-gray-700">View</span>
+          <span className="hidden lg:block text-sm text-gray-700">View</span>
           <select
             value={itemsPerPage}
             onChange={(e) => setItemsPerPage(Number(e.target.value))}
-            className="border border-gray-300 rounded px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="border border-gray-300 rounded px-1 lg:px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value={10}>10</option>
             <option value={25}>25</option>
@@ -204,7 +205,7 @@ const ProductTable = ({ products, sentQuantityModal, loading }) => {
         </div>
 
         <div className="flex items-center space-x-4">
-          <span className="text-sm text-gray-700">
+          <span className="hidden lg:block text-sm text-gray-700">
             {startIndex + 1} - {Math.min(endIndex, products.length)} of{" "}
             {products.length} Orders
           </span>
@@ -215,7 +216,10 @@ const ProductTable = ({ products, sentQuantityModal, loading }) => {
               disabled={currentPage === 1}
               className="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Previous
+              <span className="hidden lg:block">Previous</span>
+              <span className="lg:hidden">
+                <MdArrowBackIosNew className="w-4 h-5" />
+              </span>
             </button>
 
             <div className="flex space-x-1">
@@ -247,7 +251,10 @@ const ProductTable = ({ products, sentQuantityModal, loading }) => {
               disabled={currentPage === totalPages}
               className="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Next
+              <span className="hidden lg:block">Next</span>
+              <span className="lg:hidden">
+                <MdArrowForwardIos />
+              </span>
             </button>
           </div>
         </div>

@@ -408,7 +408,7 @@ const ProductForm = () => {
                 Inventory
               </h2>
 
-              <div className="flex justify-between items-center mb-4">
+              <div className="flex flex-col md:flex-row justify-between md:items-center mb-4">
                 {/* Product Type */}
                 <div className="mb-4">
                   <label className="block text-sm font-medium text-gray-700 mb-3">
