@@ -8,7 +8,7 @@ import ProductEdit from "../components/inventory/ProductEdit";
 function Home() {
   return (
     <>
-      <div className="flex min-h-screen bg-gray-50">
+      <div className="flex bg-gray-50">
         <Navbar />
         <div className="flex-1 ml-0 lg:ml-16 p-4">
           <Routes>
