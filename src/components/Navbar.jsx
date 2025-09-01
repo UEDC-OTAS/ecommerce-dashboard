@@ -197,18 +197,18 @@ function Navbar() {
         <div
           className={`
           fixed left-0 px-4 top-0 h-full bg-white border-r border-gray-200 z-40 transition-all duration-300 ease-in-out shadow-lg
-          ${isDesktopExpanded ? "w-64" : "w-18"}
+          ${isDesktopExpanded ? "w-64" : "w-20"}
         `}
         >
           {/* Menu Toggle Button */}
           <div className="py-4 border-b border-gray-200 flex justify-between">
-            <div
+            {/* <div
               className={`items-center justify-center ${
                 isDesktopExpanded ? "flex" : "hidden"
               }`}
             >
               <img src={logo} alt="logo" className="w-10 h-10 rounded-md" />
-            </div>
+            </div> */}
             <button
               onClick={() => setIsDesktopExpanded(!isDesktopExpanded)}
               className="w-10 h-10 flex items-center justify-center hover:bg-gray-100 rounded-lg transition-colors"
@@ -219,7 +219,7 @@ function Navbar() {
 
           {/* Navigation */}
           <nav className="mt-6">
-            <ul className="space-y-2 ">
+            <ul className="space-y-2">
               {navItems.map((item) => {
                 const Icon = item.icon;
                 return (
@@ -312,10 +312,10 @@ function Navbar() {
               {isDesktopExpanded && (
                 <div className="ml-3">
                   <p className="text-sm font-medium text-gray-900 whitespace-nowrap">
-                    {username}
+                    Ko Min
                   </p>
                   <p className="text-xs text-gray-500 whitespace-nowrap">
-                    {role}
+                    Admin
                   </p>
                 </div>
               )}

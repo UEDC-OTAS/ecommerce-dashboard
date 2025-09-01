@@ -12,8 +12,10 @@ function Inventory() {
   const [bulkPriceModalOpen, setIsBulkPriceModalOpen] = useState(false);
   const [category, setCategory] = useState([]);
   const getCategory = async () => {
+    console.log("getCategory");
     setLoading(true);
     const response = await getAllCategory();
+    console.log("response", response);
     if (response.status === "success") {
       setCategory(response.data);
       setLoading(false);
@@ -27,7 +29,7 @@ function Inventory() {
   }, []);
 
   const getBulkPriceModal = async (stockIds) => {
-    console.log("stockIds", stockIds);
+    // console.log("stockIds", stockIds);
     setSelectedId(stockIds);
     setIsBulkPriceModalOpen(true);
   };

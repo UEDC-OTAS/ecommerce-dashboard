@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { RiMoneyDollarCircleLine } from "react-icons/ri";
 
 const CategoryTable = ({ category, loading, sentBulkPriceModal }) => {
-  console.log("category", category);
+  // console.log("category", category);
 
   const [selectedRows, setSelectedRows] = useState(new Set());
   const [selectAll, setSelectAll] = useState(false);
