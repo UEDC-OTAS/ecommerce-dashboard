@@ -5,6 +5,9 @@ import AddProduct from "../components/inventory/AddProduct";
 import GetAllProduct from "../components/inventory/GetAllProduct";
 import ProductDetail from "../components/inventory/ProductDetail";
 import ProductEdit from "../components/inventory/ProductEdit";
+import GetAllOrder from "../components/orderManagement/GetAllOrder";
+import OrderDetail from "../components/orderManagement/OrderDetail";
+import OrderDetails from "../components/orderManagement/OrderDetail";
 function Home() {
   return (
     <>
@@ -17,6 +20,8 @@ function Home() {
             <Route path="/all-products/:id" element={<GetAllProduct />} />
             <Route path="/product-detail/:id" element={<ProductDetail />} />
             <Route path="/product-edit/:id" element={<ProductEdit />} />
+            <Route path="/orders" element={<GetAllOrder />} />
+            <Route path="/order/:id" element={<OrderDetails />} />
           </Routes>
         </div>
       </div>

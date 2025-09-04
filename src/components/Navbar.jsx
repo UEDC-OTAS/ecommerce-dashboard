@@ -44,13 +44,13 @@ function Navbar() {
     //   role: "finance",
     //   newOrderCount,
     // },
-    // {
-    //   path: "/orders",
-    //   icon: ShoppingCart,
-    //   label: "Order",
-    //   role: "finance",
-    //   secondaryRole: "customer-support",
-    // },
+    {
+      path: "/orders",
+      icon: ShoppingCart,
+      label: "Order",
+      role: "finance",
+      secondaryRole: "customer-support",
+    },
     // {
     //   path: "/delivery",
     //   icon: Truck,

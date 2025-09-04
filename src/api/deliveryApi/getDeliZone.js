@@ -1,8 +1,8 @@
 import axios from "../../axios";
 
-const getAOrder = async (orderId) => {
+const getDeliverZone = async (id) => {
   try {
-    const response = await axios.get(`order/${orderId}`);
+    const response = await axios.get(`delivery/${id}`);
 
     return response.data;
   } catch (error) {
@@ -11,4 +11,4 @@ const getAOrder = async (orderId) => {
   }
 };
 
-export default getAOrder;
+export default getDeliverZone;
