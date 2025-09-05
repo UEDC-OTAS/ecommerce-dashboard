@@ -370,7 +370,7 @@ export default function OrderDetails() {
                       Total
                     </div>
                     <div className="text-gray-900 text-lg font-semibold">
-                      {order.totalAmount.toLocaleString()} MMK
+                      {order?.totalAmount.toLocaleString()} MMK
                     </div>
                   </div>
                 </div>
