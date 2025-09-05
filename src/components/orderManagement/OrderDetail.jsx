@@ -104,9 +104,9 @@ export default function OrderDetails() {
             <div className="flex gap-2 items-center">
               <button
                 className="flex items-center gap-2 mr-4 border border-primary px-4 py-3 rounded-3xl text-primary hover:bg-primary/20 transition-colors duration-300 text-[16px]"
-                onClick={() => {
-                  chgStatus("cancelled");
-                }}
+                // onClick={() => {
+                //   chgStatus("cancelled");
+                // }}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -122,9 +122,9 @@ export default function OrderDetails() {
 
               <button
                 className="flex items-center gap-2 mr-4 border border-primary px-4 py-3 rounded-3xl text-white bg-primary hover:bg-primary/80 transition-colors duration-300 text-[16px]"
-                onClick={() => {
-                  chgStatus("confirmed");
-                }}
+                // onClick={() => {
+                //   chgStatus("confirmed");
+                // }}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"

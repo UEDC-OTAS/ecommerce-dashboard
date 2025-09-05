@@ -152,11 +152,11 @@ function GetAllOrder() {
 
         <div className="flex items-center justify-between gap-10 mt-5 lg:mt-0">
           <div className="w-auto md:w-[400px]">
-            <SearchBar
-              onSearch={(name) => (!name ? getOrders() : null)}
-              placeholder="Search Customer Name"
-              onClick={searchFunction}
-            />
+            {/* <SearchBar
+                onSearch={(name) => (!name ? getOrders() : null)}
+                placeholder="Search Customer Name"
+                onClick={searchFunction}
+              /> */}
           </div>
           {/* <button
             onClick={() => {
