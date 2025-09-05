@@ -95,37 +95,37 @@ const ProductDetail = () => {
     }
   };
 
-  const handleImageUpload = (e) => {
-    const files = Array.from(e.target.files);
-    const maxImages = 3;
+  // const handleImageUpload = (e) => {
+  //   const files = Array.from(e.target.files);
+  //   const maxImages = 3;
 
-    if (uploadedImages.length + files.length > maxImages) {
-      alert(`You can only upload up to ${maxImages} images`);
-      return;
-    }
+  //   if (uploadedImages.length + files.length > maxImages) {
+  //     alert(`You can only upload up to ${maxImages} images`);
+  //     return;
+  //   }
 
-    files.forEach((file) => {
-      if (file.size > 10 * 1024 * 1024) {
-        // 10MB limit
-        alert("File size must be less than 10MB");
-        return;
-      }
+  //   files.forEach((file) => {
+  //     if (file.size > 10 * 1024 * 1024) {
+  //       // 10MB limit
+  //       alert("File size must be less than 10MB");
+  //       return;
+  //     }
 
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setUploadedImages((prev) => [
-          ...prev,
-          {
-            id: Date.now() + Math.random(),
-            file: file,
-            url: e.target.result,
-            name: file.name,
-          },
-        ]);
-      };
-      reader.readAsDataURL(file);
-    });
-  };
+  //     const reader = new FileReader();
+  //     reader.onload = (e) => {
+  //       setUploadedImages((prev) => [
+  //         ...prev,
+  //         {
+  //           id: Date.now() + Math.random(),
+  //           file: file,
+  //           url: e.target.result,
+  //           name: file.name,
+  //         },
+  //       ]);
+  //     };
+  //     reader.readAsDataURL(file);
+  //   });
+  // };
 
   const removeImage = (imageId) => {
     setUploadedImages((prev) => prev.filter((img) => img.id !== imageId));
@@ -162,7 +162,7 @@ const ProductDetail = () => {
       productCode: formData.productCode,
       retailUnitPrice: formData.retailPrice,
       stockQuantity: formData.totalQuantity,
-      weight: formData.weight,
+      unitWeight: formData.weight,
       description: formData.description,
       category: formData.productCategory,
       onSale: formData.storeInventory === "sellProduct" ? true : false,
@@ -217,7 +217,7 @@ const ProductDetail = () => {
         productCode: response.data.productCode,
         retailPrice: response.data.retailUnitPrice,
         totalQuantity: response.data.stockQuantity,
-        weight: response.data.weight,
+        weight: response.data.unitWeight,
         description: response.data.description,
         productCategory: response.data.category,
         storeInventory: response.data.onSale ? "sellProduct" : "buyProduct",
@@ -363,6 +363,7 @@ const ProductDetail = () => {
                       value={formData.totalQuantity}
                       onChange={handleInputChange}
                       onBlur={handleBlur}
+                      readOnly
                       placeholder="Enter Quantity"
                       required
                       className={`w-full px-3 py-2 pr-12 border rounded-md focus:outline-none  ${
@@ -452,7 +453,7 @@ const ProductDetail = () => {
                         type="radio"
                         name="productType"
                         value="inStock"
-                        checked={formData.productType === "inStock"}
+                        checked
                         onChange={handleInputChange}
                         required
                         className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
@@ -461,7 +462,7 @@ const ProductDetail = () => {
                         In Stock
                       </span>
                     </label>
-                    <label className="flex items-center">
+                    {/* <label className="flex items-center">
                       <input
                         type="radio"
                         name="productType"
@@ -474,7 +475,7 @@ const ProductDetail = () => {
                       <span className="ml-2 text-sm text-gray-700">
                         Pre Order
                       </span>
-                    </label>
+                    </label> */}
                   </div>
                 </div>
 

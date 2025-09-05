@@ -80,7 +80,7 @@ const ProductForm = () => {
     // setLoading(true);
     const response = await getAllCategory();
     if (response.status === "success") {
-      console.log(response.data);
+      // console.log(response.data);
       setCategoryOptions(response.data.map((category) => category.category));
       // setCategory(response.data);
       // setLoading(false);
@@ -150,15 +150,16 @@ const ProductForm = () => {
       return;
     }
 
-    console.log("Form submitted:", formData);
+    // console.log("Form submitted:", formData);
 
     const data = new FormData();
     data.append("name", formData.productName);
     data.append("productCode", formData.productCode);
     data.append("retailUnitPrice", formData.retailPrice);
     data.append("stockQuantity", formData.totalQuantity);
-    data.append("weight", formData.weight);
+    data.append("unitWeight", formData.weight);
     data.append("description", formData.description);
+    // data.append("productType", "regular");
     data.append("category", formData.productCategory);
     data.append(
       "onSale",
@@ -173,9 +174,10 @@ const ProductForm = () => {
       data.append(`wholeSale[${index}][wholeSaleQuantity]`, price.qty);
       data.append(`wholeSale[${index}][wholeSaleUnitPrice]`, price.price);
     });
-    console.log(data);
+    // console.log(data);
+
     const res = await addProduct(data);
-    console.log(res);
+    // console.log(res);
     if (res.status === "success") {
       navigate("/");
     }
@@ -419,9 +421,8 @@ const ProductForm = () => {
                       <input
                         type="radio"
                         name="productType"
-                        value="inStock"
-                        checked={formData.productType === "inStock"}
-                        onChange={handleInputChange}
+                        value="InStock"
+                        checked
                         required
                         className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
                       />
@@ -429,7 +430,7 @@ const ProductForm = () => {
                         In Stock
                       </span>
                     </label>
-                    <label className="flex items-center">
+                    {/* <label className="flex items-center">
                       <input
                         type="radio"
                         name="productType"
@@ -442,7 +443,7 @@ const ProductForm = () => {
                       <span className="ml-2 text-sm text-gray-700">
                         Pre Order
                       </span>
-                    </label>
+                    </label> */}
                   </div>
                 </div>
 

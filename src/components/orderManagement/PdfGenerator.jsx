@@ -460,7 +460,7 @@ export async function generatePDF(orderData) {
     // Clean up
     document.body.removeChild(container);
   } catch (error) {
-    console.error("Error generating PDF:", error);
+    // console.error("Error generating PDF:", error);
     alert("Error generating PDF. Please try again.");
   }
 }

@@ -24,7 +24,7 @@ export default function OrderDetails() {
 
   const getOrder = async () => {
     const response = await getAOrder(id);
-    console.log(response);
+    // console.log(response);
 
     if (response.status === "success") {
       setOrder(response.data);
@@ -32,10 +32,10 @@ export default function OrderDetails() {
       navigate("/unauthorized");
     }
   };
-  console.log(order);
+  // console.log(order);
 
   const handlePrintClick = (voucherImageUrl) => {
-    console.log(voucherImageUrl);
+    // console.log(voucherImageUrl);
 
     // Create a new window
     const printWindow = window.open("", "_blank");
@@ -80,7 +80,7 @@ export default function OrderDetails() {
 
   const handlePrintPDF = async () => {
     const res = await getReceiptImage(id);
-    console.log(res);
+    // console.log(res);
     if (res.code === 201) {
       handlePrintClick(res.data.receiptImage.cdnUrl);
     }
@@ -295,7 +295,7 @@ export default function OrderDetails() {
               </div>
 
               {/* Print Button */}
-              <button
+              {/* <button
                 className="bg-primary hover:bg-primary/80 text-white font-medium py-3 px-4 rounded-3xl flex items-center justify-center gap-2 transition-colors"
                 onClick={() => {
                   handlePrintPDF();
@@ -320,7 +320,7 @@ export default function OrderDetails() {
                     <span className="myanmar-text">Print Receipt</span>
                   </>
                 )}
-              </button>
+              </button> */}
             </div>
 
             <div className="w-full h-auto mx-auto font-sans relative">

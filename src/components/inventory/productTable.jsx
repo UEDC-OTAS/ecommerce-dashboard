@@ -4,7 +4,7 @@ import { MdArrowBackIosNew, MdArrowForwardIos } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 
 const ProductTable = ({ products, sentQuantityModal, loading }) => {
-  console.log("products", products);
+  // console.log("products", products);
   // const role = JSON.parse(localStorage.getItem("uedc-user"))?.role;
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);

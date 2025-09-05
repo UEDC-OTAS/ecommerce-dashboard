@@ -41,7 +41,7 @@ const ProductDetail = () => {
         navigate("/");
       }
     } catch (error) {
-      console.log(error);
+      // console.log(error);
     }
   };
   const validateField = (name, value) => {
@@ -166,7 +166,7 @@ const ProductDetail = () => {
       return;
     }
 
-    console.log("Form submitted:", formData);
+    // console.log("Form submitted:", formData);
 
     const data = new FormData();
     data.append("name", formData.productName);
@@ -189,9 +189,9 @@ const ProductDetail = () => {
       data.append(`wholeSale[${index}][wholeSaleQuantity]`, price.qty);
       data.append(`wholeSale[${index}][wholeSaleUnitPrice]`, price.price);
     });
-    console.log(data);
+    // console.log(data);
     const res = await addProduct(data);
-    console.log(res);
+    // console.log(res);
     if (res.status === "success") {
       navigate("/");
     }
@@ -230,17 +230,17 @@ const ProductDetail = () => {
     setLoading(true);
     const response = await getAProducts(id);
     if (response.status === "success") {
-      console.log(response.data);
+      // console.log(response.data);
       setFormData({
         productName: response.data.name,
         productCode: response.data.productCode,
         retailPrice: response.data.retailUnitPrice,
         totalQuantity: response.data.stockQuantity,
-        weight: response.data.weight,
+        unitWeight: response.data.unitWeight,
         description: response.data.description,
         productCategory: response.data.category,
         storeInventory: response.data.onSale ? "sellProduct" : "buyProduct",
-        productType: response.data.onSale ? "inStock" : "outStock",
+        productType: response.data.saleType,
       });
       setWholesalePrices(response.data.wholeSale);
       setUploadedImages(response.data.images);
@@ -250,6 +250,7 @@ const ProductDetail = () => {
       setLoading(false);
     }
   };
+  console.log(formData.productType);
 
   useEffect(() => {
     getProduct();
@@ -407,7 +408,7 @@ const ProductDetail = () => {
                       type="number"
                       step="0.01"
                       name="weight"
-                      value={formData.weight}
+                      value={formData.unitWeight}
                       readOnly
                       onChange={handleInputChange}
                       onBlur={handleBlur}
@@ -472,7 +473,7 @@ const ProductDetail = () => {
                         name="productType"
                         value="inStock"
                         readOnly
-                        checked={formData.productType === "inStock"}
+                        checked={formData.productType === "regular"}
                         onChange={handleInputChange}
                         required
                         className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
@@ -481,7 +482,7 @@ const ProductDetail = () => {
                         In Stock
                       </span>
                     </label>
-                    <label className="flex items-center">
+                    {/* <label className="flex items-center">
                       <input
                         type="radio"
                         name="productType"
@@ -495,7 +496,7 @@ const ProductDetail = () => {
                       <span className="ml-2 text-sm text-gray-700">
                         Pre Order
                       </span>
-                    </label>
+                    </label> */}
                   </div>
                 </div>
 
@@ -511,7 +512,7 @@ const ProductDetail = () => {
                         name="storeInventory"
                         readOnly
                         value="sellProduct"
-                        checked={formData.storeInventory === "sellProduct"}
+                        checked={formData.storeInventory}
                         onChange={handleInputChange}
                         required
                         className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
@@ -525,7 +526,7 @@ const ProductDetail = () => {
                         type="radio"
                         name="storeInventory"
                         value="storeIn"
-                        checked={formData.storeInventory === "storeIn"}
+                        checked={!formData.storeInventory}
                         onChange={handleInputChange}
                         required
                         className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"

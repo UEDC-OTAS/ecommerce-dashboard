@@ -19,7 +19,10 @@ function GetAllProduct() {
     const response = await getAllProducts(id);
     // console.log("response", response);
     if (response.status === "success") {
-      setProducts(response.data);
+      const filterDelete = response.data.filter(
+        (product) => product.isDeleted === false
+      );
+      setProducts(filterDelete);
       setLoading(false);
     } else if (response.status === "error") {
       setLoading(false);
@@ -31,7 +34,7 @@ function GetAllProduct() {
   }, []);
 
   const getQuantityModal = async (product) => {
-    console.log("product", product);
+    // console.log("product", product);
     setSelectedProduct(product);
     setIsQuantityModalOpen(true);
   };
@@ -58,6 +61,7 @@ function GetAllProduct() {
         products={products}
         loading={loading}
         sentQuantityModal={getQuantityModal}
+        refresh={getProducts}
       />
 
       {/* Quantity Modal */}

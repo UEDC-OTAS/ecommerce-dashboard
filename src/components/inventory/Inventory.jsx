@@ -12,10 +12,10 @@ function Inventory() {
   const [bulkPriceModalOpen, setIsBulkPriceModalOpen] = useState(false);
   const [category, setCategory] = useState([]);
   const getCategory = async () => {
-    console.log("getCategory");
+    // console.log("getCategory");
     setLoading(true);
     const response = await getAllCategory();
-    console.log("response", response);
+    // console.log("response", response);
     if (response.status === "success") {
       setCategory(response.data);
       setLoading(false);

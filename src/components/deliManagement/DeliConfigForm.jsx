@@ -41,7 +41,7 @@ export const DeliveryConfigForm = ({
 
     if (!validateForm()) return;
 
-    console.log(formData);
+    // console.log(formData);
     const data = {
       city: formData.city,
       township: formData.township,

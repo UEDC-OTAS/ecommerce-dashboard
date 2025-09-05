@@ -70,7 +70,7 @@ function GetAllOrder() {
     }
   };
 
-  console.log("orders", orders);
+  // console.log("orders", orders);
 
   const passOrder = (orderId) => {
     if (selectedOrder === orderId) {

@@ -16,7 +16,7 @@ export const DeliveryConfigManager = () => {
   const getDeliverZone = async () => {
     try {
       const response = await getAllDeliverZone();
-      console.log(response);
+      // console.log(response);
       if (response.status === "success") {
         setConfigs(response.data);
       }
@@ -77,7 +77,7 @@ export const DeliveryConfigManager = () => {
     <div className="px-4">
       <div className="overflow-y-auto h-[calc(100vh-50px)]">
         {/* Header */}
-        <div className="mb-8 flex items-center justify-between gap-2">
+        <div className="mb-8 flex flex-col md:flex-row items-center justify-between gap-2">
           <div className="">
             <h1 className="header ml-8 lg:ml-0">Delivery Configuration</h1>
             <p className="text-gray-600">
@@ -86,7 +86,7 @@ export const DeliveryConfigManager = () => {
           </div>
 
           {/* Search */}
-          <div className="flex items-center gap-2">
+          <div className="flex flex-col md:flex-row md:items-center gap-2">
             <div className="relative  md:w-[400px]">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               <input
@@ -164,7 +164,7 @@ export const DeliveryConfigManager = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredConfigs.map((config) => (
             <DeliveryConfigCard
-              key={config.id}
+              key={config._id}
               config={config}
               onEdit={handleEditConfig}
               onDelete={handleDeleteConfig}

@@ -4,7 +4,7 @@ import updateQuantity from "../../api/inventoryApi/UpdateQuantity";
 import bulkPriceChg from "../../api/inventoryApi/BulkPriceChg";
 
 const BulkPriceModel = ({ isOpen, onClose, cancel, stockIds }) => {
-  console.log("stockIds", stockIds);
+  // console.log("stockIds", stockIds);
   const [percentageChange, setPercentageChange] = useState("");
   const [isIncreasing, setIsIncreasing] = useState(true);
 
@@ -33,14 +33,14 @@ const BulkPriceModel = ({ isOpen, onClose, cancel, stockIds }) => {
       return;
     }
 
-    console.log("percentage", percentage);
+    // console.log("percentage", percentage);
     const data = {
       ids: stockIds,
       percentage: isIncreasing ? percentage : -percentage,
     };
 
     const res = await bulkPriceChg(data);
-    console.log(res);
+    // console.log(res);
 
     if (res.status === "success") {
       onClose();

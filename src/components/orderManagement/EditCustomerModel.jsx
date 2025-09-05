@@ -3,7 +3,7 @@ import Modal from "../utli/Modal";
 
 const EditCustomerModel = ({ isOpen, onClose, onSubmit, product, orderId }) => {
   // console.log("product", product)c;
-  console.log("product", product);
+  // console.log("product", product);
 
   const handleClose = () => {
     onClose();
