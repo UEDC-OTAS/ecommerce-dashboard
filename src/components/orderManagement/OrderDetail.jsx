@@ -1,4 +1,4 @@
-import { Download, Printer } from "lucide-react";
+// import { Download, Printer } from "lucide-react";
 import { useEffect, useState } from "react";
 import getAOrder from "../../api/orderApi/getAOrder";
 import { useParams, useNavigate } from "react-router-dom";
@@ -8,7 +8,7 @@ import chgOrderStatus from "../../api/orderApi/chgOrderStatus";
 import { MdArrowBack, MdOutlinePhone } from "react-icons/md";
 import Loading from "../utli/Loading";
 import avatar from "../../assets/Oval.png";
-import getDeliverZone from "../../api/deliveryApi/getDeliZOne";
+// import getDeliverZone from "../../api/deliveryApi/getDeliZOne";
 
 export default function OrderDetails() {
   // const role = JSON.parse(localStorage.getItem("uedc-user"))?.role;
