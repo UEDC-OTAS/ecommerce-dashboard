@@ -61,15 +61,16 @@ function GetAllOrder() {
     const start = format(startDate, "yyyy-MM-dd");
     const end = format(endDate, "yyyy-MM-dd");
 
-    const response = await getAllOrders(activeTab, start, end);
-    setOrders(response.data);
-    console.log("response", response);
-    if (response.code === 200) {
+    const response = await getAllOrders();
+    if (response.status === "success") {
+      setOrders(response.data);
       setLoading(false);
     } else if (response.code === 403) {
       navigate("/unauthorized");
     }
   };
+
+  console.log("orders", orders);
 
   const passOrder = (orderId) => {
     if (selectedOrder === orderId) {

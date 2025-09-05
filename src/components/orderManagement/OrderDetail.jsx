@@ -22,19 +22,12 @@ export default function OrderDetails() {
   const [isOpen, setIsOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
 
-  const [zone, setZone] = useState(null);
-
   const getOrder = async () => {
     const response = await getAOrder(id);
-    // console.log(response);
+    console.log(response);
 
     if (response.status === "success") {
       setOrder(response.data);
-      const zoneResponse = await getDeliverZone(response.data.deliveryZone);
-      console.log(zoneResponse);
-      if (zoneResponse.status === "success") {
-        setZone(zoneResponse.data);
-      }
     } else if (response.code === 403) {
       navigate("/unauthorized");
     }
@@ -171,10 +164,10 @@ export default function OrderDetails() {
         <div>
           <form className="space-y-6">
             <div className="flex flex-col md:flex-row gap-20">
-              <div className="space-y-10 w-full md:w-2/3">
+              <div className="space-y-10 w-full ">
                 <div className="py-4 px-5 border rounded-lg">
                   <h1 className="font-semibold text-[24px] mb-10">Customer</h1>
-                  <div className="flex items-center justify-between gap-5">
+                  <div className="flex items-center gap-10 lg:gap-20">
                     <div className="flex items-center gap-5">
                       <img src={avatar} alt="" className="w-20 h-20" />
                       <div className="">
@@ -227,7 +220,7 @@ export default function OrderDetails() {
                         id="city"
                         name="city"
                         readOnly
-                        value={zone?.city}
+                        value={order?.delivery?.city}
                         className="input-box"
                       />
                     </div>
@@ -242,7 +235,7 @@ export default function OrderDetails() {
                         id="Township"
                         name="Township"
                         readOnly
-                        value={zone?.township}
+                        value={order?.delivery?.township}
                         className="input-box"
                       />
                     </div>
@@ -265,21 +258,21 @@ export default function OrderDetails() {
                   </div>
                 </div>
               </div>
-              <div className="w-full md:w-1/3">
+              {/* <div className="w-full">
                 <label className="label">Payment ScreenShot</label>
 
-                {/* Form Image Previews */}
+               
 
                 <div className="mt-4 w-full">
                   <div className="rounded-lg overflow-hidden bg-gray-100">
-                    {/* <img
+                    <img
                         src={order.paymentImage.url || "/placeholder.svg"}
                         alt="paymentImage"
                         className="w-full max-h-[600px]"
-                      /> */}
+                      />
                   </div>
                 </div>
-              </div>
+              </div> */}
             </div>
           </form>
 
@@ -332,8 +325,9 @@ export default function OrderDetails() {
 
             <div className="w-full h-auto mx-auto font-sans relative">
               {/* Header */}
-              <div className="grid grid-cols-4 gap-4 pb-4 mb-6 border-b border-gray-200">
+              <div className="grid grid-cols-5 gap-4 pb-4 mb-6 border-b border-gray-200">
                 <div className="label">Items</div>
+                <div className="label text-center">Category</div>
                 <div className="label text-center">Quantity</div>
                 <div className="label text-center">Weight</div>
                 <div className="label text-right">Price</div>
@@ -342,8 +336,8 @@ export default function OrderDetails() {
               {/* Item Row */}
               {order?.products?.map((item) => (
                 <div
-                  className="grid grid-cols-4 gap-4 mb-8"
-                  key={item.saleCode}
+                  className="grid grid-cols-5 gap-4 mb-8"
+                  key={item.stockId}
                   onClick={() => {
                     setIsOpen(true);
                     setProduct(item);
@@ -354,13 +348,16 @@ export default function OrderDetails() {
                     {item.name}
                   </div>
                   <div className="text-gray-900 text-sm text-center">
+                    {item.category}
+                  </div>
+                  <div className="text-gray-900 text-sm text-center">
                     {item.quantity}
                   </div>
                   <div className="text-gray-900 text-sm text-center">
                     {item.unitWeight} {item.weightUnit}
                   </div>
                   <div className="text-gray-900 text-sm text-right">
-                    {/* {(item.price * item.quantity).toLocaleString()} MMK */}
+                    {(item.unitPrice * item.quantity).toLocaleString()} MMK
                   </div>
                 </div>
               ))}

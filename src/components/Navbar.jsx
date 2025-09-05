@@ -51,13 +51,13 @@ function Navbar() {
       role: "finance",
       secondaryRole: "customer-support",
     },
-    // {
-    //   path: "/delivery",
-    //   icon: Truck,
-    //   label: "Delivery",
-    //   role: "delivery",
-    //   secondaryRole: "customer-support",
-    // },
+    {
+      path: "/delivery",
+      icon: Truck,
+      label: "Delivery",
+      role: "delivery",
+      secondaryRole: "customer-support",
+    },
     // {
     //   path: "/support",
     //   icon: MdOutlineSupportAgent,

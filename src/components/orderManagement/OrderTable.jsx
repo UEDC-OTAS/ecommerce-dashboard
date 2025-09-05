@@ -82,7 +82,7 @@ const OrderTable = ({
   return (
     <div className="w-full mx-auto pt-6">
       {/* Tabs */}
-      <div className="flex mb-10 justify-between flex-wrap gap-1">
+      {/* <div className="flex mb-10 justify-between flex-wrap gap-1">
         <div>
           {tabs.map((tab) => (
             <button
@@ -117,7 +117,7 @@ const OrderTable = ({
                 "dd-MM-yyyy"
               )}`}
         </button>
-      </div>
+      </div> */}
 
       {showDatePicker && (
         <div className="mb-4 bg-white rounded-lg shadow-md absolute right-0 z-10">
@@ -156,7 +156,7 @@ const OrderTable = ({
       )}
 
       {/* Table */}
-      <div className="bg-white rounded-lg shadow overflow-y-auto h-[calc(100vh-230px)]">
+      <div className="bg-white mt-[50px] rounded-lg shadow overflow-y-auto h-[calc(100vh-230px)]">
         <table className="w-full table-auto">
           <thead
             className="bg-gray-50 border-b border-gray-200"
@@ -170,16 +170,19 @@ const OrderTable = ({
                 Customer
               </th>
               <th className="px-4 py-4 text-left text-xs font-medium text-black uppercase tracking-wider">
-                Phone
-              </th>
-              <th className="px-4 py-4 text-left text-xs font-medium text-black uppercase tracking-wider">
                 Address
               </th>
               <th className="px-4 py-4 text-left text-xs font-medium text-black uppercase tracking-wider">
-                Quantity
+                Township
               </th>
+              {/* <th className="px-4 py-4 text-left text-xs font-medium text-black uppercase tracking-wider">
+                Qty
+              </th> */}
               <th className="px-4 py-4 text-left text-xs font-medium text-black uppercase tracking-wider">
                 Total
+              </th>
+              <th className="px-4 py-4 text-left text-xs font-medium text-black uppercase tracking-wider">
+                Status
               </th>
               <th className="px-4 py-4 text-left text-xs font-medium text-black uppercase tracking-wider">
                 Actions
@@ -206,7 +209,7 @@ const OrderTable = ({
                   </td>
                 </tr>
               ) : (
-                currentOrders.map((order, index) => (
+                orders.map((order, index) => (
                   <tr
                     key={order._id}
                     className={`${
@@ -214,75 +217,31 @@ const OrderTable = ({
                     }`}
                   >
                     <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {currentPage * itemsPerPage - itemsPerPage + index + 1}
+                      {index + 1}
                     </td>
                     <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {order?.snapshotData.customerName}
+                      {order?.userId?.userName}
                     </td>
                     <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {order?.snapshotData.contactNumber}
+                      {order?.address}
                     </td>
                     <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
-                      <p
-                        className={`text-ellipsis overflow-hidden whitespace-nowrap ${
-                          activeOrder ? "max-w-[100px]" : "w-full"
-                        }`}
-                      >
-                        {order?.snapshotData.address}
-                      </p>
+                      <span>{order?.delivery?.township}</span>
                     </td>
                     <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
-                      <span>{order?.snapshotData.paymentType}</span>
+                      <span>{order?.totalAmount.toLocaleString()}</span>
                     </td>
                     <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
-                      <span>
-                        {order?.snapshotData.totalAmount.toLocaleString()} MMK
-                      </span>
+                      <span>{order?.status}</span>
                     </td>
                     <td className="px-4 py-4 whitespace-nowrap text-sm font-medium">
-                      <div className="flex space-x-2">
-                        {!activeOrder &&
-                          order.snapshotData.deliveryStatus === "pending" && (
-                            <button
-                              onClick={() => passOrder(order._id)}
-                              className="bg-primary hover:bg-primary/80 text-white p-3 rounded-lg transition-colors"
-                              title="Edit"
-                            >
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                height="18px"
-                                viewBox="0 -960 960 960"
-                                width="24px"
-                                fill="#e3e3e3"
-                              >
-                                <path d="m691-150 139-138-42-42-97 95-39-39-42 43 81 81ZM240-600h480v-80H240v80ZM720-40q-83 0-141.5-58.5T520-240q0-83 58.5-141.5T720-440q83 0 141.5 58.5T920-240q0 83-58.5 141.5T720-40ZM120-80v-680q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v267q-19-9-39-15t-41-9v-243H200v562h243q5 31 15.5 59T486-86l-6 6-60-60-60 60-60-60-60 60-60-60-60 60Zm120-200h203q3-21 9-41t15-39H240v80Zm0-160h284q38-37 88.5-58.5T720-520H240v80Zm-40 242v-562 562Z" />
-                              </svg>
-                            </button>
-                          )}
-
-                        {order.snapshotData.deliveryStatus === "cancelled" &&
-                          role !== "customer-support" && (
-                            <button
-                              onClick={() => {
-                                setSelectedOrder(order);
-                                setDeleteOrderId(order._id);
-                                setDeleteModal(true);
-                              }}
-                              className="bg-red-600 hover:bg-red-700 text-white p-3 rounded-lg transition-colors"
-                              title=""
-                            >
-                              <Trash2 size={18} />
-                            </button>
-                          )}
-
-                        <button
-                          onClick={() => handleView(order._id)}
-                          className="border border-gray-200 hover:bg-gray-200 text-delete p-3 rounded-lg transition-colors"
-                          title="View"
-                        >
-                          <Eye size={18} />
-                        </button>
-                      </div>
+                      <button
+                        onClick={() => navigate(`/order/${order._id}`)}
+                        className="button border border-primary text-primary"
+                      >
+                        <Eye className="w-4 h-4" />
+                        <span>View Details</span>
+                      </button>
                     </td>
                   </tr>
                 ))

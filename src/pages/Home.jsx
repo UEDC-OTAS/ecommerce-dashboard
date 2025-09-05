@@ -8,6 +8,7 @@ import ProductEdit from "../components/inventory/ProductEdit";
 import GetAllOrder from "../components/orderManagement/GetAllOrder";
 import OrderDetail from "../components/orderManagement/OrderDetail";
 import OrderDetails from "../components/orderManagement/OrderDetail";
+import { DeliveryConfigManager } from "../components/deliManagement/DeliConfigManager";
 function Home() {
   return (
     <>
@@ -22,6 +23,7 @@ function Home() {
             <Route path="/product-edit/:id" element={<ProductEdit />} />
             <Route path="/orders" element={<GetAllOrder />} />
             <Route path="/order/:id" element={<OrderDetails />} />
+            <Route path="/delivery" element={<DeliveryConfigManager />} />
           </Routes>
         </div>
       </div>

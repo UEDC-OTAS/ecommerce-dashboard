@@ -1,8 +1,9 @@
 import axios from "../../axios";
 
-const getAllOrders = async (status) => {
+const getAllDeliverZone = async () => {
   try {
-    const response = await axios.get(`order`);
+    const response = await axios.get(`delivery`);
+
     return response.data;
   } catch (error) {
     console.log(error);
@@ -10,4 +11,4 @@ const getAllOrders = async (status) => {
   }
 };
 
-export default getAllOrders;
+export default getAllDeliverZone;
