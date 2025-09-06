@@ -338,11 +338,11 @@ export default function OrderDetails() {
                 <div
                   className="grid grid-cols-5 gap-4 mb-8"
                   key={item.stockId}
-                  onClick={() => {
-                    setIsOpen(true);
-                    setProduct(item);
-                    setIsEditOpen(false);
-                  }}
+                  // onClick={() => {
+                  //   setIsOpen(true);
+                  //   setProduct(item);
+                  //   setIsEditOpen(false);
+                  // }}
                 >
                   <div className="text-gray-900 text-sm font-medium">
                     {item.name}

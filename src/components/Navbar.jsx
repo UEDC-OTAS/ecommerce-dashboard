@@ -49,6 +49,7 @@ function Navbar() {
       icon: ShoppingCart,
       label: "Order",
       role: "finance",
+      secondaryPath: "order",
       secondaryRole: "customer-support",
     },
     {
