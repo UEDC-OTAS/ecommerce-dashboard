@@ -60,6 +60,7 @@ const QuantityModal = ({ isOpen, onClose, cancel, product }) => {
     if (res.code === 200) {
       onClose();
       setMethod(null);
+      setNewQuantity(0);
       // onSubmit();
     }
   };

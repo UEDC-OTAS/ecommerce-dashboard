@@ -139,7 +139,7 @@ const ProductTable = ({ products, sentQuantityModal, loading }) => {
                           Out of Stock
                         </span>
                       )}
-                      {product.stockQuantity > 10 && (
+                      {product.stockQuantity >= 10 && (
                         <span className="piller bg-success text-successText">
                           Stock Available
                         </span>
