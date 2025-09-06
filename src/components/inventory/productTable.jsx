@@ -130,7 +130,7 @@ const ProductTable = ({ products, sentQuantityModal, loading }) => {
                     </td>
                     <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
                       {product.stockQuantity < 10 && (
-                        <span className="piller bg-warnin g text-warningText">
+                        <span className="piller bg-warning text-warningText">
                           Low Stock
                         </span>
                       )}
