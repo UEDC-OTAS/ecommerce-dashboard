@@ -239,7 +239,7 @@ const ProductDetail = () => {
         unitWeight: response.data.unitWeight,
         description: response.data.description,
         productCategory: response.data.category,
-        storeInventory: response.data.onSale ? "sellProduct" : "buyProduct",
+        storeInventory: response.data.onSale,
         productType: response.data.saleType,
       });
       setWholesalePrices(response.data.wholeSale);
@@ -250,7 +250,7 @@ const ProductDetail = () => {
       setLoading(false);
     }
   };
-  console.log(formData.productType);
+  // console.log(formData.productType);
 
   useEffect(() => {
     getProduct();
