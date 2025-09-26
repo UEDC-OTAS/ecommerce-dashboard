@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { RiMoneyDollarCircleLine } from "react-icons/ri";
 
 const CategoryTable = ({ category, loading, sentBulkPriceModal }) => {
-  // console.log("category", category);
+  console.log("category", category);
 
   const [selectedRows, setSelectedRows] = useState(new Set());
   const [selectAll, setSelectAll] = useState(false);
@@ -111,80 +111,87 @@ const CategoryTable = ({ category, loading, sentBulkPriceModal }) => {
           ) : (
             <tbody>
               {category.length > 0 &&
-                category.map((product, index) => (
-                  <tr
-                    key={index}
-                    className={
-                      selectedRows.has(product.category) ? "bg-blue-50" : ""
-                    }
-                  >
-                    <td className="px-4 py-4 whitespace-nowrap">
-                      <input
-                        type="checkbox"
-                        checked={selectedRows.has(product.category)}
-                        onChange={() => handleRowSelect(product.category)}
-                        className="w-4 h-4 text-primary bg-gray-100 border-gray-300 rounded focus:none"
-                      />
-                    </td>
-                    <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {index + 1}
-                    </td>
-                    <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {product.category}
-                    </td>
-                    <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {product.totalStockItems}
-                    </td>
-                    <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
-                      <div className="piller bg-success text-successText">
-                        <span>
-                          {product.inStock}{" "}
-                          {product.inStock > 1 ? "Products" : "Product"}
-                        </span>
-                      </div>
-                    </td>
-                    <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
-                      <div>
-                        <div className="piller bg-warning text-warningText">
-                          <span>
-                            {product.lowStock}{" "}
-                            {product.lowStock > 1 ? "Products" : "Product"}
-                          </span>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
-                      <div className="piller bg-danger text-dangerText">
-                        <span>
-                          {product.outOfStock}{" "}
-                          {product.outOfStock > 1 ? "Products" : "Product"}
-                        </span>
-                      </div>
-                    </td>
-                    <td className="px-4 py-4 whitespace-nowrap text-sm font-medium">
-                      <div className="flex space-x-2">
-                        <button
-                          onClick={() => getBulkPriceModal(product.stockIds)}
-                          className="button border border-primary text-primary hover:bg-primary hover:text-white"
-                          title="Edit"
-                        >
-                          <RiMoneyDollarCircleLine className="w-4 h-4" />
-                          <span>Edit Price</span>
-                        </button>
-                        <button
-                          onClick={() =>
-                            navigate(`/all-products/${product.category}`)
-                          }
-                          className="button border border-primary text-primary hover:bg-primary hover:text-white"
-                          title="View Stock"
-                        >
-                          <EyeIcon className="w-4 h-4" />
-                          <span>View</span>
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                category.map(
+                  (product, index) => (
+                    console.log("product", product),
+                    (
+                      <tr
+                        key={index}
+                        className={
+                          selectedRows.has(product.category) ? "bg-blue-50" : ""
+                        }
+                      >
+                        <td className="px-4 py-4 whitespace-nowrap">
+                          <input
+                            type="checkbox"
+                            checked={selectedRows.has(product.category)}
+                            onChange={() => handleRowSelect(product.category)}
+                            className="w-4 h-4 text-primary bg-gray-100 border-gray-300 rounded focus:none"
+                          />
+                        </td>
+                        <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
+                          {index + 1}
+                        </td>
+                        <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
+                          {product.category}
+                        </td>
+                        <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
+                          {product.totalStockItems}
+                        </td>
+                        <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
+                          <div className="piller bg-success text-successText">
+                            <span>
+                              {product.inStock}{" "}
+                              {product.inStock > 1 ? "Products" : "Product"}
+                            </span>
+                          </div>
+                        </td>
+                        <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
+                          <div>
+                            <div className="piller bg-warning text-warningText">
+                              <span>
+                                {product.lowStock}{" "}
+                                {product.lowStock > 1 ? "Products" : "Product"}
+                              </span>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
+                          <div className="piller bg-danger text-dangerText">
+                            <span>
+                              {product.outOfStock}{" "}
+                              {product.outOfStock > 1 ? "Products" : "Product"}
+                            </span>
+                          </div>
+                        </td>
+                        <td className="px-4 py-4 whitespace-nowrap text-sm font-medium">
+                          <div className="flex space-x-2">
+                            <button
+                              onClick={() =>
+                                getBulkPriceModal(product.stockIds)
+                              }
+                              className="button border border-primary text-primary hover:bg-primary hover:text-white"
+                              title="Edit"
+                            >
+                              <RiMoneyDollarCircleLine className="w-4 h-4" />
+                              <span>Edit Price</span>
+                            </button>
+                            <button
+                              onClick={() =>
+                                navigate(`/all-products/${product.category}`)
+                              }
+                              className="button border border-primary text-primary hover:bg-primary hover:text-white"
+                              title="View Stock"
+                            >
+                              <EyeIcon className="w-4 h-4" />
+                              <span>View</span>
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    )
+                  )
+                )}
               {category.length === 0 && (
                 <tr>
                   <td

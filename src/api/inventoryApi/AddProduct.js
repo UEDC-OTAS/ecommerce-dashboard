@@ -9,7 +9,7 @@ const addProduct = async (data) => {
         "Content-Type": "multipart/form-data",
       },
     });
-    if (response.status === 201) {
+    if (response.success) {
       toast.success("Product added successfully!", {
         id: toastId,
         autoClose: 500, // Auto-close the toast after 5 seconds

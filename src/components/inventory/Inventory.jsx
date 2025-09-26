@@ -15,14 +15,16 @@ function Inventory() {
     // console.log("getCategory");
     setLoading(true);
     const response = await getAllCategory();
-    // console.log("response", response);
-    if (response.status === "success") {
-      setCategory(response.data);
+    console.log("response", response);
+    if (response.success) {
+      setCategory(response.data.items);
       setLoading(false);
-    } else if (response.status === "error") {
+    } else if (response.success === false) {
       setLoading(false);
     }
   };
+
+  console.log("category", category);
 
   useEffect(() => {
     getCategory();

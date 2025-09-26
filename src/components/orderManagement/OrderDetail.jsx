@@ -26,7 +26,7 @@ export default function OrderDetails() {
     const response = await getAOrder(id);
     // console.log(response);
 
-    if (response.status === "success") {
+    if (response.success) {
       setOrder(response.data);
     } else if (response.code === 403) {
       navigate("/unauthorized");

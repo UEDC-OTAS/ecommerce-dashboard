@@ -62,10 +62,11 @@ function GetAllOrder() {
     const end = format(endDate, "yyyy-MM-dd");
 
     const response = await getAllOrders();
-    if (response.status === "success") {
-      setOrders(response.data);
+    if (response.success) {
+      console.log(response);
+      setOrders(response.data.orders);
       setLoading(false);
-    } else if (response.code === 403) {
+    } else if (response.success === false) {
       navigate("/unauthorized");
     }
   };

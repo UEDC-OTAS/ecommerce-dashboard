@@ -42,7 +42,7 @@ const BulkPriceModel = ({ isOpen, onClose, cancel, stockIds }) => {
     const res = await bulkPriceChg(data);
     // console.log(res);
 
-    if (res.status === "success") {
+    if (res.success) {
       onClose();
       setPercentageChange("");
       setIsIncreasing(true);

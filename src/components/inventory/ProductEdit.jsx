@@ -86,12 +86,12 @@ const ProductDetail = () => {
   const getCategoryName = async () => {
     // setLoading(true);
     const response = await getAllCategory();
-    if (response.status === "success") {
+    if (response.success) {
       // console.log(response.data);
       setCategoryOptions(response.data.map((category) => category.category));
       // setCategory(response.data);
       // setLoading(false);
-    } else if (response.status === "error") {
+    } else if (response.success === false) {
     }
   };
 
@@ -173,7 +173,7 @@ const ProductDetail = () => {
     };
 
     const res = await updateProduct({ productId, data });
-    if (res.status === "success") {
+    if (res.success) {
       navigate("/");
     }
   };
@@ -210,7 +210,8 @@ const ProductDetail = () => {
   const getProduct = async () => {
     setLoading(true);
     const response = await getAProducts(id);
-    if (response.status === "success") {
+    // console.log(response);
+    if (response.success) {
       setProductId(response.data._id);
       setFormData({
         productName: response.data.name,
@@ -232,7 +233,7 @@ const ProductDetail = () => {
       );
       setUploadedImages(response.data.images);
       setLoading(false);
-    } else if (response.status === "error") {
+    } else if (response.success === false) {
       setLoading(false);
     }
   };

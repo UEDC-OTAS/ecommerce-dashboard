@@ -17,14 +17,14 @@ function GetAllProduct() {
   const getProducts = async () => {
     setLoading(true);
     const response = await getAllProducts(id);
-    // console.log("response", response);
-    if (response.status === "success") {
+    console.log("response", response);
+    if (response.success) {
       const filterDelete = response.data.filter(
         (product) => product.isDeleted === false
       );
       setProducts(filterDelete);
       setLoading(false);
-    } else if (response.status === "error") {
+    } else if (response.success === false) {
       setLoading(false);
     }
   };

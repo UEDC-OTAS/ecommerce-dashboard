@@ -5,7 +5,7 @@ import { toast } from "sonner";
 const handleLogin = async (data) => {
   const toastId = toast.loading("Logging in...");
   try {
-    const response = await axios.post("api/v1/login", data);
+    const response = await axios.post("admin/login", data);
     toast.success("Logged in successfully!", {
       id: toastId,
       autoClose: 200, // Auto-close the toast after 5 seconds

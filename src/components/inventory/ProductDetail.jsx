@@ -37,7 +37,7 @@ const ProductDetail = () => {
   const deleteProduct = async (productId) => {
     try {
       const response = await deleteStock(productId);
-      if (response.status === "success") {
+      if (response.success) {
         navigate("/");
       }
     } catch (error) {
@@ -95,12 +95,12 @@ const ProductDetail = () => {
   // const getCategoryName = async () => {
   //   // setLoading(true);
   //   const response = await getAllCategory();
-  //   if (response.status === "success") {
+  //   if (response.success) {
   //     console.log(response.data);
   //     setCategoryOptions(response.data.map((category) => category.category));
   //     // setCategory(response.data);
   //     // setLoading(false);
-  //   } else if (response.status === "error") {
+  //   } else if (response.success === false) {
   //   }
   // };
 
@@ -192,7 +192,7 @@ const ProductDetail = () => {
     // console.log(data);
     const res = await addProduct(data);
     // console.log(res);
-    if (res.status === "success") {
+    if (res.success) {
       navigate("/");
     }
   };
@@ -229,7 +229,8 @@ const ProductDetail = () => {
   const getProduct = async () => {
     setLoading(true);
     const response = await getAProducts(id);
-    if (response.status === "success") {
+    console.log(response);
+    if (response.success) {
       // console.log(response.data);
       setFormData({
         productName: response.data.name,
@@ -246,7 +247,7 @@ const ProductDetail = () => {
       setUploadedImages(response.data.images);
       setProductId(response.data._id);
       setLoading(false);
-    } else if (response.status === "error") {
+    } else if (response.success === false) {
       setLoading(false);
     }
   };

@@ -79,12 +79,12 @@ const ProductForm = () => {
   const getCategoryName = async () => {
     // setLoading(true);
     const response = await getAllCategory();
-    if (response.status === "success") {
+    if (response.success) {
       // console.log(response.data);
       setCategoryOptions(response.data.map((category) => category.category));
       // setCategory(response.data);
       // setLoading(false);
-    } else if (response.status === "error") {
+    } else if (response.success === false) {
     }
   };
 
@@ -177,8 +177,8 @@ const ProductForm = () => {
     // console.log(data);
 
     const res = await addProduct(data);
-    // console.log(res);
-    if (res.status === "success") {
+    console.log(res);
+    if (res.success) {
       navigate("/");
     }
   };
