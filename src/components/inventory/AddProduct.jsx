@@ -98,9 +98,9 @@ const ProductForm = () => {
     }
 
     files.forEach((file) => {
-      if (file.size > 10 * 1024 * 1024) {
+      if (file.size > 1 * 1024 * 1024) {
         // 10MB limit
-        alert("File size must be less than 10MB");
+        alert("File size must be less than 1MB");
         return;
       }
 
@@ -657,7 +657,7 @@ const ProductForm = () => {
                           Upload stock image
                         </p>
                         <p className="text-xs text-gray-500">
-                          Please upload an image with file size less than 10mb.
+                          Please upload an image with file size less than 1mb.
                         </p>
                       </div>
                     </div>
