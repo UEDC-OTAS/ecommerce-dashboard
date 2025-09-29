@@ -1,25 +1,37 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Modal from "../utli/Modal";
 import updatePassword from "../../api/accountApi/updatePassword";
 import updateDepartment from "../../api/accountApi/updateDeperment";
 const UpdateModel = ({ isOpen, onClose, isPasswordOpen, onSubmit, user }) => {
-  // console.log(user);
+  console.log(user);
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [department, setDepartment] = useState("");
+  const [name, setName] = useState("");
+
+  useEffect(() => {
+    setName(user?.name || "");
+    // setDepartment(user?.role || "");
+  }, [user]);
   // console.log(department);
 
   const handleClose = () => {
     onClose();
+    setPassword("");
+    setConfirmPassword("");
+    setDepartment(user?.role || "");
+    setName(user?.name || "");
   };
 
   const updateInfo = async () => {
     // console.log("updateDepartment");
     const data = {
       role: department,
+      name: name,
     };
     const response = await updateDepartment({ id: user?._id, data });
-    if (response.code === 200) {
+    console.log(response);
+    if (response.success) {
       handleClose();
       onSubmit();
     }
@@ -33,6 +45,7 @@ const UpdateModel = ({ isOpen, onClose, isPasswordOpen, onSubmit, user }) => {
       confirmPassword,
     };
     const response = await updatePassword({ id: user?._id, data });
+    console.log(response);
     if (response.code === 200) {
       handleClose();
     }
@@ -84,7 +97,7 @@ const UpdateModel = ({ isOpen, onClose, isPasswordOpen, onSubmit, user }) => {
             </button>
             <button
               onClick={passwordSubmit}
-              className="px-4 py-2 text-sm font-medium text-white bg-orange-500 border border-orange-500 rounded-lg hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-200 transition-colors"
+              className="px-4 py-2 text-sm font-medium text-white bg-primary border border-primary rounded-lg hover:bg-primary/80 focus:outline-none focus:ring-2 focus:ring-primary transition-colors"
             >
               Confirm Edit
             </button>
@@ -100,8 +113,8 @@ const UpdateModel = ({ isOpen, onClose, isPasswordOpen, onSubmit, user }) => {
               type="text"
               id="name"
               className="input-box"
-              readOnly
-              value={user?.username || ""}
+              onChange={(e) => setName(e.target.value)}
+              value={name}
             />
           </div>
 
@@ -120,17 +133,14 @@ const UpdateModel = ({ isOpen, onClose, isPasswordOpen, onSubmit, user }) => {
                 onChange={(e) => setDepartment(e.target.value)}
                 className={`
               w-full px-3 py-2 border rounded-lg text-sm
-              focus:outline-none focus:ring-2 focus:ring-orange-100 focus:border-orange-300
+              focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary
               transition-colors
              
             `}
               >
                 <option value="">Select Department</option>
                 <option value="admin">Admin</option>
-                <option value="inventory">Inventory</option>
-                <option value="finance">Finance</option>
-                <option value="delivery">Delivery</option>
-                <option value="customer-support">Customer Support</option>
+                <option value="staff">Staff</option>
               </select>
             </div>
           </div>
@@ -146,7 +156,7 @@ const UpdateModel = ({ isOpen, onClose, isPasswordOpen, onSubmit, user }) => {
             </button>
             <button
               onClick={() => updateInfo()}
-              className="px-4 py-2 text-sm font-medium text-white bg-orange-500 border border-orange-500 rounded-lg hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-200 transition-colors"
+              className="px-4 py-2 text-sm font-medium text-white bg-primary border border-primary rounded-lg hover:bg-primary/80 focus:outline-none focus:ring-2 focus:ring-primary transition-colors"
             >
               Confirm Edit
             </button>

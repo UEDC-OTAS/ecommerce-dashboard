@@ -4,7 +4,7 @@ import { toast } from "sonner";
 const deleteAccount = async (id) => {
   const toastId = toast.loading("Deleting Account...");
   try {
-    const response = await axiosInstance.delete(`/admin/${id}`);
+    const response = await axiosInstance.patch(`/admin/soft-delete/${id}`);
     toast.success("Account deleted successfully!", {
       id: toastId,
       autoClose: 500,
