@@ -9,16 +9,19 @@ export default function DeleteConfirmationModal({
   refetch,
 }) {
   const [inputValue, setInputValue] = useState("");
-  const isConfirmButtonDisabled = inputValue !== user?.username;
+  const isConfirmButtonDisabled = inputValue !== user?.name;
 
   const handleDelete = async () => {
-    if (inputValue === user?.username) {
-      // console.log("user", user);
-      const res = await deleteAccount(user._id);
-      console.log("res", res);
-      if (res.code === 200) {
-        onClose();
-        refetch();
+    if (inputValue === user?.name) {
+      try {
+        const res = await deleteAccount(user._id);
+        console.log("res", res);
+        if (res.code === 200) {
+          onClose();
+          refetch();
+        }
+      } catch (error) {
+        console.error("Error deleting account:", error);
       }
     } else {
       alert("Please type the correct staff name to confirm.");
@@ -50,7 +53,7 @@ export default function DeleteConfirmationModal({
           </p>
           <p className="text-gray-700 mb-6">
             To confirm this action, please type the staff name{" "}
-            <span className="font-bold text-red-600">{user?.username}</span>
+            <span className="font-bold text-red-600">{user?.name}</span>
           </p>
           <input
             type="text"

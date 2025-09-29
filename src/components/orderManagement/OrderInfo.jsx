@@ -6,7 +6,7 @@ import { ImCancelCircle } from "react-icons/im";
 import Loading from "../utli/Loading";
 
 function OrderInfo({ selectedOrder, refreshOrders, handleClose }) {
-  const role = JSON.parse(localStorage.getItem("uedc-user"))?.role;
+  // const role = JSON.parse(localStorage.getItem("uedc-user"))?.role;
   // console.log(role);
   const [loading, setLoading] = useState(false);
   const [order, setOrder] = useState(null);

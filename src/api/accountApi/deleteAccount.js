@@ -1,21 +1,18 @@
 import axiosInstance from "../../axios";
 import { toast } from "sonner";
 
-const updatePassword = async ({ id, data }) => {
-  const toastId = toast.loading("Updating Password...");
+const deleteAccount = async (id) => {
+  const toastId = toast.loading("Deleting Account...");
   try {
-    const response = await axiosInstance.patch(
-      `/admin/update-password/${id}`,
-      data
-    );
-    toast.success("Password updated successfully!", {
+    const response = await axiosInstance.delete(`/admin/${id}`);
+    toast.success("Account deleted successfully!", {
       id: toastId,
       autoClose: 500,
     });
     return response.data;
   } catch (error) {
     toast.error(
-      `Failed to update password: ${
+      `Failed to delete account: ${
         error.response?.data?.message || "Unknown error"
       }`,
       {
@@ -23,7 +20,8 @@ const updatePassword = async ({ id, data }) => {
         autoClose: 500,
       }
     );
+    throw error;
   }
 };
 
-export default updatePassword;
+export default deleteAccount;

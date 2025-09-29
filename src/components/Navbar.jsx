@@ -12,6 +12,9 @@ import {
   X,
   User,
   LogOut,
+  BarChart3,
+  Users,
+  Shield,
 } from "lucide-react";
 import logo from "../assets/uedc.png";
 import { useContext } from "react";
@@ -19,7 +22,7 @@ import { NumberContext } from "../context/NumberContext";
 
 function Navbar() {
   const username = JSON.parse(localStorage.getItem("uedc-user"))?.name;
-  // const role = JSON.parse(localStorage.getItem("uedc-user"))?.role;
+  const role = JSON.parse(localStorage.getItem("uedc-user"))?.role;
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isDesktopExpanded, setIsDesktopExpanded] = useState(false);
   const { newOrderCount, setNewOrderCount, messageCount, setMessageCount } =
@@ -27,7 +30,7 @@ function Navbar() {
 
   const location = useLocation();
   const navigate = useNavigate();
-  const navItems = [
+  const allNavItems = [
     {
       path: "/",
       icon: Package,
@@ -59,6 +62,27 @@ function Navbar() {
       role: "delivery",
       secondaryRole: "customer-support",
     },
+    {
+      path: "/sales-report",
+      icon: BarChart3,
+      label: "Sales Report",
+      role: "finance",
+      secondaryRole: "admin",
+    },
+    {
+      path: "/users",
+      icon: Users,
+      label: "Users",
+      role: "admin",
+      secondaryRole: "admin",
+    },
+    {
+      path: "/accounts",
+      icon: Shield,
+      label: "Admin Accounts",
+      role: "admin",
+      secondaryRole: "admin",
+    },
     // {
     //   path: "/support",
     //   icon: MdOutlineSupportAgent,
@@ -69,6 +93,9 @@ function Navbar() {
     // },
     // { path: "/accs", icon: CgProfile, label: "Account", role: "admin" },
   ];
+
+  // Show all nav items to all users
+  const navItems = allNavItems;
 
   const isActive = (path, secondaryPath) =>
     location.pathname === path || location.pathname.includes(secondaryPath);

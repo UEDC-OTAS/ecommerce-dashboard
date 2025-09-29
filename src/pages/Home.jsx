@@ -9,6 +9,10 @@ import GetAllOrder from "../components/orderManagement/GetAllOrder";
 import OrderDetail from "../components/orderManagement/OrderDetail";
 import OrderDetails from "../components/orderManagement/OrderDetail";
 import { DeliveryConfigManager } from "../components/deliManagement/DeliConfigManager";
+import SalesReport from "./SalesReport";
+import UserManagement from "./UserManagement";
+import UserDetail from "./UserDetail";
+import Accounts from "../components/accounts/Accounts";
 function Home() {
   return (
     <>
@@ -24,6 +28,10 @@ function Home() {
             <Route path="/orders" element={<GetAllOrder />} />
             <Route path="/order/:id" element={<OrderDetails />} />
             <Route path="/delivery" element={<DeliveryConfigManager />} />
+            <Route path="/sales-report" element={<SalesReport />} />
+            <Route path="/users" element={<UserManagement />} />
+            <Route path="/user/:id" element={<UserDetail />} />
+            <Route path="/accounts" element={<Accounts />} />
           </Routes>
         </div>
       </div>

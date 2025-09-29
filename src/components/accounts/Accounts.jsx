@@ -11,13 +11,19 @@ function Accounts() {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const fetchUsers = async () => {
-    const res = await getAllUsers();
-    console.log(res);
-    if (res.code === 200) {
-      const filteredUsers = res.data.filter((user) => user.isDeleted !== true);
-      setUsers(filteredUsers);
-    } else if (res.code === 403) {
-      navigate("/unauthorized");
+    try {
+      const res = await getAllUsers();
+      console.log(res);
+      if (res.code === 200) {
+        const filteredUsers = res.data.accounts.filter(
+          (user) => !user.softDeleted
+        );
+        setUsers(filteredUsers);
+      } else if (res.code === 403) {
+        navigate("/unauthorized");
+      }
+    } catch (error) {
+      console.error("Error fetching users:", error);
     }
   };
 
@@ -34,7 +40,7 @@ function Accounts() {
             <SearchBar placeholder="Search Product with name or Product Code" />
           </div> */}
           <button
-            className="button w-[150px]"
+            className="button bg-primary text-white hover:bg-primary/80 transition-all duration-300"
             onClick={() => setIsModalOpen(true)}
           >
             <MdOutlinePersonAddAlt size={20} />

@@ -2,10 +2,10 @@ import axiosInstance from "../../axios";
 
 const getAllUsers = async () => {
   try {
-    const response = await axiosInstance.get("/admin");
+    const response = await axiosInstance.get("/user-profile");
     return response.data;
   } catch (error) {
-    console.error("Error fetching admin users:", error);
+    console.error("Error fetching users:", error);
     throw error;
   }
 };

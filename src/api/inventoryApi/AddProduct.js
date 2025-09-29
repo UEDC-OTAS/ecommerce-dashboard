@@ -9,12 +9,12 @@ const addProduct = async (data) => {
         "Content-Type": "multipart/form-data",
       },
     });
-    if (response.success) {
-      toast.success("Product added successfully!", {
-        id: toastId,
-        autoClose: 500, // Auto-close the toast after 5 seconds
-      });
-    }
+    // console.log(response);
+    toast.success("Product added successfully!", {
+      id: toastId,
+      autoClose: 500, // Auto-close the toast after 5 seconds
+    });
+
     return response.data;
   } catch (error) {
     toast.error(`Failed to add product: ${error.response.data.message}`, {

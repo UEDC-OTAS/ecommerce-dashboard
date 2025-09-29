@@ -1,22 +1,27 @@
-import axios from "../../axios";
+import axiosInstance from "../../axios";
 import { toast } from "sonner";
 
 const createStaff = async (data) => {
   const toastId = toast.loading("Adding Staff...");
   try {
-    const response = await axios.post("api/v1/signup", data);
-    if (response.status === 201) {
+    const response = await axiosInstance.post("/admin/signup", data);
+    if (response.data.success) {
       toast.success("Staff added successfully!", {
         id: toastId,
-        autoClose: 500, // Auto-close the toast after 5 seconds
+        autoClose: 500,
       });
     }
     return response.data;
   } catch (error) {
-    toast.error(`Failed to add staff: ${error.response.data.message}`, {
-      id: toastId,
-      autoClose: 500, // Auto-close the toast after 5 seconds
-    });
+    toast.error(
+      `Failed to add staff: ${
+        error.response?.data?.message || "Unknown error"
+      }`,
+      {
+        id: toastId,
+        autoClose: 500,
+      }
+    );
   }
 };
 

@@ -8,21 +8,20 @@ import chgOrderStatus from "../../api/orderApi/chgOrderStatus";
 import { MdArrowBack, MdOutlinePhone } from "react-icons/md";
 import Loading from "../utli/Loading";
 import avatar from "../../assets/Oval.png";
-// import getDeliverZone from "../../api/deliveryApi/getDeliZOne";
 
 export default function OrderDetails() {
-  // const role = JSON.parse(localStorage.getItem("uedc-user"))?.role;
-
   const navigate = useNavigate();
   const { id } = useParams();
   const [product, setProduct] = useState(null);
   const [order, setOrder] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const [isGenerating, setIsGenerating] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
 
   const getOrder = async () => {
+    setLoading(true);
     const response = await getAOrder(id);
     // console.log(response);
 
@@ -31,8 +30,9 @@ export default function OrderDetails() {
     } else if (response.code === 403) {
       navigate("/unauthorized");
     }
+    setLoading(false);
   };
-  // console.log(order);
+  console.log(order);
 
   const handlePrintClick = (voucherImageUrl) => {
     // console.log(voucherImageUrl);
@@ -65,9 +65,13 @@ export default function OrderDetails() {
   const chgStatus = async (status) => {
     const orderId = id;
     const data = {
-      deliveryStatus: status,
+      status,
     };
-    await chgOrderStatus({ orderId, data });
+    const res = await chgOrderStatus({ orderId, data });
+    // console.log(res);
+    if (res.success) {
+      getOrder();
+    }
   };
 
   const handleClose = () => {
@@ -86,9 +90,9 @@ export default function OrderDetails() {
     }
   };
 
-  // if (!order) {
-  //   return <Loading />;
-  // }
+  if (loading || !order) {
+    return <Loading />;
+  }
 
   return (
     <div className="h-[calc(100vh-50px)] overflow-y-auto px-5">
@@ -102,41 +106,45 @@ export default function OrderDetails() {
             {/* <div className="flex gap-2 items-center"></div> */}
 
             <div className="flex gap-2 items-center">
-              <button
-                className="flex items-center gap-2 mr-4 border border-primary px-4 py-3 rounded-3xl text-primary hover:bg-primary/20 transition-colors duration-300 text-[16px]"
-                // onClick={() => {
-                //   chgStatus("cancelled");
-                // }}
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  height="18px"
-                  viewBox="0 -960 960 960"
-                  width="24px"
-                  fill="currentColor"
+              {order.status !== "cancelled" && (
+                <button
+                  className="flex items-center gap-2 mr-4 border border-primary px-4 py-3 rounded-3xl text-primary hover:bg-primary/20 transition-colors duration-300 text-[16px]"
+                  onClick={() => {
+                    chgStatus("cancelled");
+                  }}
                 >
-                  <path d="m760-183-85 84-56-56 84-85-84-85 56-56 85 84 85-84 56 56-84 85 84 85-56 56-85-84ZM240-80q-50 0-85-35t-35-85v-120h120v-560h600v415q-19-7-39-10.5t-41-3.5v-321H320v480h214q-7 19-10.5 39t-3.5 41H200v40q0 17 11.5 28.5T240-160h294q8 23 20 43t28 37H240Zm120-520v-80h360v80H360Zm0 120v-80h360v80H360Zm174 320H200h334Z" />
-                </svg>
-                Order Cancel
-              </button>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    height="18px"
+                    viewBox="0 -960 960 960"
+                    width="24px"
+                    fill="currentColor"
+                  >
+                    <path d="m760-183-85 84-56-56 84-85-84-85 56-56 85 84 85-84 56 56-84 85 84 85-56 56-85-84ZM240-80q-50 0-85-35t-35-85v-120h120v-560h600v415q-19-7-39-10.5t-41-3.5v-321H320v480h214q-7 19-10.5 39t-3.5 41H200v40q0 17 11.5 28.5T240-160h294q8 23 20 43t28 37H240Zm120-520v-80h360v80H360Zm0 120v-80h360v80H360Zm174 320H200h334Z" />
+                  </svg>
+                  Order Cancel
+                </button>
+              )}
 
-              <button
-                className="flex items-center gap-2 mr-4 border border-primary px-4 py-3 rounded-3xl text-white bg-primary hover:bg-primary/80 transition-colors duration-300 text-[16px]"
-                // onClick={() => {
-                //   chgStatus("confirmed");
-                // }}
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  height="18px"
-                  viewBox="0 -960 960 960"
-                  width="24px"
-                  fill="currentColor"
+              {order.status !== "confirmed" && (
+                <button
+                  className="flex items-center gap-2 mr-4 border border-primary px-4 py-3 rounded-3xl text-white bg-primary hover:bg-primary/80 transition-colors duration-300 text-[16px]"
+                  onClick={() => {
+                    chgStatus("confirmed");
+                  }}
                 >
-                  <path d="m760-183-85 84-56-56 84-85-84-85 56-56 85 84 85-84 56 56-84 85 84 85-56 56-85-84ZM240-80q-50 0-85-35t-35-85v-120h120v-560h600v415q-19-7-39-10.5t-41-3.5v-321H320v480h214q-7 19-10.5 39t-3.5 41H200v40q0 17 11.5 28.5T240-160h294q8 23 20 43t28 37H240Zm120-520v-80h360v80H360Zm0 120v-80h360v80H360Zm174 320H200h334Z" />
-                </svg>
-                Confirm Order
-              </button>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    height="18px"
+                    viewBox="0 -960 960 960"
+                    width="24px"
+                    fill="currentColor"
+                  >
+                    <path d="m760-183-85 84-56-56 84-85-84-85 56-56 85 84 85-84 56 56-84 85 84 85-56 56-85-84ZM240-80q-50 0-85-35t-35-85v-120h120v-560h600v415q-19-7-39-10.5t-41-3.5v-321H320v480h214q-7 19-10.5 39t-3.5 41H200v40q0 17 11.5 28.5T240-160h294q8 23 20 43t28 37H240Zm120-520v-80h360v80H360Zm0 120v-80h360v80H360Zm174 320H200h334Z" />
+                  </svg>
+                  Confirm Order
+                </button>
+              )}
 
               {/* <button
                 className="flex items-center gap-2 mr-4 bg-primary px-4 py-3 rounded-lg text-white hover:bg-primary/80"
@@ -362,6 +370,38 @@ export default function OrderDetails() {
                 </div>
               ))}
 
+              <div className="border-t border-gray-200 pt-4 mb-6">
+                <div className="grid grid-cols-5 gap-4 mb-8">
+                  <div className="text-gray-900 text-sm font-medium col-span-4">
+                    Delivery Fee
+                  </div>
+
+                  <div className="text-gray-900 text-sm text-right">
+                    {order?.delivery.baseDeliveryFee.toLocaleString()}
+                    MMK
+                  </div>
+                </div>
+                <div className="grid grid-cols-5 gap-4 mb-8">
+                  <div className="text-gray-900 text-sm font-medium col-span-3">
+                    Additional Kilo Fee <br />{" "}
+                    <span className="text-xs text-gray-500">
+                      (1000 MMK Per Kilo)
+                    </span>
+                  </div>
+                  <div className="text-gray-900 text-sm text-center">
+                    {order?.delivery.totalWeight}
+                    kg
+                  </div>
+                  <div className="text-gray-900 text-sm text-right">
+                    {(
+                      order?.delivery.additionalWeightCharge *
+                      order?.delivery.totalWeight
+                    ).toLocaleString()}
+                    MMK
+                  </div>
+                </div>
+              </div>
+
               <div>
                 {/* Total Section */}
                 <div className="border-t border-gray-200 pt-4 mb-6">
@@ -370,7 +410,11 @@ export default function OrderDetails() {
                       Total
                     </div>
                     <div className="text-gray-900 text-lg font-semibold">
-                      {order?.totalAmount.toLocaleString()} MMK
+                      {(
+                        order?.totalAmount +
+                        order.delivery.calculatedDeliveryFee
+                      ).toLocaleString()}
+                      MMK
                     </div>
                   </div>
                 </div>

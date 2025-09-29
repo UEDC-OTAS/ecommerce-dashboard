@@ -6,7 +6,7 @@ import createStaff from "../../api/accountApi/CreateStaff";
 
 const AddStaffModal = ({ isOpen, onClose, onSubmit }) => {
   const [formData, setFormData] = useState({
-    username: "",
+    name: "",
     password: "",
     confirmPassword: "",
     role: "",
@@ -33,8 +33,8 @@ const AddStaffModal = ({ isOpen, onClose, onSubmit }) => {
   const validateForm = () => {
     const newErrors = {};
 
-    if (!formData.username.trim()) {
-      newErrors.username = "Username is required";
+    if (!formData.name.trim()) {
+      newErrors.name = "Name is required";
     }
 
     if (!formData.password.trim()) {
@@ -43,6 +43,10 @@ const AddStaffModal = ({ isOpen, onClose, onSubmit }) => {
 
     if (!formData.confirmPassword.trim()) {
       newErrors.confirmPassword = "Confirm Password is required";
+    }
+
+    if (formData.password !== formData.confirmPassword) {
+      newErrors.confirmPassword = "Passwords do not match";
     }
 
     if (!formData.role) {
@@ -57,23 +61,21 @@ const AddStaffModal = ({ isOpen, onClose, onSubmit }) => {
     e.preventDefault();
 
     if (validateForm()) {
-      handleAddStock(formData);
+      handleAddStaff(formData);
     }
   };
 
-  const handleAddStock = async (stockData) => {
-    // console.log("Adding new stock:", stockData);
+  const handleAddStaff = async (staffData) => {
     const data = {
-      username: stockData.username,
-      password: stockData.password,
-      confirmPassword: stockData.confirmPassword,
-      role: stockData.role,
+      name: staffData.name,
+      password: staffData.password,
+      confirmPassword: staffData.confirmPassword,
+      role: staffData.role,
     };
 
     const res = await createStaff(data);
-    if (res.code === 201) {
+    if (res.success) {
       handleClose();
-      // Optionally call onSubmit if it's meant to trigger something in the parent
       if (onSubmit) {
         onSubmit();
       }
@@ -82,7 +84,7 @@ const AddStaffModal = ({ isOpen, onClose, onSubmit }) => {
 
   const handleClose = () => {
     setFormData({
-      username: "",
+      name: "",
       password: "",
       confirmPassword: "",
       role: "",
@@ -107,39 +109,37 @@ const AddStaffModal = ({ isOpen, onClose, onSubmit }) => {
             {/* Staff Name */}
             <div>
               <label
-                htmlFor="username"
+                htmlFor="name"
                 className="block text-sm font-medium text-gray-700 mb-2"
               >
-                Username
+                Name
               </label>
               <input
                 type="text"
-                id="username"
-                name="username"
-                value={formData.username}
+                id="name"
+                name="name"
+                value={formData.name}
                 onChange={handleInputChange}
-                placeholder="Enter Username"
+                placeholder="Enter Name"
                 className={`
               w-full px-3 py-2 border rounded-lg text-sm
-              focus:outline-none focus:ring-2 focus:ring-orange-100 focus:border-orange-300
+              focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary
               transition-colors
-              ${
-                errors.username ? "border-red-300 bg-red-50" : "border-gray-300"
-              }
+              ${errors.name ? "border-red-300 bg-red-50" : "border-gray-300"}
             `}
               />
-              {errors.username && (
-                <p className="mt-1 text-sm text-red-600">{errors.username}</p>
+              {errors.name && (
+                <p className="mt-1 text-sm text-red-600">{errors.name}</p>
               )}
             </div>
 
-            {/* Department */}
+            {/* Role */}
             <div>
               <label
                 htmlFor="role"
                 className="block text-sm font-medium text-gray-700 mb-2"
               >
-                Department
+                Role
               </label>
               <select
                 id="role"
@@ -148,17 +148,14 @@ const AddStaffModal = ({ isOpen, onClose, onSubmit }) => {
                 onChange={handleInputChange}
                 className={`
               w-full px-3 py-2 border rounded-lg text-sm
-              focus:outline-none focus:ring-2 focus:ring-orange-100 focus:border-orange-300
+              focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary
               transition-colors
               ${errors.role ? "border-red-300 bg-red-50" : "border-gray-300"}
             `}
               >
-                <option value="">Select Department</option>
+                <option value="">Select Role</option>
                 <option value="admin">Admin</option>
-                <option value="inventory">Inventory</option>
-                <option value="finance">Finance</option>
-                <option value="delivery">Delivery</option>
-                <option value="customer-support">Customer Support</option>
+                <option value="staff">Staff</option>
               </select>
               {errors.role && (
                 <p className="mt-1 text-sm text-red-600">{errors.role}</p>
@@ -183,7 +180,7 @@ const AddStaffModal = ({ isOpen, onClose, onSubmit }) => {
                   placeholder="Enter Password"
                   className={`
               w-full px-3 py-2 border rounded-lg text-sm
-              focus:outline-none focus:ring-2 focus:ring-orange-100 focus:border-orange-300
+              focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary
               transition-colors
               ${
                 errors.password ? "border-red-300 bg-red-50" : "border-gray-300"
@@ -221,7 +218,7 @@ const AddStaffModal = ({ isOpen, onClose, onSubmit }) => {
                   placeholder="Enter Confirm Password"
                   className={`
               w-full px-3 py-2 border rounded-lg text-sm
-              focus:outline-none focus:ring-2 focus:ring-orange-100 focus:border-orange-300
+              focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary
               transition-colors
               ${
                 errors.confirmPassword
@@ -257,7 +254,7 @@ const AddStaffModal = ({ isOpen, onClose, onSubmit }) => {
           </button>
           <button
             type="submit"
-            className="px-4 py-2 text-sm font-medium text-white bg-orange-500 border border-orange-500 rounded-lg hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-200 transition-colors"
+            className="px-4 py-2 text-sm font-medium text-white bg-primary border border-primary rounded-lg hover:bg-primary/80 focus:outline-none focus:ring-2 focus:ring-primary transition-colors"
           >
             <div className="flex items-center gap-2">
               <MdOutlinePersonAddAlt size={20} />
