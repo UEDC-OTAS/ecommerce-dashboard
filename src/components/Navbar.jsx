@@ -15,6 +15,7 @@ import {
   BarChart3,
   Users,
   Shield,
+  Image,
 } from "lucide-react";
 import logo from "../assets/uedc.png";
 import { useContext } from "react";
@@ -80,6 +81,13 @@ function Navbar() {
       path: "/accounts",
       icon: Shield,
       label: "Admin Accounts",
+      role: "admin",
+      secondaryRole: "admin",
+    },
+    {
+      path: "/banners",
+      icon: Image,
+      label: "Banners",
       role: "admin",
       secondaryRole: "admin",
     },

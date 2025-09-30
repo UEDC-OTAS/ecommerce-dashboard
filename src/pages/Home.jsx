@@ -13,6 +13,8 @@ import SalesReport from "./SalesReport";
 import UserManagement from "./UserManagement";
 import UserDetail from "./UserDetail";
 import Accounts from "../components/accounts/Accounts";
+import Banner from "../components/banner/Banner";
+import CreateBanner from "../components/banner/CreateBanner";
 function Home() {
   return (
     <>
@@ -32,6 +34,8 @@ function Home() {
             <Route path="/users" element={<UserManagement />} />
             <Route path="/user/:id" element={<UserDetail />} />
             <Route path="/accounts" element={<Accounts />} />
+            <Route path="/banners" element={<Banner />} />
+            <Route path="/banners/create" element={<CreateBanner />} />
           </Routes>
         </div>
       </div>
