@@ -50,15 +50,33 @@ const CategoryTable = ({ category, loading, sentBulkPriceModal }) => {
   return (
     <div className="w-full mx-auto pt-6">
       {/* Tabs */}
-      <div className="flex gap-2 mb-6 border-b border-gray-200 rubik">
-        {visibleTabs.map((tab) => (
-          <button
-            key={tab}
-            className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-colors text-primary border-b-2 border-primary`}
+      <div className="flex items-center justify-between">
+        <div className="flex gap-2 mb-6 border-b border-gray-200 rubik">
+          {visibleTabs.map((tab) => (
+            <button
+              key={tab}
+              className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-colors text-primary border-b-2 border-primary`}
+            >
+              {tab}
+            </button>
+          ))}
+        </div>
+
+        <button
+          onClick={() => navigate("/add-product")}
+          className="button mb-5 bg-primary text-white hover:bg-primary/80 transition-all duration-300"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            height="16px"
+            viewBox="0 -960 960 960"
+            width="16px"
+            fill="currentColor"
           >
-            {tab}
-          </button>
-        ))}
+            <path d="M640-640h120-120Zm-440 0h338-18 14-334Zm16-80h528l-34-40H250l-34 40Zm184 270 80-40 80 40v-190H400v190Zm182 330H200q-33 0-56.5-23.5T120-200v-499q0-14 4.5-27t13.5-24l50-61q11-14 27.5-21.5T250-840h460q18 0 34.5 7.5T772-811l50 61q9 11 13.5 24t4.5 27v196q-19-7-39-11t-41-4v-122H640v153q-35 20-61 49.5T538-371l-58-29-160 80v-320H200v440h334q8 23 20 43t28 37Zm138 0v-120H600v-80h120v-120h80v120h120v80H800v120h-80Z" />
+          </svg>
+          <span className="hidden md:block text-[14px]">Add Product</span>
+        </button>
       </div>
 
       {/* Table */}
