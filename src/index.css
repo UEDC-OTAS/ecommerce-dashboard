@@ -20,7 +20,7 @@ body {
 }
 
 .header {
-  @apply font-semibold text-[28px] rubik;
+  @apply font-semibold text-[18px] md:text-[22px] lg:text-[28px] rubik;
 }
 
 .button {

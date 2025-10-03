@@ -80,8 +80,10 @@ const ProductForm = () => {
     // setLoading(true);
     const response = await getAllCategory();
     if (response.success) {
-      // console.log(response.data);
-      setCategoryOptions(response.data.map((category) => category.category));
+      console.log(response.data);
+      setCategoryOptions(
+        response.data.items.map((category) => category.category)
+      );
       // setCategory(response.data);
       // setLoading(false);
     } else if (response.success === false) {
