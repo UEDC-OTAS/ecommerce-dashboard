@@ -16,6 +16,7 @@ import {
   Users,
   Shield,
   Image,
+  MessageCircle,
 } from "lucide-react";
 import logo from "../assets/uedc.png";
 import { useContext } from "react";
@@ -54,6 +55,13 @@ function Navbar() {
       label: "Delivery",
       role: "delivery",
       secondaryRole: "customer-support",
+    },
+    {
+      path: "/chat",
+      icon: MessageCircle,
+      label: "Chat",
+      role: "customer-support",
+      secondaryRole: "admin",
     },
     // {
     //   path: "/sales-report",

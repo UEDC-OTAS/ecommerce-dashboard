@@ -15,6 +15,8 @@ import UserDetail from "./UserDetail";
 import Accounts from "../components/accounts/Accounts";
 import Banner from "../components/banner/Banner";
 import CreateBanner from "../components/banner/CreateBanner";
+import Chat from "./Chat";
+import ChatDetailPage from "./ChatDetail";
 function Home() {
   return (
     <>
@@ -36,6 +38,8 @@ function Home() {
             <Route path="/accounts" element={<Accounts />} />
             <Route path="/banners" element={<Banner />} />
             <Route path="/banners/create" element={<CreateBanner />} />
+            <Route path="/chat" element={<Chat />} />
+            <Route path="/chat/:id" element={<ChatDetailPage />} />
           </Routes>
         </div>
       </div>
