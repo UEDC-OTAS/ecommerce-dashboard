@@ -63,34 +63,34 @@ function Navbar() {
       role: "customer-support",
       secondaryRole: "admin",
     },
-    // {
-    //   path: "/sales-report",
-    //   icon: BarChart3,
-    //   label: "Sales Report",
-    //   role: "finance",
-    //   secondaryRole: "admin",
-    // },
-    // {
-    //   path: "/users",
-    //   icon: Users,
-    //   label: "Users",
-    //   role: "admin",
-    //   secondaryRole: "admin",
-    // },
-    // {
-    //   path: "/accounts",
-    //   icon: Shield,
-    //   label: "Admin Accounts",
-    //   role: "admin",
-    //   secondaryRole: "admin",
-    // },
-    // {
-    //   path: "/banners",
-    //   icon: Image,
-    //   label: "Banners",
-    //   role: "admin",
-    //   secondaryRole: "admin",
-    // },
+    {
+      path: "/sales-report",
+      icon: BarChart3,
+      label: "Sales Report",
+      role: "finance",
+      secondaryRole: "admin",
+    },
+    {
+      path: "/users",
+      icon: Users,
+      label: "Users",
+      role: "admin",
+      secondaryRole: "admin",
+    },
+    {
+      path: "/accounts",
+      icon: Shield,
+      label: "Admin Accounts",
+      role: "admin",
+      secondaryRole: "admin",
+    },
+    {
+      path: "/banners",
+      icon: Image,
+      label: "Banners",
+      role: "admin",
+      secondaryRole: "admin",
+    },
   ];
 
   // Show all nav items to all users
