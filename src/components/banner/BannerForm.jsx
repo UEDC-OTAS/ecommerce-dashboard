@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { X, Upload, Trash2, Calendar, Clock } from "lucide-react";
+import { X, Upload, Trash2, Calendar, Clock, Package } from "lucide-react";
 import ProductSelector from "./ProductSelector";
 import createBanner from "../../api/bannerApi/createBanner";
 import { useNavigate } from "react-router-dom";
@@ -15,7 +15,7 @@ const BannerForm = () => {
     useStockImage: true,
   });
 
-  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [selectedProducts, setSelectedProducts] = useState([]);
   const [uploadedImage, setUploadedImage] = useState(null);
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
@@ -61,7 +61,14 @@ const BannerForm = () => {
   };
 
   const handleProductSelect = (product) => {
-    setSelectedProduct(product);
+    setSelectedProducts((prev) => {
+      const exists = prev.find((p) => p._id === product._id);
+      if (exists) {
+        return prev.filter((p) => p._id !== product._id);
+      } else {
+        return [...prev, product];
+      }
+    });
     if (errors.product) {
       setErrors((prev) => ({
         ...prev,
@@ -108,8 +115,8 @@ const BannerForm = () => {
       }
     });
 
-    if (!selectedProduct) {
-      newErrors.product = "Please select a product";
+    if (selectedProducts.length === 0) {
+      newErrors.product = "Please select at least one product";
     }
 
     if (Object.keys(newErrors).length > 0) {
@@ -120,7 +127,9 @@ const BannerForm = () => {
 
     try {
       const data = new FormData();
-      data.append("stockId", selectedProduct._id);
+      selectedProducts.forEach((product, index) => {
+        data.append(`stockIds[${index}]`, product._id);
+      });
       data.append("title", formData.title);
       data.append("description", formData.description);
       data.append("eventDate", formData.eventDate);
@@ -282,10 +291,10 @@ const BannerForm = () => {
             {/* Product Selection Section */}
             <div className="border border-gray-200 shadow-md p-4 rounded">
               <h2 className="text-lg font-medium text-gray-900 mb-4">
-                Featured Product
+                Featured Products
               </h2>
               <ProductSelector
-                selectedProduct={selectedProduct}
+                selectedProducts={selectedProducts}
                 onProductSelect={handleProductSelect}
                 error={errors.product}
               />
@@ -389,16 +398,17 @@ const BannerForm = () => {
               )}
 
               {/* Product Image Preview */}
-              {formData.useStockImage && selectedProduct && (
+              {formData.useStockImage && selectedProducts.length > 0 && (
                 <div className="mt-4">
                   <p className="text-sm font-medium text-gray-700 mb-2">
                     Product Image Preview:
                   </p>
                   <div className="w-full h-48 bg-gray-100 rounded-lg flex items-center justify-center">
-                    {selectedProduct.images && selectedProduct.images[0] ? (
+                    {selectedProducts[0].images &&
+                    selectedProducts[0].images[0] ? (
                       <img
-                        src={selectedProduct.images[0].url}
-                        alt={selectedProduct.name}
+                        src={selectedProducts[0].images[0].url}
+                        alt={selectedProducts[0].name}
                         className="w-full h-full object-cover rounded-lg"
                       />
                     ) : (
@@ -408,6 +418,12 @@ const BannerForm = () => {
                       </div>
                     )}
                   </div>
+                  {selectedProducts.length > 1 && (
+                    <p className="text-xs text-gray-500 mt-2 text-center">
+                      Showing first of {selectedProducts.length} selected
+                      products
+                    </p>
+                  )}
                 </div>
               )}
             </div>

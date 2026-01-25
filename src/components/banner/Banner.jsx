@@ -17,7 +17,8 @@ function Banner() {
       console.log("Banner response:", response);
 
       if (response.status === "success") {
-        setBanners(response.data);
+        const banners = response.data.filter((banner) => !banner.softDeleted);
+        setBanners(banners);
       } else {
         setError("Failed to fetch banners");
       }
@@ -27,6 +28,16 @@ function Banner() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleDelete = (deletedBannerId) => {
+    setBanners((prevBanners) =>
+      prevBanners.map((banner) =>
+        banner._id === deletedBannerId
+          ? { ...banner, softDeleted: true }
+          : banner,
+      ),
+    );
   };
 
   useEffect(() => {
@@ -99,7 +110,7 @@ function Banner() {
       )}
 
       {/* Banner List */}
-      <BannerList banners={banners} loading={loading} />
+      <BannerList banners={banners} loading={loading} onDelete={handleDelete} />
     </div>
   );
 }

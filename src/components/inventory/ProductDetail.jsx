@@ -8,6 +8,8 @@ import Loading from "../utli/Loading";
 import { useParams } from "react-router-dom";
 import { MdOutlineEdit } from "react-icons/md";
 import deleteStock from "../../api/inventoryApi/DeleteStock";
+import ConfirmModal from "../common/ConfirmModal";
+import { toast } from "sonner";
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -33,16 +35,30 @@ const ProductDetail = () => {
 
   const [wholesalePrices, setWholesalePrices] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const deleteProduct = async (productId) => {
+    setIsDeleting(true);
     try {
       const response = await deleteStock(productId);
       if (response.success) {
+        toast.success("Product deleted successfully!");
         navigate("/");
+      } else {
+        toast.error(response.message || "Failed to delete product");
       }
     } catch (error) {
-      // console.log(error);
+      console.error("Error deleting product:", error);
+      toast.error("An error occurred while deleting the product");
+    } finally {
+      setIsDeleting(false);
+      setShowDeleteModal(false);
     }
+  };
+
+  const handleDeleteClick = () => {
+    setShowDeleteModal(true);
   };
   const validateField = (name, value) => {
     const requiredFields = [
@@ -178,7 +194,7 @@ const ProductDetail = () => {
     data.append("category", formData.productCategory);
     data.append(
       "onSale",
-      formData.storeInventory === "sellProduct" ? true : false
+      formData.storeInventory === "sellProduct" ? true : false,
     );
     if (uploadedImages.length > 0) {
       uploadedImages.forEach((img) => {
@@ -210,7 +226,7 @@ const ProductDetail = () => {
 
   const handleWholesaleChange = (id, field, value) => {
     setWholesalePrices((prev) =>
-      prev.map((w) => (w.id === id ? { ...w, [field]: value } : w))
+      prev.map((w) => (w.id === id ? { ...w, [field]: value } : w)),
     );
   };
 
@@ -223,7 +239,7 @@ const ProductDetail = () => {
   };
 
   const filteredCategories = categoryOptions.filter((category) =>
-    category.toLowerCase().includes(formData.productCategory.toLowerCase())
+    category.toLowerCase().includes(formData.productCategory.toLowerCase()),
   );
 
   const getProduct = async () => {
@@ -262,7 +278,7 @@ const ProductDetail = () => {
   }
 
   return (
-    <div className="mx-auto h-[calc(100vh-4px)] overflow-y-auto">
+    <div className="mx-auto">
       {/* Header */}
       <div className="flex items-center justify-between p-6 border-b border-gray-200">
         <h1 className="text-xl font-semibold text-gray-900">
@@ -608,7 +624,7 @@ const ProductDetail = () => {
             </div>
 
             {/* Wholesale Pricing Section */}
-            <div className="border border-gray-200 shadow-md p-4 rounded">
+            {/* <div className="border border-gray-200 shadow-md p-4 rounded">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-lg font-medium text-gray-900">
                   Wholesale Pricing
@@ -633,7 +649,7 @@ const ProductDetail = () => {
                           handleWholesaleChange(
                             wholesale.id,
                             "qty",
-                            e.target.value
+                            e.target.value,
                           )
                         }
                         placeholder="Eg - 10"
@@ -653,7 +669,7 @@ const ProductDetail = () => {
                             handleWholesaleChange(
                               wholesale.id,
                               "price",
-                              e.target.value
+                              e.target.value,
                             )
                           }
                           placeholder="Eg - 55000"
@@ -667,7 +683,7 @@ const ProductDetail = () => {
                   </div>
                 ))}
               </div>
-            </div>
+            </div> */}
           </div>
 
           {/* Right Column - Product Images */}
@@ -719,11 +735,14 @@ const ProductDetail = () => {
         {/* Bottom Buttons */}
         <div className="flex justify-end gap-3 mt-8 pt-6 border-t border-gray-200">
           <button
-            onClick={() => deleteProduct(porductId)}
+            onClick={handleDeleteClick}
+            disabled={isDeleting}
             type="button"
-            className="button bg-danger text-red-500"
+            className="button bg-danger text-red-500 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <span className="text-[14px]">Delete</span>
+            <span className="text-[14px]">
+              {isDeleting ? "Deleting..." : "Delete"}
+            </span>
           </button>
           <button
             onClick={() => navigate(`/product-edit/${formData.productCode}`)}
@@ -734,6 +753,18 @@ const ProductDetail = () => {
           </button>
         </div>
       </form>
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmModal
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={() => deleteProduct(porductId)}
+        title="Delete Product"
+        message={`Are you sure you want to delete the product "${formData.productName}"? This action cannot be undone.`}
+        confirmText="Delete"
+        cancelText="Cancel"
+        type="danger"
+      />
     </div>
   );
 };

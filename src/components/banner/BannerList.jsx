@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { MdArrowBackIosNew, MdArrowForwardIos } from "react-icons/md";
 import BannerCard from "./BannerCard";
 
-const BannerList = ({ banners, loading }) => {
+const BannerList = ({ banners, loading, onDelete }) => {
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(12);
@@ -118,6 +118,7 @@ const BannerList = ({ banners, loading }) => {
             key={banner._id}
             banner={banner}
             index={startIndex + index}
+            onDelete={onDelete}
           />
         ))}
       </div>

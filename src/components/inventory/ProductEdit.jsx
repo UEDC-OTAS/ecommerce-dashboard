@@ -191,7 +191,7 @@ const ProductDetail = () => {
 
   const handleWholesaleChange = (id, field, value) => {
     setWholesalePrices((prev) =>
-      prev.map((w) => (w.id === id ? { ...w, [field]: value } : w))
+      prev.map((w) => (w.id === id ? { ...w, [field]: value } : w)),
     );
   };
 
@@ -204,7 +204,7 @@ const ProductDetail = () => {
   };
 
   const filteredCategories = categoryOptions.filter((category) =>
-    category.toLowerCase().includes(formData.productCategory.toLowerCase())
+    category.toLowerCase().includes(formData.productCategory.toLowerCase()),
   );
 
   const getProduct = async () => {
@@ -229,7 +229,7 @@ const ProductDetail = () => {
           id: w._id,
           qty: w.wholeSaleQuantity,
           price: w.wholeSaleUnitPrice,
-        }))
+        })),
       );
       setUploadedImages(response.data.images);
       setLoading(false);
@@ -586,7 +586,7 @@ const ProductDetail = () => {
             </div>
 
             {/* Wholesale Pricing Section */}
-            <div className="border border-gray-200 shadow-md p-4 rounded">
+            {/* <div className="border border-gray-200 shadow-md p-4 rounded">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-lg font-medium text-gray-900">
                   Wholesale Pricing
@@ -661,7 +661,7 @@ const ProductDetail = () => {
                   </div>
                 ))}
               </div>
-            </div>
+            </div> */}
           </div>
 
           {/* Right Column - Product Images */}

@@ -1,8 +1,14 @@
 import { useState } from "react";
-import { EyeIcon, CalendarIcon, ClockIcon } from "lucide-react";
+import { EyeIcon, CalendarIcon, ClockIcon, Trash2 } from "lucide-react";
+import softDeleteBanner from "../../api/bannerApi/softDeleteBanner";
+import { toast } from "sonner";
+import ConfirmModal from "../common/ConfirmModal";
 
-const BannerCard = ({ banner, index }) => {
+const BannerCard = ({ banner, index, onDelete }) => {
+  console.log(banner.image?.url);
   const [imageError, setImageError] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -13,22 +19,38 @@ const BannerCard = ({ banner, index }) => {
     });
   };
 
-  const getImageUrl = () => {
-    if (banner.useStockImage && banner.stockId?.images?.[0]?.url) {
-      return banner.stockId.images[0].url;
+  const handleDelete = async () => {
+    setIsDeleting(true);
+    try {
+      const response = await softDeleteBanner(banner._id);
+      if (response.success || response.status === "success") {
+        toast.success("Banner deleted successfully!");
+        if (onDelete) {
+          onDelete(banner._id);
+        }
+      } else {
+        toast.error(response.message || "Failed to delete banner");
+      }
+    } catch (error) {
+      console.error("Error deleting banner:", error);
+      toast.error("An error occurred while deleting the banner");
+    } finally {
+      setIsDeleting(false);
+      setShowDeleteModal(false);
     }
-    return banner.image;
   };
 
-  const imageUrl = getImageUrl();
+  const handleDeleteClick = () => {
+    setShowDeleteModal(true);
+  };
 
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
       {/* Image Section */}
       <div className="relative h-48 bg-gray-100">
-        {imageUrl && !imageError ? (
+        {banner.image?.url && !imageError ? (
           <img
-            src={imageUrl}
+            src={banner.image?.url}
             alt={banner.title}
             className="w-full h-full object-cover"
             onError={() => setImageError(true)}
@@ -67,7 +89,7 @@ const BannerCard = ({ banner, index }) => {
         </p>
 
         {/* Product Info */}
-        {banner.stockId && (
+        {/* {banner.stockId && (
           <div className="mb-3 p-2 bg-gray-50 rounded">
             <p className="text-xs text-gray-500 mb-1">Featured Product:</p>
             <p className="text-sm font-medium text-gray-800">
@@ -77,7 +99,7 @@ const BannerCard = ({ banner, index }) => {
               Code: {banner.stockId.productCode}
             </p>
           </div>
-        )}
+        )} */}
 
         {/* Event Details */}
         <div className="space-y-2 mb-4">
@@ -98,12 +120,32 @@ const BannerCard = ({ banner, index }) => {
             Created: {formatDate(banner.createdAt)}
           </div>
 
-          <button className="flex items-center px-3 py-1 text-sm text-primary hover:text-primary-dark transition-colors">
-            <EyeIcon className="w-4 h-4 mr-1" />
-            View Details
-          </button>
+          <div className="flex gap-2">
+            {!banner.softDeleted && (
+              <button
+                onClick={handleDeleteClick}
+                disabled={isDeleting}
+                className="flex items-center px-3 py-1 text-sm text-red-600 hover:text-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <Trash2 className="w-4 h-4 mr-1" />
+                {isDeleting ? "Deleting..." : "Delete"}
+              </button>
+            )}
+          </div>
         </div>
       </div>
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmModal
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={handleDelete}
+        title="Delete Banner"
+        message={`Are you sure you want to delete the banner "${banner.title}"? This action can be undone.`}
+        confirmText="Delete"
+        cancelText="Cancel"
+        type="danger"
+      />
     </div>
   );
 };

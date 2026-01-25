@@ -9,7 +9,7 @@ export default {
         squada: ['"Squada One"', "sans-serif"],
       },
       colors: {
-        primary: "#1E1E1E", // Custom primary color
+        primary: "#E95900", // Custom primary color
         success: "#CFF7D3", // Custom secondary color
         successText: "#02542D",
         warning: "#FFF1C2",

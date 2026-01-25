@@ -339,7 +339,7 @@ function Navbar() {
               {isDesktopExpanded && (
                 <div className="ml-3">
                   <p className="text-sm font-medium text-gray-900 whitespace-nowrap">
-                    Ko Min
+                    UEDC
                   </p>
                   <p className="text-xs text-gray-500 whitespace-nowrap">
                     Admin
