@@ -42,7 +42,7 @@ const LoginPage = () => {
     <div className="flex w-full justify-center items-center h-screen">
       <div className="w-full md:w-[450px] bg-white rounded-lg p-20 md:p-6">
         <h2 className="header font-bold mb-10 border-b pb-5">
-          Sign in to Ko Min DIY Store
+          Sign in to UEDC Admin
         </h2>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
