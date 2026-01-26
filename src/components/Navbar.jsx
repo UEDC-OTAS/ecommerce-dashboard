@@ -56,13 +56,13 @@ function Navbar() {
       role: "delivery",
       secondaryRole: "customer-support",
     },
-    {
-      path: "/chat",
-      icon: MessageCircle,
-      label: "Chat",
-      role: "customer-support",
-      secondaryRole: "admin",
-    },
+    // {
+    //   path: "/chat",
+    //   icon: MessageCircle,
+    //   label: "Chat",
+    //   role: "customer-support",
+    //   secondaryRole: "admin",
+    // },
     {
       path: "/sales-report",
       icon: BarChart3,
@@ -84,13 +84,13 @@ function Navbar() {
       role: "admin",
       secondaryRole: "admin",
     },
-    {
-      path: "/banners",
-      icon: Image,
-      label: "Banners",
-      role: "admin",
-      secondaryRole: "admin",
-    },
+    // {
+    //   path: "/banners",
+    //   icon: Image,
+    //   label: "Banners",
+    //   role: "admin",
+    //   secondaryRole: "admin",
+    // },
   ];
 
   // Show all nav items to all users
