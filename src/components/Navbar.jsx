@@ -42,6 +42,13 @@ function Navbar() {
       secondaryPath: "product",
     },
     {
+      path: "/banners",
+      icon: Image,
+      label: "Banners",
+      role: "admin",
+      secondaryRole: "admin",
+    },
+    {
       path: "/orders",
       icon: ShoppingCart,
       label: "Order",
@@ -81,13 +88,6 @@ function Navbar() {
       path: "/accounts",
       icon: Shield,
       label: "Admin Accounts",
-      role: "admin",
-      secondaryRole: "admin",
-    },
-    {
-      path: "/banners",
-      icon: Image,
-      label: "Banners",
       role: "admin",
       secondaryRole: "admin",
     },
