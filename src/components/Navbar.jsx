@@ -84,13 +84,13 @@ function Navbar() {
       role: "admin",
       secondaryRole: "admin",
     },
-    // {
-    //   path: "/banners",
-    //   icon: Image,
-    //   label: "Banners",
-    //   role: "admin",
-    //   secondaryRole: "admin",
-    // },
+    {
+      path: "/banners",
+      icon: Image,
+      label: "Banners",
+      role: "admin",
+      secondaryRole: "admin",
+    },
   ];
 
   // Show all nav items to all users

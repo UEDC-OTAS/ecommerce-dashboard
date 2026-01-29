@@ -12,7 +12,6 @@ const BannerForm = () => {
     description: "",
     eventDate: "",
     eventTime: "",
-    useStockImage: true,
   });
 
   const [selectedProducts, setSelectedProducts] = useState([]);
@@ -134,9 +133,8 @@ const BannerForm = () => {
       data.append("description", formData.description);
       data.append("eventDate", formData.eventDate);
       data.append("eventTime", formData.eventTime);
-      data.append("useStockImage", formData.useStockImage.toString());
 
-      if (uploadedImage && !formData.useStockImage) {
+      if (uploadedImage) {
         data.append("image", uploadedImage.file);
       }
 
@@ -308,124 +306,47 @@ const BannerForm = () => {
                 Banner Image
               </h2>
 
-              {/* Image Source Selection */}
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-3">
-                  Image Source
-                </label>
-                <div className="space-y-2">
-                  <label className="flex items-center">
-                    <input
-                      type="radio"
-                      name="useStockImage"
-                      value="true"
-                      checked={formData.useStockImage === true}
-                      onChange={() =>
-                        setFormData((prev) => ({
-                          ...prev,
-                          useStockImage: true,
-                        }))
-                      }
-                      className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
-                    />
-                    <span className="ml-2 text-sm text-gray-700">
-                      Use Product Image
-                    </span>
-                  </label>
-                  <label className="flex items-center">
-                    <input
-                      type="radio"
-                      name="useStockImage"
-                      value="false"
-                      checked={formData.useStockImage === false}
-                      onChange={() =>
-                        setFormData((prev) => ({
-                          ...prev,
-                          useStockImage: false,
-                        }))
-                      }
-                      className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
-                    />
-                    <span className="ml-2 text-sm text-gray-700">
-                      Upload Custom Image
-                    </span>
-                  </label>
-                </div>
-              </div>
-
               {/* Image Upload Area */}
-              {!formData.useStockImage && (
-                <div className="space-y-4">
-                  {!uploadedImage ? (
-                    <label className="block">
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={handleImageUpload}
-                        className="hidden"
-                      />
-                      <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-gray-400 transition-colors cursor-pointer">
-                        <div className="flex flex-col items-center">
-                          <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-4">
-                            <Upload className="w-6 h-6 text-gray-600" />
-                          </div>
-                          <p className="text-sm font-medium text-gray-900 mb-1">
-                            Upload banner image
-                          </p>
-                          <p className="text-xs text-gray-500">
-                            Please upload an image with file size less than 5MB.
-                          </p>
+              <div className="space-y-4">
+                {!uploadedImage ? (
+                  <label className="block">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageUpload}
+                      className="hidden"
+                    />
+                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-gray-400 transition-colors cursor-pointer">
+                      <div className="flex flex-col items-center">
+                        <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                          <Upload className="w-6 h-6 text-gray-600" />
                         </div>
+                        <p className="text-sm font-medium text-gray-900 mb-1">
+                          Upload banner image
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          Please upload an image with file size less than 5MB.
+                        </p>
                       </div>
-                    </label>
-                  ) : (
-                    <div className="relative">
-                      <img
-                        src={uploadedImage.url}
-                        alt="Banner preview"
-                        className="w-full h-48 object-cover rounded-lg"
-                      />
-                      <button
-                        type="button"
-                        onClick={removeImage}
-                        className="absolute top-2 right-2 p-1 text-red-500 bg-white hover:bg-red-200 hover:text-red-600 rounded"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
                     </div>
-                  )}
-                </div>
-              )}
-
-              {/* Product Image Preview */}
-              {formData.useStockImage && selectedProducts.length > 0 && (
-                <div className="mt-4">
-                  <p className="text-sm font-medium text-gray-700 mb-2">
-                    Product Image Preview:
-                  </p>
-                  <div className="w-full h-48 bg-gray-100 rounded-lg flex items-center justify-center">
-                    {selectedProducts[0].images &&
-                    selectedProducts[0].images[0] ? (
-                      <img
-                        src={selectedProducts[0].images[0].url}
-                        alt={selectedProducts[0].name}
-                        className="w-full h-full object-cover rounded-lg"
-                      />
-                    ) : (
-                      <div className="text-center text-gray-500">
-                        <Package className="w-8 h-8 mx-auto mb-2" />
-                        <p className="text-sm">No product image available</p>
-                      </div>
-                    )}
+                  </label>
+                ) : (
+                  <div className="relative">
+                    <img
+                      src={uploadedImage.url}
+                      alt="Banner preview"
+                      className="w-full h-48 object-cover rounded-lg"
+                    />
+                    <button
+                      type="button"
+                      onClick={removeImage}
+                      className="absolute top-2 right-2 p-1 text-red-500 bg-white hover:bg-red-200 hover:text-red-600 rounded"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
                   </div>
-                  {selectedProducts.length > 1 && (
-                    <p className="text-xs text-gray-500 mt-2 text-center">
-                      Showing first of {selectedProducts.length} selected
-                      products
-                    </p>
-                  )}
-                </div>
-              )}
+                )}
+              </div>
             </div>
           </div>
         </div>

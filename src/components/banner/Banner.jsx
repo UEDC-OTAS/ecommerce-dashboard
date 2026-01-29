@@ -30,7 +30,8 @@ function Banner() {
     }
   };
 
-  const handleDelete = (deletedBannerId) => {
+  const handleDelete = async (deletedBannerId) => {
+    // Optimistically update the UI first
     setBanners((prevBanners) =>
       prevBanners.map((banner) =>
         banner._id === deletedBannerId
@@ -38,6 +39,9 @@ function Banner() {
           : banner,
       ),
     );
+
+    // Then refetch to ensure data consistency
+    await fetchBanners();
   };
 
   useEffect(() => {
