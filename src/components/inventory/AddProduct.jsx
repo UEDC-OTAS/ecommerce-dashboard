@@ -16,7 +16,12 @@ const ProductForm = () => {
     productType: "inStock",
     storeInventory: "sellProduct",
     productCategory: "",
+    tags: [],
+    isDiscounted: false,
+    discountPercentage: "",
   });
+
+  const [tagInput, setTagInput] = useState("");
 
   const [errors, setErrors] = useState({});
 
@@ -163,6 +168,14 @@ const ProductForm = () => {
     data.append("description", formData.description);
     // data.append("productType", "regular");
     data.append("category", formData.productCategory);
+    data.append("isDiscounted", formData.isDiscounted);
+    data.append("discountPercentage", formData.isDiscounted ? formData.discountPercentage : 0);
+
+    // Send tags as multiple entries
+    formData.tags.forEach((tag, index) => {
+      data.append(`tags[${index}]`, tag);
+    });
+
     data.append(
       "onSale",
       formData.storeInventory === "sellProduct" ? true : false,
@@ -172,14 +185,22 @@ const ProductForm = () => {
         data.append("images", img.file);
       });
     }
-    // wholesalePrices.forEach((price, index) => {
-    //   data.append(`wholeSale[${index}][wholeSaleQuantity]`, price.qty);
-    //   data.append(`wholeSale[${index}][wholeSaleUnitPrice]`, price.price);
-    // });
-    // console.log(data);
+    const validWholesalePrices = wholesalePrices.filter(
+      (price) =>
+        price.qty &&
+        price.price &&
+        price.qty.toString().trim() !== "" &&
+        price.price.toString().trim() !== "",
+    );
+    console.log("validWholesalePrices", validWholesalePrices);
+    validWholesalePrices.forEach((price, index) => {
+      data.append(`wholeSale[${index}][wholeSaleQuantity]`, price.qty);
+      data.append(`wholeSale[${index}][wholeSaleUnitPrice]`, price.price);
+    });
+    console.log(data);
 
     const res = await addProduct(data);
-    console.log(res);
+    console.log("res", res);
     if (res.success) {
       navigate("/");
     }
@@ -210,6 +231,32 @@ const ProductForm = () => {
     setIsCategoryDropdownOpen(false);
   };
 
+  const addTag = (e) => {
+    e.preventDefault();
+    const tag = tagInput.trim();
+    if (tag && !formData.tags.includes(tag)) {
+      setFormData((prev) => ({
+        ...prev,
+        tags: [...prev.tags, tag],
+      }));
+      setTagInput("");
+    }
+  };
+
+  const removeTag = (tagToRemove) => {
+    setFormData((prev) => ({
+      ...prev,
+      tags: prev.tags.filter((tag) => tag !== tagToRemove),
+    }));
+  };
+
+  const handleTagInputKeyDown = (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      addTag(e);
+    }
+  };
+
   const filteredCategories = categoryOptions.filter((category) =>
     category.toLowerCase().includes(formData.productCategory.toLowerCase()),
   );
@@ -221,8 +268,8 @@ const ProductForm = () => {
   return (
     <div className="mx-auto h-[calc(100vh-4px)] overflow-y-auto">
       {/* Header */}
-      <div className="flex items-center justify-between p-6 border-b border-gray-200">
-        <h1 className="text-xl font-semibold text-gray-900">
+      <div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-200">
+        <h1 className="ml-8 lg:ml-0 text-xl font-semibold text-gray-900">
           Create New Product
         </h1>
         <button
@@ -256,9 +303,8 @@ const ProductForm = () => {
                   onBlur={handleBlur}
                   placeholder="Enter Product Name"
                   required
-                  className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                    errors.productName ? "border-red-500" : "border-gray-300"
-                  }`}
+                  className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.productName ? "border-red-500" : "border-gray-300"
+                    }`}
                 />
                 {errors.productName && (
                   <p className="mt-1 text-sm text-red-600">
@@ -281,9 +327,8 @@ const ProductForm = () => {
                     onBlur={handleBlur}
                     placeholder="Enter Product Code"
                     required
-                    className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                      errors.productCode ? "border-red-500" : "border-gray-300"
-                    }`}
+                    className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.productCode ? "border-red-500" : "border-gray-300"
+                      }`}
                   />
                   {errors.productCode && (
                     <p className="mt-1 text-sm text-red-600">
@@ -304,11 +349,10 @@ const ProductForm = () => {
                       onBlur={handleBlur}
                       placeholder="Enter Retail Price"
                       required
-                      className={`w-full px-3 py-2 pr-12 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                        errors.retailPrice
-                          ? "border-red-500"
-                          : "border-gray-300"
-                      }`}
+                      className={`w-full px-3 py-2 pr-12 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.retailPrice
+                        ? "border-red-500"
+                        : "border-gray-300"
+                        }`}
                     />
                     <span className="absolute right-3 top-2 text-sm text-gray-500">
                       MMK
@@ -337,11 +381,10 @@ const ProductForm = () => {
                       onBlur={handleBlur}
                       placeholder="Enter Quantity"
                       required
-                      className={`w-full px-3 py-2 pr-12 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                        errors.totalQuantity
-                          ? "border-red-500"
-                          : "border-gray-300"
-                      }`}
+                      className={`w-full px-3 py-2 pr-12 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.totalQuantity
+                        ? "border-red-500"
+                        : "border-gray-300"
+                        }`}
                     />
                     <span className="absolute right-3 top-2 text-sm text-gray-500">
                       PCS
@@ -367,9 +410,8 @@ const ProductForm = () => {
                       onBlur={handleBlur}
                       placeholder="Enter Weight"
                       required
-                      className={`w-full px-3 py-2 pr-12 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                        errors.weight ? "border-red-500" : "border-gray-300"
-                      }`}
+                      className={`w-full px-3 py-2 pr-12 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.weight ? "border-red-500" : "border-gray-300"
+                        }`}
                     />
                     <span className="absolute right-3 top-2 text-sm text-gray-500">
                       KG
@@ -394,14 +436,96 @@ const ProductForm = () => {
                   placeholder="Describe what this kind of product is"
                   rows={4}
                   required
-                  className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none ${
-                    errors.description ? "border-red-500" : "border-gray-300"
-                  }`}
+                  className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none ${errors.description ? "border-red-500" : "border-gray-300"
+                    }`}
                 />
                 {errors.description && (
                   <p className="mt-1 text-sm text-red-600">
                     {errors.description}
                   </p>
+                )}
+              </div>
+
+              {/* Tags Section */}
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Tags (Press Enter to add)
+                </label>
+                <div className="flex flex-wrap gap-2 mb-2">
+                  {formData.tags.map((tag, index) => (
+                    <span
+                      key={index}
+                      className="inline-flex items-center px-4 py-1.5 rounded-lg text-sm font-semibold bg-blue-50 text-blue-700 border border-blue-100 shadow-sm hover:shadow-md transition-all group"
+                    >
+                      <span className="w-1.5 h-1.5 rounded-full bg-blue-500 mr-2"></span>
+                      {tag}
+                      <button
+                        type="button"
+                        onClick={() => removeTag(tag)}
+                        className="ml-2.5 inline-flex items-center justify-center w-5 h-5 rounded-md hover:bg-blue-200 text-blue-400 group-hover:text-blue-700 transition-colors"
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    </span>
+                  ))}
+                </div>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={tagInput}
+                    onChange={(e) => setTagInput(e.target.value)}
+                    onKeyDown={handleTagInputKeyDown}
+                    placeholder="Add a tag..."
+                    className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                  <button
+                    type="button"
+                    onClick={addTag}
+                    className="px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200"
+                  >
+                    Add
+                  </button>
+                </div>
+              </div>
+
+              {/* Discount Section */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div className="flex items-center gap-2">
+                  <label className="relative inline-flex items-center cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={formData.isDiscounted}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          isDiscounted: e.target.checked,
+                        }))
+                      }
+                      className="sr-only peer"
+                    />
+                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                    <span className="ml-3 text-sm font-medium text-gray-700">
+                      On Discount
+                    </span>
+                  </label>
+                </div>
+
+                {formData.isDiscounted && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Discount Percentage (%)
+                    </label>
+                    <input
+                      type="number"
+                      name="discountPercentage"
+                      value={formData.discountPercentage}
+                      onChange={handleInputChange}
+                      placeholder="Eg - 10"
+                      min="0"
+                      max="100"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
                 )}
               </div>
             </div>
@@ -501,11 +625,10 @@ const ProductForm = () => {
                     onFocus={() => setIsCategoryDropdownOpen(true)}
                     placeholder="Enter Product Category"
                     // required
-                    className={`w-full px-3 py-2 pr-10 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                      errors.productCategory
-                        ? "border-red-500"
-                        : "border-gray-300"
-                    }`}
+                    className={`w-full px-3 py-2 pr-10 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.productCategory
+                      ? "border-red-500"
+                      : "border-gray-300"
+                      }`}
                   />
                   <button
                     type="button"
@@ -533,15 +656,15 @@ const ProductForm = () => {
                     <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto">
                       {filteredCategories.length > 0
                         ? filteredCategories.map((category, index) => (
-                            <button
-                              key={index}
-                              type="button"
-                              onClick={() => handleCategorySelect(category)}
-                              className="w-full px-3 py-2 text-left hover:bg-gray-100 focus:bg-gray-100 focus:outline-none"
-                            >
-                              {category}
-                            </button>
-                          ))
+                          <button
+                            key={index}
+                            type="button"
+                            onClick={() => handleCategorySelect(category)}
+                            className="w-full px-3 py-2 text-left hover:bg-gray-100 focus:bg-gray-100 focus:outline-none"
+                          >
+                            {category}
+                          </button>
+                        ))
                         : null}
                     </div>
                   )}
@@ -555,7 +678,7 @@ const ProductForm = () => {
             </div>
 
             {/* Wholesale Pricing Section */}
-            {/* <div className="border border-gray-200 shadow-md p-4 rounded">
+            <div className="border border-gray-200 shadow-md p-4 rounded">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-lg font-medium text-gray-900">
                   Wholesale Pricing
@@ -566,7 +689,7 @@ const ProductForm = () => {
                   className="flex items-center gap-2 px-4 py-2 bg-gray-900 text-white text-sm rounded-md hover:bg-gray-800 transition-colors"
                 >
                   <Plus className="w-4 h-4" />
-                  Add Wholesale Price
+                  Add <span className="hidden sm:inline">Wholesale Price</span>
                 </button>
               </div>
 
@@ -596,7 +719,7 @@ const ProductForm = () => {
                           handleWholesaleChange(
                             wholesale.id,
                             "qty",
-                            e.target.value
+                            e.target.value,
                           )
                         }
                         placeholder="Eg - 10"
@@ -615,7 +738,7 @@ const ProductForm = () => {
                             handleWholesaleChange(
                               wholesale.id,
                               "price",
-                              e.target.value
+                              e.target.value,
                             )
                           }
                           placeholder="Eg - 55000"
@@ -629,7 +752,7 @@ const ProductForm = () => {
                   </div>
                 ))}
               </div>
-            </div> */}
+            </div>
           </div>
 
           {/* Right Column - Product Images */}

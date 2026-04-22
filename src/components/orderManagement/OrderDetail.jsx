@@ -5,7 +5,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import getReceiptImage from "../../api/receipt/getReceiptIamge";
 import UpdateModel from "./UpdateModel";
 import chgOrderStatus from "../../api/orderApi/chgOrderStatus";
-import { MdArrowBack, MdOutlinePhone } from "react-icons/md";
+import { MdArrowBack, MdOutlinePhone, MdLocalShipping, MdCheckCircle, MdCheck, MdCancel } from "react-icons/md";
 import Loading from "../utli/Loading";
 import avatar from "../../assets/Oval.png";
 
@@ -84,7 +84,7 @@ export default function OrderDetails() {
 
   const handlePrintPDF = async () => {
     const res = await getReceiptImage(id);
-    // console.log(res);
+    console.log(res);
     if (res.code === 201) {
       handlePrintClick(res.data.receiptImage.cdnUrl);
     }
@@ -95,129 +95,133 @@ export default function OrderDetails() {
   }
 
   return (
-    <div className="h-[calc(100vh-50px)] overflow-y-auto px-5">
+    <div className="h-[calc(100vh-50px)] overflow-y-auto px-3 sm:px-5">
       <div>
-        <div className="flex justify-between items-center mb-4 border-b border-gray-200 pb-4">
+        <div className="flex flex-col sm:flex-row justify-between items-center mb-4 border-b border-gray-200 pb-4 gap-4">
           <div className="flex gap-2 items-center">
-            <MdArrowBack size={24} onClick={() => navigate("/orders")} />
-            <h1 className="header">Order Details</h1>
+            <button
+              className="cursor-pointer hidden sm:block"
+              onClick={() => navigate("/orders")}
+            >
+              <MdArrowBack size={24} />
+            </button>
+            <h1 className="header text-xl sm:text-2xl">Order Details</h1>
           </div>
-          <div className="flex gap-2 items-center">
-            {/* <div className="flex gap-2 items-center"></div> */}
+          {/* <div className="flex gap-2 items-center"> */}
+          {/* <div className="flex gap-2 items-center"></div> */}
 
-            <div className="flex gap-2 items-center">
-              {order.status !== "cancelled" && (
-                <button
-                  className="flex items-center gap-2 mr-4 border border-primary px-4 py-3 rounded-3xl text-primary hover:bg-primary/20 transition-colors duration-300 text-[16px]"
-                  onClick={() => {
-                    chgStatus("cancelled");
-                  }}
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    height="18px"
-                    viewBox="0 -960 960 960"
-                    width="24px"
-                    fill="currentColor"
-                  >
-                    <path d="m760-183-85 84-56-56 84-85-84-85 56-56 85 84 85-84 56 56-84 85 84 85-56 56-85-84ZM240-80q-50 0-85-35t-35-85v-120h120v-560h600v415q-19-7-39-10.5t-41-3.5v-321H320v480h214q-7 19-10.5 39t-3.5 41H200v40q0 17 11.5 28.5T240-160h294q8 23 20 43t28 37H240Zm120-520v-80h360v80H360Zm0 120v-80h360v80H360Zm174 320H200h334Z" />
-                  </svg>
-                  Order Cancel
-                </button>
-              )}
-
-              {order.status !== "confirmed" && (
-                <button
-                  className="flex items-center gap-2 mr-4 border border-primary px-4 py-3 rounded-3xl text-white bg-primary hover:bg-primary/80 transition-colors duration-300 text-[16px]"
-                  onClick={() => {
-                    chgStatus("confirmed");
-                  }}
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    height="18px"
-                    viewBox="0 -960 960 960"
-                    width="24px"
-                    fill="currentColor"
-                  >
-                    <path d="m760-183-85 84-56-56 84-85-84-85 56-56 85 84 85-84 56 56-84 85 84 85-56 56-85-84ZM240-80q-50 0-85-35t-35-85v-120h120v-560h600v415q-19-7-39-10.5t-41-3.5v-321H320v480h214q-7 19-10.5 39t-3.5 41H200v40q0 17 11.5 28.5T240-160h294q8 23 20 43t28 37H240Zm120-520v-80h360v80H360Zm0 120v-80h360v80H360Zm174 320H200h334Z" />
-                  </svg>
-                  Confirm Order
-                </button>
-              )}
-
-              {/* <button
-                className="flex items-center gap-2 mr-4 bg-primary px-4 py-3 rounded-lg text-white hover:bg-primary/80"
-                onClick={() => {
-                  setIsOpen(true);
-                  setIsEditOpen(true);
-                  setProduct(order);
-                }}
+          <div className="flex flex-wrap gap-2 items-center">
+            {order.status !== "cancelled" && order.status !== "success" && (
+              <button
+                className="flex items-center gap-2 border border-primary px-4 py-3 rounded-3xl text-primary hover:bg-primary/10 transition-all duration-300 text-[15px] font-medium"
+                onClick={() => chgStatus("cancelled")}
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  height="24px"
-                  viewBox="0 -960 960 960"
-                  width="24px"
-                  fill="#fff"
-                >
-                  <path d="M480-240Zm-320 80v-112q0-34 17.5-62.5T224-378q62-31 126-46.5T480-440q37 0 73 4.5t72 14.5l-67 68q-20-3-39-5t-39-2q-56 0-111 13.5T260-306q-9 5-14.5 14t-5.5 20v32h240v80H160Zm400 40v-123l221-220q9-9 20-13t22-4q12 0 23 4.5t20 13.5l37 37q8 9 12.5 20t4.5 22q0 11-4 22.5T903-340L683-120H560Zm300-263-37-37 37 37ZM620-180h38l121-122-18-19-19-18-122 121v38Zm141-141-19-18 37 37-18-19ZM480-480q-66 0-113-47t-47-113q0-66 47-113t113-47q66 0 113 47t47 113q0 66-47 113t-113 47Zm0-80q33 0 56.5-23.5T560-640q0-33-23.5-56.5T480-720q-33 0-56.5 23.5T400-640q0 33 23.5 56.5T480-560Zm0-80Z" />
-                </svg>
-                Edit Customer Info
-              </button> */}
-            </div>
+                <MdCancel size={20} />
+                Order Cancel
+              </button>
+            )}
+
+            {order.status === "pending" && (
+              <button
+                className="flex items-center gap-2 border border-primary px-5 py-3 rounded-3xl text-white bg-primary hover:bg-primary/90 transition-all duration-300 text-[15px] font-medium shadow-sm hover:shadow-md"
+                onClick={() => chgStatus("confirmed")}
+              >
+                <MdCheck size={20} />
+                Confirm Order
+              </button>
+            )}
+
+            {order.status === "confirmed" && (
+              <button
+                className="flex items-center gap-2 border border-primary px-5 py-3 rounded-3xl text-white bg-primary hover:bg-primary/90 transition-all duration-300 text-[15px] font-medium shadow-sm hover:shadow-md"
+                onClick={() => chgStatus("on-delivery")}
+              >
+                <MdLocalShipping size={20} />
+                On Delivery
+              </button>
+            )}
+
+            {order.status === "on-delivery" && (
+              <button
+                className="flex items-center gap-2 border border-primary px-5 py-3 rounded-3xl text-white bg-primary hover:bg-primary/90 transition-all duration-300 text-[15px] font-medium shadow-sm hover:shadow-md"
+                onClick={() => chgStatus("success")}
+              >
+                <MdCheckCircle size={20} />
+                Mark as Success
+              </button>
+            )}
           </div>
+          {/* </div> */}
         </div>
 
         <div>
           <form className="space-y-6">
-            <div className="flex flex-col md:flex-row gap-20">
-              <div className="space-y-10 w-full ">
-                <div className="py-4 px-5 border rounded-lg">
-                  <h1 className="font-semibold text-[24px] mb-10">Customer</h1>
-                  <div className="flex items-center gap-10 lg:gap-20">
-                    <div className="flex items-center gap-5">
-                      <img src={avatar} alt="" className="w-20 h-20" />
-                      <div className="">
-                        <p className="font-bold text-[24px]">
+            <div className="flex flex-col lg:flex-row gap-6 lg:gap-20">
+              <div className="space-y-6 w-full">
+                <div className="py-4 px-3 sm:px-5 border rounded-lg">
+                  <h1 className="font-semibold text-xl sm:text-[24px] mb-6">
+                    Customer
+                  </h1>
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6 lg:gap-20">
+                    <div className="flex items-center gap-4 w-full sm:w-auto">
+                      <img
+                        src={avatar}
+                        alt=""
+                        className="w-16 h-16 sm:w-20 sm:h-20"
+                      />
+                      <div className="flex-1 sm:flex-none">
+                        <p className="font-bold text-lg sm:text-[24px] break-words">
                           {order?.userId?.userName}
                         </p>
-                        <span className="font-bold flex items-center gap-2">
+                        <span className="font-bold flex items-center gap-2 text-sm sm:text-base">
                           <MdOutlinePhone /> {order?.userId?.phoneNumber}
                         </span>
                       </div>
                     </div>
 
-                    <div>
-                      <p className="font-semibold text-[16px] mb-2">
-                        Customer Status
-                      </p>
+                    <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 w-full sm:w-auto">
                       <div>
-                        <span className="px-4 py-2 text-[12px] rounded-full bg-primary text-white">
-                          Regular
-                        </span>
+                        <p className="font-semibold text-[14px] sm:text-[16px] mb-2">
+                          Customer Status
+                        </p>
+                        <div>
+                          <span className="px-3 sm:px-4 py-2 text-[12px] rounded-full bg-primary text-white">
+                            Regular
+                          </span>
+                        </div>
                       </div>
-                    </div>
 
-                    <div>
-                      <p className="font-semibold text-[16px] mb-2">
-                        Order Status
-                      </p>
                       <div>
-                        <span className="px-4 py-2 text-[12px] rounded-full bg-[#FFF1C2] text-[#522504]">
-                          {order?.status}
-                        </span>
+                        <p className="font-semibold text-[14px] sm:text-[16px] mb-2">
+                          Order Status
+                        </p>
+                        <div>
+                          <span className="px-3 sm:px-4 py-2 text-[12px] rounded-full bg-[#FFF1C2] text-[#522504]">
+                            {order?.status}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div>
+                        <p className="font-semibold text-[14px] sm:text-[16px] mb-2">
+                          Payment Method
+                        </p>
+                        <div>
+                          <span className="px-3 sm:px-4 py-2 text-[12px] rounded-full bg-[#E8F5E8] text-[#2E7D32] capitalize">
+                            {order?.paymentMethod?.replace("-", " ")}
+                          </span>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
 
-                <div className="py-4 px-5 border rounded-lg">
-                  <h1 className="font-semibold text-[24px] mb-10">
+                <div className="py-4 px-3 sm:px-5 border rounded-lg">
+                  <h1 className="font-semibold text-xl sm:text-[24px] mb-6">
                     Delivery Address
                   </h1>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-10">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                     {/* city */}
                     <div>
                       <label htmlFor="city" className="label">
@@ -249,7 +253,7 @@ export default function OrderDetails() {
                     </div>
                   </div>
 
-                  <div className=" grid grid-cols-1 gap-10 mt-10">
+                  <div className="grid grid-cols-1 gap-4 sm:gap-6 mt-4 sm:mt-6">
                     {/* Address */}
                     <div>
                       <label htmlFor="address" className="label">
@@ -261,6 +265,7 @@ export default function OrderDetails() {
                         readOnly
                         value={order?.address}
                         className="input-box"
+                        rows={3}
                       />
                     </div>
                   </div>
@@ -285,10 +290,10 @@ export default function OrderDetails() {
           </form>
 
           {/* Order Section */}
-          <div className="bg-white rounded-lg shadow-sm border p-6 mt-10">
-            <div className="flex justify-between items-center mb-8 pb-4">
+          <div className="bg-white rounded-lg shadow-sm border p-4 sm:p-6 mt-6 sm:mt-10">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 pb-4 gap-4">
               <div className="flex items-center gap-4">
-                <h2 className="header">Order Receipt</h2>
+                <h2 className="header text-xl sm:text-2xl">Order Receipt</h2>
                 {/* <span
                   className={`px-3 py-1 text-xs font-medium rounded-full ${
                     order.deliveryStatus === "Delivered"
@@ -332,72 +337,292 @@ export default function OrderDetails() {
             </div>
 
             <div className="w-full h-auto mx-auto font-sans relative">
-              {/* Header */}
-              <div className="grid grid-cols-5 gap-4 pb-4 mb-6 border-b border-gray-200">
-                <div className="label">Items</div>
-                <div className="label text-center">Category</div>
-                <div className="label text-center">Quantity</div>
-                <div className="label text-center">Weight</div>
-                <div className="label text-right">Price</div>
+              {/* Header - Hidden on mobile, shown on desktop */}
+              <div className="hidden sm:grid grid-cols-5 gap-2 sm:gap-4 pb-4 mb-6 border-b border-gray-200">
+                <div className="label text-xs sm:text-sm">Items</div>
+                <div className="label text-center text-xs sm:text-sm">
+                  Category
+                </div>
+                <div className="label text-center text-xs sm:text-sm">
+                  Quantity
+                </div>
+                <div className="label text-center text-xs sm:text-sm">
+                  Weight
+                </div>
+                <div className="label text-right text-xs sm:text-sm">Price</div>
               </div>
 
-              {/* Item Row */}
-              {order?.products?.map((item) => (
-                <div
-                  className="grid grid-cols-5 gap-4 mb-8"
-                  key={item.stockId}
-                  // onClick={() => {
-                  //   setIsOpen(true);
-                  //   setProduct(item);
-                  //   setIsEditOpen(false);
-                  // }}
-                >
-                  <div className="text-gray-900 text-sm font-medium">
-                    {item.name}
+              {/* Item Rows - Mobile: Card layout, Desktop: Table layout */}
+              {order?.products?.map((item, index) => (
+                <div key={item.stockId}>
+                  {/* Mobile Card Layout */}
+                  <div className="sm:hidden bg-gray-50 rounded-lg p-4 mb-4 border border-gray-200">
+                    <div className="space-y-3">
+                      <div className="flex justify-between items-start">
+                        <div className="flex-1">
+                          <h3 className="font-semibold text-gray-900 text-sm mb-1">
+                            {item.name}
+                          </h3>
+                          <p className="text-xs text-gray-600">
+                            Category: {item.category}
+                          </p>
+                        </div>
+                        <div className="text-right">
+                          {item.isDiscounted ? (
+                            <>
+                              <div className="flex flex-col items-end">
+                                <span className="bg-red-100 text-red-600 text-[10px] font-bold px-1.5 py-0.5 rounded mb-1">
+                                  -{item.discountPercentage}%
+                                </span>
+                                <p className="text-xs text-gray-400 line-through">
+                                  {item.unitPrice.toLocaleString()} MMK
+                                </p>
+                                <p className="font-semibold text-primary text-sm">
+                                  {(
+                                    item.unitPrice *
+                                    (1 - item.discountPercentage / 100)
+                                  ).toLocaleString()}{" "}
+                                  MMK
+                                </p>
+                              </div>
+                              <p className="text-xs text-gray-500 mt-1">
+                                Qty: {item.quantity} ={" "}
+                                {(
+                                  item.unitPrice *
+                                  (1 - item.discountPercentage / 100) *
+                                  item.quantity
+                                ).toLocaleString()}{" "}
+                                MMK
+                              </p>
+                            </>
+                          ) : (
+                            <>
+                              <p className="font-semibold text-gray-900 text-sm">
+                                {item.unitPrice.toLocaleString()} MMK
+                              </p>
+                              <p className="text-xs text-gray-500">
+                                Qty: {item.quantity} ={" "}
+                                {(
+                                  item.unitPrice * item.quantity
+                                ).toLocaleString()}{" "}
+                                MMK
+                              </p>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex justify-between text-xs text-gray-600">
+                        <span>Qty: {item.quantity}</span>
+                        <span>
+                          Weight: {item.unitWeight} {item.weightUnit}
+                        </span>
+                        <span>Sale Type: {item.sale}</span>
+                      </div>
+                    </div>
                   </div>
-                  <div className="text-gray-900 text-sm text-center">
-                    {item.category}
-                  </div>
-                  <div className="text-gray-900 text-sm text-center">
-                    {item.quantity}
-                  </div>
-                  <div className="text-gray-900 text-sm text-center">
-                    {item.unitWeight} {item.weightUnit}
-                  </div>
-                  <div className="text-gray-900 text-sm text-right">
-                    {(item.unitPrice * item.quantity).toLocaleString()} MMK
+
+                  {/* Desktop Table Row */}
+                  <div className="hidden sm:grid grid-cols-5 gap-2 sm:gap-4 mb-6 items-center">
+                    <div className="text-gray-900 text-sm font-medium">
+                      {item.name}
+                    </div>
+                    <div className="text-gray-900 text-sm text-center">
+                      {item.category}
+                    </div>
+                    <div className="text-gray-900 text-sm text-center">
+                      {item.quantity}
+                    </div>
+                    <div className="text-gray-900 text-sm text-center">
+                      {item.unitWeight} {item.weightUnit}
+                    </div>
+                    <div className="text-gray-900 text-sm text-right">
+                      {item.isDiscounted ? (
+                        <div className="flex flex-col items-end">
+                          <span className="bg-red-100 text-red-600 text-[10px] font-bold px-1.5 py-0.5 rounded mb-1">
+                            -{item.discountPercentage}%
+                          </span>
+                          <span className="text-xs text-gray-400 line-through">
+                            {item.unitPrice.toLocaleString()} MMK
+                          </span>
+                          <span className="font-semibold text-primary">
+                            {(
+                              item.unitPrice *
+                              (1 - item.discountPercentage / 100)
+                            ).toLocaleString()}{" "}
+                            MMK
+                          </span>
+                          <div className="text-xs text-gray-500 mt-1">
+                            Qty: {item.quantity} ={" "}
+                            {(
+                              item.unitPrice *
+                              (1 - item.discountPercentage / 100) *
+                              item.quantity
+                            ).toLocaleString()}{" "}
+                            MMK
+                          </div>
+                        </div>
+                      ) : (
+                        <>
+                          {item.unitPrice.toLocaleString()} MMK
+                          <div className="text-xs text-gray-500">
+                            Qty: {item.quantity} ={" "}
+                            {(item.unitPrice * item.quantity).toLocaleString()}{" "}
+                            MMK
+                          </div>
+                        </>
+                      )}
+                    </div>
                   </div>
                 </div>
               ))}
 
               <div className="border-t border-gray-200 pt-4 mb-6">
-                <div className="grid grid-cols-5 gap-4 mb-8">
-                  <div className="text-gray-900 text-sm font-medium col-span-4">
-                    Delivery Fee
+                {/* Mobile Layout for Fees */}
+                <div className="sm:hidden space-y-4">
+                  {/* Subtotal */}
+                  <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-900 text-sm font-medium">
+                        Subtotal
+                      </span>
+                      <span className="text-gray-900 text-sm font-semibold">
+                        {order?.subTotal.toLocaleString()} MMK
+                      </span>
+                    </div>
                   </div>
 
-                  <div className="text-gray-900 text-sm text-right">
-                    {order?.delivery.baseDeliveryFee.toLocaleString()}
-                    MMK
+                  {/* Tax - show if > 0 */}
+                  {order?.tax > 0 && (
+                    <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-900 text-sm font-medium">
+                          Tax
+                        </span>
+                        <span className="text-gray-900 text-sm font-semibold">
+                          {order?.tax.toLocaleString()} MMK
+                        </span>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Discount - show if > 0 */}
+                  {order?.discount > 0 && (
+                    <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                      <div className="flex justify-between items-center text-red-600">
+                        <span className="text-sm font-medium">
+                          Discount
+                        </span>
+                        <span className="text-sm font-semibold">
+                          -{order?.discount.toLocaleString()} MMK
+                        </span>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Delivery Fee */}
+                  <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-900 text-sm font-medium">
+                        Delivery Fee
+                      </span>
+                      <span className="text-gray-900 text-sm font-semibold">
+                        {order?.delivery.calculatedDeliveryFee.toLocaleString()}{" "}
+                        MMK
+                      </span>
+                    </div>
                   </div>
+
+                  {/* Only show Additional Kilo Fee if weight > 2kg */}
+                  {order?.delivery.totalWeight > 2 && (
+                    <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                      <div className="space-y-2">
+                        <div className="text-gray-900 text-sm font-medium">
+                          Additional Weight Fee
+                        </div>
+                        <div className="text-xs text-gray-500">
+                          (1000 MMK Per Kilo for weight over 2kg)
+                        </div>
+                        <div className="flex justify-between items-center pt-2">
+                          <span className="text-gray-900 text-sm">
+                            {order?.delivery.totalWeight} kg
+                          </span>
+                          <span className="text-gray-900 text-sm font-semibold">
+                            {order?.delivery.additionalWeightCharge.toLocaleString()}{" "}
+                            MMK
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
-                <div className="grid grid-cols-5 gap-4 mb-8">
-                  <div className="text-gray-900 text-sm font-medium col-span-3">
-                    Additional Kilo Fee <br />{" "}
-                    <span className="text-xs text-gray-500">
-                      (1000 MMK Per Kilo)
-                    </span>
+
+                {/* Desktop Layout for Fees */}
+                <div className="hidden sm:block space-y-4">
+                  {/* Subtotal */}
+                  <div className="grid grid-cols-5 gap-2 sm:gap-4">
+                    <div className="text-gray-900 text-sm font-medium col-span-4">
+                      Subtotal
+                    </div>
+                    <div className="text-gray-900 text-sm text-right">
+                      {order?.subTotal.toLocaleString()} MMK
+                    </div>
                   </div>
-                  <div className="text-gray-900 text-sm text-center">
-                    {order?.delivery.totalWeight}
-                    kg
-                  </div>
-                  <div className="text-gray-900 text-sm text-right">
-                    {(
-                      order?.delivery.additionalWeightCharge *
-                      order?.delivery.totalWeight
-                    ).toLocaleString()}
-                    MMK
+
+                  {/* Tax */}
+                  {order?.tax > 0 && (
+                    <div className="grid grid-cols-5 gap-2 sm:gap-4">
+                      <div className="text-gray-900 text-sm font-medium col-span-4">
+                        Tax
+                      </div>
+                      <div className="text-gray-900 text-sm text-right">
+                        {order?.tax.toLocaleString()} MMK
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Discount */}
+                  {order?.discount > 0 && (
+                    <div className="grid grid-cols-5 gap-2 sm:gap-4 text-red-600">
+                      <div className="text-sm font-medium col-span-4">
+                        Discount
+                      </div>
+                      <div className="text-sm text-right font-semibold">
+                        -{order?.discount.toLocaleString()} MMK
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Additional Weight Charge */}
+                  {order?.delivery?.totalWeight > 2 && (
+                    <div className="flex flex-col gap-4 border-b pb-5">
+                      <div className="grid grid-cols-5 gap-2 sm:gap-4">
+                        <div className="text-gray-900 text-sm font-medium col-span-4">
+                          Additional Weight Charge
+                        </div>
+                        <div className="text-gray-900 text-sm text-right">
+                          {order?.delivery.additionalWeightCharge.toLocaleString()} MMK
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-5 gap-2 sm:gap-4">
+                        <div className="text-gray-900 text-sm font-medium col-span-4">
+                          Delivery Fee
+                        </div>
+                        <div className="text-gray-900 text-sm text-right">
+                          {order?.delivery.baseDeliveryFee.toLocaleString()} MMK
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Delivery Fee */}
+                  <div className="grid grid-cols-5 gap-2 sm:gap-4">
+                    <div className="text-gray-900 text-sm font-medium col-span-4">
+                      {order?.delivery?.totalWeight > 2 ? "Total Delivery Fee" : "Delivery Fee"}
+                    </div>
+                    <div className="text-gray-900 text-sm text-right">
+                      {order?.delivery.calculatedDeliveryFee.toLocaleString()} MMK
+                    </div>
                   </div>
                 </div>
               </div>
@@ -405,16 +630,15 @@ export default function OrderDetails() {
               <div>
                 {/* Total Section */}
                 <div className="border-t border-gray-200 pt-4 mb-6">
-                  <div className="flex justify-between items-center">
-                    <div className="text-gray-900 text-lg font-semibold">
-                      Total
-                    </div>
-                    <div className="text-gray-900 text-lg font-semibold">
-                      {(
-                        order?.totalAmount +
-                        order.delivery.calculatedDeliveryFee
-                      ).toLocaleString()}
-                      MMK
+                  <div className="bg-blue-50 rounded-lg p-4 sm:p-6 border border-blue-200">
+                    <div className="flex justify-between items-center">
+                      <div className="text-gray-900 text-lg sm:text-xl font-bold">
+                        Total
+                      </div>
+                      <div className="text-gray-900 text-lg sm:text-xl font-bold">
+                        {(order?.finalAmount).toLocaleString()}
+                        MMK
+                      </div>
                     </div>
                   </div>
                 </div>

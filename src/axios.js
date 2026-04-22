@@ -15,8 +15,8 @@ const setAuthToken = (token) => {
   }
 };
 
-// Initialize token from sessionStorage if available
-const token = sessionStorage.getItem("ko-min-token");
+// Initialize token from localStorage if available
+const token = localStorage.getItem("uedc-token");
 if (token) {
   setAuthToken(token);
 }

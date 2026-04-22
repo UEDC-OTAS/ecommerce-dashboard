@@ -1,14 +1,15 @@
 import { useState } from "react";
 import { EyeIcon, CalendarIcon, ClockIcon, Trash2 } from "lucide-react";
-import softDeleteBanner from "../../api/bannerApi/softDeleteBanner";
+import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import deleteBanner from "../../api/bannerApi/deleteBanner";
 import ConfirmModal from "../common/ConfirmModal";
 
-const BannerCard = ({ banner, index, onDelete }) => {
-  console.log(banner.image?.url);
+const BannerCard = ({ banner, onBannerUpdate }) => {
   const [imageError, setImageError] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const navigate = useNavigate();
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -19,38 +20,50 @@ const BannerCard = ({ banner, index, onDelete }) => {
     });
   };
 
-  const handleDelete = async () => {
-    setIsDeleting(true);
+  const getImageUrl = () => {
+    if (banner.useStockImage && banner.stockId?.images?.[0]?.url) {
+      return banner.stockId.images[0].url;
+    }
+    return banner.image;
+  };
+
+  const imageUrl = getImageUrl();
+
+  const handleDelete = async (e) => {
+    e.stopPropagation(); // Prevent navigation to detail page
+    setShowConfirmModal(true);
+  };
+
+  const confirmDelete = async () => {
     try {
-      const response = await softDeleteBanner(banner._id);
-      if (response.success || response.status === "success") {
-        toast.success("Banner deleted successfully!");
-        if (onDelete) {
-          onDelete(banner._id);
+      setDeleteLoading(true);
+      const response = await deleteBanner(banner._id);
+
+      if (response.status === "success") {
+        toast.success("Banner deleted successfully");
+        // Call the parent function to refresh the banner list
+        if (onBannerUpdate) {
+          onBannerUpdate();
         }
       } else {
         toast.error(response.message || "Failed to delete banner");
       }
-    } catch (error) {
-      console.error("Error deleting banner:", error);
+    } catch (err) {
+      console.error("Error deleting banner:", err);
       toast.error("An error occurred while deleting the banner");
     } finally {
-      setIsDeleting(false);
-      setShowDeleteModal(false);
+      setDeleteLoading(false);
+      setShowConfirmModal(false);
     }
-  };
-
-  const handleDeleteClick = () => {
-    setShowDeleteModal(true);
   };
 
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
       {/* Image Section */}
       <div className="relative h-48 bg-gray-100">
-        {banner.image?.url && !imageError ? (
+        {imageUrl && !imageError ? (
           <img
-            src={banner.image?.url}
+            src={imageUrl.url}
             alt={banner.title}
             className="w-full h-full object-cover"
             onError={() => setImageError(true)}
@@ -89,7 +102,7 @@ const BannerCard = ({ banner, index, onDelete }) => {
         </p>
 
         {/* Product Info */}
-        {/* {banner.stockId && (
+        {banner.stockId && (
           <div className="mb-3 p-2 bg-gray-50 rounded">
             <p className="text-xs text-gray-500 mb-1">Featured Product:</p>
             <p className="text-sm font-medium text-gray-800">
@@ -99,7 +112,7 @@ const BannerCard = ({ banner, index, onDelete }) => {
               Code: {banner.stockId.productCode}
             </p>
           </div>
-        )} */}
+        )}
 
         {/* Event Details */}
         <div className="space-y-2 mb-4">
@@ -121,27 +134,39 @@ const BannerCard = ({ banner, index, onDelete }) => {
           </div>
 
           <div className="flex gap-2">
+            <button
+              onClick={() => navigate(`/banners/${banner._id}`)}
+              className="flex items-center px-3 py-1 text-sm text-primary hover:text-primary-dark transition-colors"
+            >
+              <EyeIcon className="w-4 h-4 mr-1" />
+              View Details
+            </button>
+
             {!banner.softDeleted && (
               <button
-                onClick={handleDeleteClick}
-                disabled={isDeleting}
-                className="flex items-center px-3 py-1 text-sm text-red-600 hover:text-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                onClick={handleDelete}
+                disabled={deleteLoading}
+                className="flex items-center px-2 py-1 text-sm text-red-600 hover:text-red-800 hover:bg-red-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                title="Delete Banner"
               >
-                <Trash2 className="w-4 h-4 mr-1" />
-                {isDeleting ? "Deleting..." : "Delete"}
+                {deleteLoading ? (
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-red-600"></div>
+                ) : (
+                  <Trash2 className="w-4 h-4" />
+                )}
               </button>
             )}
           </div>
         </div>
       </div>
 
-      {/* Delete Confirmation Modal */}
+      {/* Confirm Modal */}
       <ConfirmModal
-        isOpen={showDeleteModal}
-        onClose={() => setShowDeleteModal(false)}
-        onConfirm={handleDelete}
+        isOpen={showConfirmModal}
+        onClose={() => setShowConfirmModal(false)}
+        onConfirm={confirmDelete}
         title="Delete Banner"
-        message={`Are you sure you want to delete the banner "${banner.title}"? This action can be undone.`}
+        message={`Are you sure you want to delete "${banner.title}"? This action cannot be undone.`}
         confirmText="Delete"
         cancelText="Cancel"
         type="danger"

@@ -23,13 +23,14 @@ const LoginPage = () => {
     if (res.success) {
       const token = res.data.token;
       console.log(token);
-      // const user = {
-      //   name: username,
-      //   role: res.data.user.role,
-      // };
+
+      const user = {
+        name: res.data.admin.name,
+        role: res.data.admin.role,
+      };
       setAuthToken(token);
-      // localStorage.setItem("uedc-user", JSON.stringify(user));
-      sessionStorage.setItem("ko-min-token", token);
+      localStorage.setItem("uedc-user", JSON.stringify(user));
+      localStorage.setItem("uedc-token", token);
       // if (user.role === "admin") {
       navigate("/");
       // }
@@ -40,9 +41,9 @@ const LoginPage = () => {
 
   return (
     <div className="flex w-full justify-center items-center h-screen">
-      <div className="w-full md:w-[450px] bg-white rounded-lg p-20 md:p-6">
+      <div className="w-full md:w-[450px] bg-white rounded-lg p-6">
         <h2 className="header font-bold mb-10 border-b pb-5">
-          Sign in to UEDC Admin
+          Sign in to UEDC Dashboard
         </h2>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
@@ -55,7 +56,7 @@ const LoginPage = () => {
               name="name"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="Enter Staff Name"
+              placeholder="Enter Name"
               required
               className="block w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
             />
@@ -70,7 +71,7 @@ const LoginPage = () => {
               name="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="Enter Account Password"
+              placeholder="Enter Password"
               required
               className="block w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
             />

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { X, Upload, Trash2, Calendar, Clock, Package } from "lucide-react";
+import { X, Upload, Trash2 } from "lucide-react";
 import ProductSelector from "./ProductSelector";
 import createBanner from "../../api/bannerApi/createBanner";
 import { useNavigate } from "react-router-dom";

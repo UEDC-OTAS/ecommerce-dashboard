@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 function PrivateRoute({ children }) {
   const navigate = useNavigate();
   //   handleTokenExpiration();
-  const token = sessionStorage.getItem("ko-min-token");
+  const token = localStorage.getItem("uedc-token");
   if (token) {
     return children;
   } else {

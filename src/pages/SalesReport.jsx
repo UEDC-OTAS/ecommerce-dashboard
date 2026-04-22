@@ -1,23 +1,45 @@
 import { useEffect, useState } from "react";
-import getAnalytics from "../api/reportApi/getAnalytics";
+import getSalesReport from "../api/reportApi/getSalesReport";
+import getProductReport from "../api/reportApi/getProductReport";
 import Loading from "../components/utli/Loading";
-import {
-  MdTrendingUp,
-  MdShoppingCart,
-  MdLocalShipping,
-  MdPersonAdd,
-  MdRefresh,
-  MdCalendarToday,
-  MdCalendarViewWeek,
-  MdCalendarViewMonth,
-} from "react-icons/md";
+import { DateRangePicker } from "../components/utli/DateRangePicker";
+import { MdRefresh } from "react-icons/md";
+import SalesOverview from "../components/reportManagement/SalesOverview";
+import ProductSalesReport from "../components/reportManagement/ProductSalesReport";
+
+// Helper function to get today's date
+const getToday = () => {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  return today;
+};
 
 export default function SalesReport() {
-  const [analytics, setAnalytics] = useState(null);
+  const [salesReport, setSalesReport] = useState(null);
+  const [productReport, setProductReport] = useState(null);
+  const [activeReportTab, setActiveReportTab] = useState("overview"); // 'overview' or 'products'
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  // Initialize dates to last 30 days
+  const [startDate, setStartDate] = useState(() => {
+    const thirtyDaysAgo = new Date(getToday());
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    return thirtyDaysAgo;
+  });
+  const [endDate, setEndDate] = useState(getToday());
+  const [paymentMethod, setPaymentMethod] = useState("");
 
-  const fetchAnalytics = async (isRefresh = false) => {
+  const formatDateForAPI = (date) => {
+    if (!date) return null;
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  };
+
+  const fetchSalesReport = async (isRefresh = false) => {
+    if (!startDate || !endDate) return;
+
     if (isRefresh) {
       setRefreshing(true);
     } else {
@@ -25,10 +47,34 @@ export default function SalesReport() {
     }
 
     try {
-      const response = await getAnalytics();
-      setAnalytics(response);
+      const startDateStr = formatDateForAPI(startDate);
+      const endDateStr = formatDateForAPI(endDate);
+      const response = await getSalesReport(startDateStr, endDateStr, paymentMethod);
+      setSalesReport(response);
     } catch (error) {
-      console.error("Error fetching analytics:", error);
+      console.error("Error fetching sales report:", error);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  };
+
+  const fetchProductReport = async (isRefresh = false) => {
+    if (!startDate || !endDate) return;
+
+    if (isRefresh) {
+      setRefreshing(true);
+    } else {
+      setLoading(true);
+    }
+
+    try {
+      const startDateStr = formatDateForAPI(startDate);
+      const endDateStr = formatDateForAPI(endDate);
+      const response = await getProductReport(startDateStr, endDateStr);
+      setProductReport(response);
+    } catch (error) {
+      console.error("Error fetching product report:", error);
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -36,64 +82,29 @@ export default function SalesReport() {
   };
 
   useEffect(() => {
-    fetchAnalytics();
-  }, []);
+    if (activeReportTab === "overview") {
+      fetchSalesReport();
+    } else {
+      fetchProductReport();
+    }
+  }, [activeReportTab, startDate, endDate, paymentMethod]);
+
+  const handleDateRangeChange = (start, end) => {
+    setStartDate(start);
+    setEndDate(end);
+  };
 
   const handleRefresh = () => {
-    fetchAnalytics(true);
+    if (activeReportTab === "overview") {
+      fetchSalesReport(true);
+    } else {
+      fetchProductReport(true);
+    }
   };
 
   const formatCurrency = (amount) => {
     return amount?.toLocaleString() || "0";
   };
-
-  const StatCard = ({ title, value, icon: Icon, color = "bg-gray-100" }) => (
-    <div className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
-      <div className="flex items-center justify-between">
-        <div>
-          <p className="text-sm font-medium text-gray-600 mb-1">{title}</p>
-          <p className="text-2xl font-bold text-gray-900">{value}</p>
-        </div>
-        <div className={`p-3 rounded-full ${color}`}>
-          <Icon className="w-6 h-6 text-gray-700" />
-        </div>
-      </div>
-    </div>
-  );
-
-  const TimePeriodCard = ({ period, data, icon: Icon, periodLabel }) => (
-    <div className="bg-white border border-gray-200 rounded-lg p-6">
-      <div className="flex items-center gap-3 mb-6">
-        <div className="p-2 bg-gray-100 rounded-lg">
-          <Icon className="w-5 h-5 text-gray-700" />
-        </div>
-        <h3 className="text-lg font-semibold text-gray-900">{periodLabel}</h3>
-      </div>
-
-      <div className="grid grid-cols-2 gap-4">
-        <div className="text-center p-4 bg-gray-50 rounded-lg">
-          <p className="text-sm text-gray-600 mb-1">Orders</p>
-          <p className="text-xl font-bold text-gray-900">{data.orderCount}</p>
-        </div>
-        <div className="text-center p-4 bg-gray-50 rounded-lg">
-          <p className="text-sm text-gray-600 mb-1">New Customers</p>
-          <p className="text-xl font-bold text-gray-900">{data.newCustomers}</p>
-        </div>
-        <div className="text-center p-4 bg-gray-50 rounded-lg">
-          <p className="text-sm text-gray-600 mb-1">Total Sales</p>
-          <p className="text-lg font-bold text-gray-900">
-            {formatCurrency(data.totalSale)} MMK
-          </p>
-        </div>
-        <div className="text-center p-4 bg-gray-50 rounded-lg">
-          <p className="text-sm text-gray-600 mb-1">Delivery Fees</p>
-          <p className="text-lg font-bold text-gray-900">
-            {formatCurrency(data.totalDeliveryFee)} MMK
-          </p>
-        </div>
-      </div>
-    </div>
-  );
 
   if (loading) {
     return <Loading />;
@@ -102,179 +113,93 @@ export default function SalesReport() {
   return (
     <div className="h-[calc(100vh-50px)] overflow-y-auto px-5 py-6">
       <div className="">
-        {/* Header */}
-        <div className="flex justify-between items-center mb-8">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
-              Sales Report
-            </h1>
-            <p className="text-gray-600">
-              Last updated: {new Date(analytics?.generatedAt).toLocaleString()}
-            </p>
-          </div>
+        {/* Tabs */}
+        <div className="flex border-b border-gray-200 mb-6 font-primary">
           <button
-            onClick={handleRefresh}
-            disabled={refreshing}
-            className="flex items-center gap-2 px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors disabled:opacity-50"
+            onClick={() => setActiveReportTab("overview")}
+            className={`px-6 py-3 text-sm font-medium transition-colors border-b-2 ${
+              activeReportTab === "overview"
+                ? "border-gray-900 text-gray-900"
+                : "border-transparent text-gray-500 hover:text-gray-700"
+            }`}
           >
-            <MdRefresh
-              className={`w-4 h-4 ${refreshing ? "animate-spin" : ""}`}
-            />
-            {refreshing ? "Refreshing..." : "Refresh"}
+            Overview
+          </button>
+          <button
+            onClick={() => setActiveReportTab("products")}
+            className={`px-6 py-3 text-sm font-medium transition-colors border-b-2 ${
+              activeReportTab === "products"
+                ? "border-gray-900 text-gray-900"
+                : "border-transparent text-gray-500 hover:text-gray-700"
+            }`}
+          >
+            Product Sales
           </button>
         </div>
 
-        {/* Performance Summary */}
-        <div className="mb-8">
-          <h2 className="text-xl font-semibold text-gray-900 mb-6">
-            Performance Summary
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <TimePeriodCard
-              period={analytics?.performanceSummary?.today}
-              data={analytics?.performanceSummary?.today || {}}
-              icon={MdCalendarToday}
-              periodLabel="Today"
+        {/* Header */}
+        <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-4 mb-8">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2 font-primary">
+              Sales Report
+            </h1>
+            <p className="text-gray-600">
+              Last updated:{" "}
+              {new Date().toLocaleString()}
+            </p>
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-3">
+            {/* Payment Method Filter - Only show for Overview */}
+            {activeReportTab === "overview" && (
+              <select
+                value={paymentMethod}
+                onChange={(e) => setPaymentMethod(e.target.value)}
+                className="border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-gray-900 min-w-[160px]"
+              >
+                <option value="">All Payment Methods</option>
+                <option value="cash-on-delivery">Cash on Delivery</option>
+                <option value="k-pay">K Pay</option>
+              </select>
+            )}
+
+            {/* Date Range Picker */}
+            <DateRangePicker
+              startDate={startDate}
+              endDate={endDate}
+              onChange={handleDateRangeChange}
             />
-            <TimePeriodCard
-              period={analytics?.performanceSummary?.week}
-              data={analytics?.performanceSummary?.week || {}}
-              icon={MdCalendarViewWeek}
-              periodLabel="This Week"
-            />
-            <TimePeriodCard
-              period={analytics?.performanceSummary?.month}
-              data={analytics?.performanceSummary?.month || {}}
-              icon={MdCalendarViewMonth}
-              periodLabel="This Month"
-            />
+
+            <button
+              onClick={handleRefresh}
+              disabled={refreshing}
+              className="flex items-center gap-2 px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors disabled:opacity-50 h-10"
+            >
+              <MdRefresh
+                className={`w-4 h-4 ${refreshing ? "animate-spin" : ""}`}
+              />
+              {refreshing ? "Refreshing..." : "Refresh"}
+            </button>
           </div>
         </div>
 
-        {/* Product Performance */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Most Sold Product */}
-          <div className="bg-white border border-gray-200 rounded-lg p-6">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="p-2 bg-green-100 rounded-lg">
-                <MdTrendingUp className="w-5 h-5 text-green-700" />
-              </div>
-              <h3 className="text-lg font-semibold text-gray-900">
-                Most Sold Product
-              </h3>
-            </div>
-
-            {analytics?.mostSoldProduct ? (
-              <div className="p-4 bg-green-50 rounded-lg">
-                <div className="flex items-center justify-between mb-2">
-                  <p className="font-medium text-gray-900">
-                    {analytics.mostSoldProduct.name}
-                  </p>
-                  <span className="text-sm text-green-600 font-medium">
-                    {analytics.mostSoldProduct.totalSold} sold
-                  </span>
-                </div>
-                <p className="text-sm text-gray-600">
-                  Category: {analytics.mostSoldProduct.category}
-                </p>
-                <p className="text-sm text-gray-600">
-                  Product Code: {analytics.mostSoldProduct.productCode}
-                </p>
-              </div>
-            ) : (
-              <div className="p-8 text-center text-gray-500">
-                <MdShoppingCart className="w-12 h-12 mx-auto mb-3 opacity-50" />
-                <p>No sales data available</p>
-              </div>
-            )}
-          </div>
-
-          {/* Least Sold Product */}
-          <div className="bg-white border border-gray-200 rounded-lg p-6">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="p-2 bg-red-100 rounded-lg">
-                <MdTrendingUp className="w-5 h-5 text-red-700 rotate-180" />
-              </div>
-              <h3 className="text-lg font-semibold text-gray-900">
-                Least Sold Product
-              </h3>
-            </div>
-
-            {analytics?.leastSoldProduct ? (
-              <div className="p-4 bg-red-50 rounded-lg">
-                <div className="flex items-center justify-between mb-2">
-                  <p className="font-medium text-gray-900">
-                    {analytics.leastSoldProduct.name}
-                  </p>
-                  <span className="text-sm text-red-600 font-medium">
-                    {analytics.leastSoldProduct.totalSold} sold
-                  </span>
-                </div>
-                <p className="text-sm text-gray-600">
-                  Category: {analytics.leastSoldProduct.category}
-                </p>
-                <p className="text-sm text-gray-600">
-                  Product Code: {analytics.leastSoldProduct.productCode}
-                </p>
-              </div>
-            ) : (
-              <div className="p-8 text-center text-gray-500">
-                <MdShoppingCart className="w-12 h-12 mx-auto mb-3 opacity-50" />
-                <p>No sales data available</p>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Quick Stats */}
-        {/* <div className="mt-8">
-          <h2 className="text-xl font-semibold text-gray-900 mb-6">
-            Quick Stats
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <StatCard
-              title="Total Orders (All Time)"
-              value={formatCurrency(
-                (analytics?.performanceSummary?.today?.orderCount || 0) +
-                  (analytics?.performanceSummary?.week?.orderCount || 0) +
-                  (analytics?.performanceSummary?.month?.orderCount || 0)
-              )}
-              icon={MdShoppingCart}
-              color="bg-blue-100"
-            />
-            <StatCard
-              title="Total Sales (All Time)"
-              value={`${formatCurrency(
-                (analytics?.performanceSummary?.today?.totalSale || 0) +
-                  (analytics?.performanceSummary?.week?.totalSale || 0) +
-                  (analytics?.performanceSummary?.month?.totalSale || 0)
-              )} MMK`}
-              icon={MdTrendingUp}
-              color="bg-green-100"
-            />
-            <StatCard
-              title="Total Delivery Fees"
-              value={`${formatCurrency(
-                (analytics?.performanceSummary?.today?.totalDeliveryFee || 0) +
-                  (analytics?.performanceSummary?.week?.totalDeliveryFee || 0) +
-                  (analytics?.performanceSummary?.month?.totalDeliveryFee || 0)
-              )} MMK`}
-              icon={MdLocalShipping}
-              color="bg-purple-100"
-            />
-            <StatCard
-              title="New Customers"
-              value={formatCurrency(
-                (analytics?.performanceSummary?.today?.newCustomers || 0) +
-                  (analytics?.performanceSummary?.week?.newCustomers || 0) +
-                  (analytics?.performanceSummary?.month?.newCustomers || 0)
-              )}
-              icon={MdPersonAdd}
-              color="bg-orange-100"
-            />
-          </div>
-        </div> */}
+        {activeReportTab === "overview" ? (
+          <SalesOverview
+            salesReport={salesReport}
+            formatCurrency={formatCurrency}
+            startDate={startDate}
+            endDate={endDate}
+          />
+        ) : (
+          <ProductSalesReport
+            productReport={productReport}
+            formatCurrency={formatCurrency}
+            startDate={startDate}
+            endDate={endDate}
+          />
+        )}
       </div>
     </div>
   );
 }
+

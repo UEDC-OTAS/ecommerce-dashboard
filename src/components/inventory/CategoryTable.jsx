@@ -23,7 +23,7 @@ const CategoryTable = ({ category, loading, sentBulkPriceModal }) => {
 
     // Update select all state based on current selection
     setSelectAll(
-      newSelectedRows.size === category.length && category.length > 0
+      newSelectedRows.size === category.length && category.length > 0,
     );
   };
 
@@ -75,7 +75,7 @@ const CategoryTable = ({ category, loading, sentBulkPriceModal }) => {
           >
             <path d="M640-640h120-120Zm-440 0h338-18 14-334Zm16-80h528l-34-40H250l-34 40Zm184 270 80-40 80 40v-190H400v190Zm182 330H200q-33 0-56.5-23.5T120-200v-499q0-14 4.5-27t13.5-24l50-61q11-14 27.5-21.5T250-840h460q18 0 34.5 7.5T772-811l50 61q9 11 13.5 24t4.5 27v196q-19-7-39-11t-41-4v-122H640v153q-35 20-61 49.5T538-371l-58-29-160 80v-320H200v440h334q8 23 20 43t28 37Zm138 0v-120H600v-80h120v-120h80v120h120v80H800v120h-80Z" />
           </svg>
-          <span className="hidden md:block text-[14px]">Add Product</span>
+          <span className="text-[14px]">Add Product</span>
         </button>
       </div>
 
@@ -87,14 +87,14 @@ const CategoryTable = ({ category, loading, sentBulkPriceModal }) => {
             style={{ position: "sticky", top: 0 }}
           >
             <tr>
-              <th className="px-4 py-4 text-left">
+              {/* <th className="px-4 py-4 text-left">
                 <input
                   type="checkbox"
                   checked={selectAll}
                   onChange={handleSelectAll}
                   className="w-4 h-4 text-primary bg-gray-100 border-gray-300 rounded focus:none"
                 />
-              </th>
+              </th> */}
               <th className="px-4 py-4 text-left text-xs font-black uppercase tracking-wider">
                 No
               </th>
@@ -139,14 +139,14 @@ const CategoryTable = ({ category, loading, sentBulkPriceModal }) => {
                           selectedRows.has(product.category) ? "bg-blue-50" : ""
                         }
                       >
-                        <td className="px-4 py-4 whitespace-nowrap">
+                        {/* <td className="px-4 py-4 whitespace-nowrap">
                           <input
                             type="checkbox"
                             checked={selectedRows.has(product.category)}
                             onChange={() => handleRowSelect(product.category)}
                             className="w-4 h-4 text-primary bg-gray-100 border-gray-300 rounded focus:none"
                           />
-                        </td>
+                        </td> */}
                         <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
                           {index + 1}
                         </td>
@@ -208,7 +208,7 @@ const CategoryTable = ({ category, loading, sentBulkPriceModal }) => {
                         </td>
                       </tr>
                     )
-                  )
+                  ),
                 )}
               {category.length === 0 && (
                 <tr>

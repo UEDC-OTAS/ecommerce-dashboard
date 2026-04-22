@@ -7,11 +7,12 @@ export const DeliveryConfigForm = ({
   onSubmit,
   onCancel,
   initialData,
-  isEditing = false,
+  isEditing,
   refetch,
 }) => {
+  console.log(isEditing);
   const [formData, setFormData] = useState(() =>
-    createDeliveryConfig(initialData)
+    createDeliveryConfig(initialData),
   );
 
   const [errors, setErrors] = useState(createFormErrors());
@@ -22,10 +23,6 @@ export const DeliveryConfigForm = ({
 
     if (!formData.city.trim()) {
       newErrors.city = "City is required";
-    }
-
-    if (!formData.township.trim()) {
-      newErrors.township = "Township is required";
     }
 
     if (formData.deliveryFee < 0) {
@@ -51,12 +48,20 @@ export const DeliveryConfigForm = ({
     };
 
     setIsSubmitting(true);
-    const response = await createDeliZone(data);
-    if (response.status === "success") {
-      onSubmit(response.data);
-      setIsSubmitting(false);
-      refetch();
+
+    if (isEditing) {
+      // For editing, call the parent's onSubmit function
+      await onSubmit(data);
+    } else {
+      // For creating new config, use createDeliZone API
+      const response = await createDeliZone(data);
+      if (response.status === "success") {
+        onSubmit(response.data);
+        setIsSubmitting(false);
+        refetch();
+      }
     }
+    setIsSubmitting(false);
   };
 
   const handleInputChange = (field, value) => {
@@ -68,18 +73,7 @@ export const DeliveryConfigForm = ({
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-lg p-8 border border-gray-100">
-      <div className="flex items-center gap-3 mb-8">
-        <div className="p-2 bg-blue-100 rounded-lg">
-          <Plus className="w-6 h-6 text-blue-600" />
-        </div>
-        <h2 className="text-2xl font-bold text-gray-800">
-          {isEditing
-            ? "Edit Delivery Configuration"
-            : "Add New Delivery Configuration"}
-        </h2>
-      </div>
-
+    <div className="">
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* City */}
@@ -95,11 +89,10 @@ export const DeliveryConfigForm = ({
               id="city"
               value={formData.city}
               onChange={(e) => handleInputChange("city", e.target.value)}
-              className={`w-full px-4 py-3 border rounded-lg font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                errors.city
-                  ? "border-red-300 bg-red-50"
-                  : "border-gray-300 hover:border-gray-400"
-              }`}
+              className={`w-full px-4 py-3 border rounded-lg font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.city
+                ? "border-red-300 bg-red-50"
+                : "border-gray-300 hover:border-gray-400"
+                }`}
               placeholder="Enter city name"
             />
             {errors.city && (
@@ -113,24 +106,21 @@ export const DeliveryConfigForm = ({
               htmlFor="township"
               className="block text-sm font-semibold text-gray-700"
             >
-              Township *
+              Township
             </label>
             <input
               type="text"
               id="township"
               value={formData.township}
               onChange={(e) => handleInputChange("township", e.target.value)}
-              className={`w-full px-4 py-3 border rounded-lg font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                errors.township
-                  ? "border-red-300 bg-red-50"
-                  : "border-gray-300 hover:border-gray-400"
-              }`}
+              className={`w-full px-4 py-3 border rounded-lg font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.township
+                ? "border-red-300 bg-red-50"
+                : "border-gray-300 hover:border-gray-400"
+                }`}
               placeholder="Enter township name"
             />
             {errors.township && (
-              <p className="text-sm text-red-600 font-medium">
-                {errors.township}
-              </p>
+              <p className="text-sm text-red-600 font-medium">{errors.township}</p>
             )}
           </div>
         </div>
@@ -144,7 +134,7 @@ export const DeliveryConfigForm = ({
             >
               Delivery Fee *
             </label>
-            <div className="relative flex items-center gap-2">
+            <div className="relative flex items-center gap-2 border border-gray-300 rounded-lg ">
               <input
                 type="number"
                 id="deliveryFee"
@@ -154,14 +144,13 @@ export const DeliveryConfigForm = ({
                 onChange={(e) =>
                   handleInputChange("deliveryFee", Number(e.target.value))
                 }
-                className={`w-full pl-8 pr-4 py-3 border rounded-lg font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                  errors.deliveryFee
-                    ? "border-red-300 bg-red-50"
-                    : "border-gray-300 hover:border-gray-400"
-                }`}
+                className={`w-full pl-8 pr-4 py-3 font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.deliveryFee
+                  ? "border-red-300 bg-red-50"
+                  : "border-gray-300 hover:border-gray-400"
+                  }`}
                 placeholder="0.00"
               />
-              <span className="left-3 top-3 text-gray-500 font-medium">
+              <span className="left-3 top-3 text-gray-500 font-medium me-2">
                 MMK
               </span>
             </div>
@@ -180,7 +169,7 @@ export const DeliveryConfigForm = ({
             >
               Additional Weight Charge
             </label>
-            <div className="relative flex items-center gap-2">
+            <div className="relative flex items-center gap-2 border border-gray-300 rounded-lg ">
               <input
                 type="number"
                 id="additionalWeightCharge"
@@ -190,13 +179,13 @@ export const DeliveryConfigForm = ({
                 onChange={(e) =>
                   handleInputChange(
                     "additionalWeightCharge",
-                    Number(e.target.value)
+                    Number(e.target.value),
                   )
                 }
-                className="w-full pl-8 pr-4 py-3 border border-gray-300 rounded-lg font-medium transition-colors hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full pl-8 pr-4 py-3 font-medium transition-colors hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="0.00"
               />
-              <span className="left-3 top-3 text-gray-500 font-medium">
+              <span className="left-3 top-3 text-gray-500 font-medium me-2">
                 MMK
               </span>
             </div>
@@ -214,20 +203,17 @@ export const DeliveryConfigForm = ({
               onClick={() =>
                 handleInputChange("reachable", !formData.reachable)
               }
-              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
-                formData.reachable ? "bg-green-500" : "bg-gray-300"
-              }`}
+              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${formData.reachable ? "bg-green-500" : "bg-gray-300"
+                }`}
             >
               <span
-                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                  formData.reachable ? "translate-x-6" : "translate-x-1"
-                }`}
+                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${formData.reachable ? "translate-x-6" : "translate-x-1"
+                  }`}
               />
             </button>
             <span
-              className={`text-sm font-medium ${
-                formData.reachable ? "text-green-600" : "text-gray-500"
-              }`}
+              className={`text-sm font-medium ${formData.reachable ? "text-green-600" : "text-gray-500"
+                }`}
             >
               {formData.reachable ? "Reachable" : "Not Reachable"}
             </span>
@@ -242,11 +228,7 @@ export const DeliveryConfigForm = ({
             className="flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Save className="w-4 h-4" />
-            {isSubmitting
-              ? "Saving..."
-              : isEditing
-              ? "Update Configuration"
-              : "Add Configuration"}
+            {isSubmitting ? "Saving..." : isEditing ? "Update" : "Add"}
           </button>
 
           {onCancel && (

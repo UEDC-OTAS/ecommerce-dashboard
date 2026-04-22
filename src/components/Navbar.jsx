@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { CgProfile } from "react-icons/cg";
-import { MdOutlineSupportAgent } from "react-icons/md";
-import { ClockPlus } from "lucide-react";
+// import { CgProfile } from "react-icons/cg";
+// import { MdOutlineSupportAgent } from "react-icons/md";
+// import { ClockPlus } from "lucide-react";
 import {
   Package,
   ShoppingCart,
@@ -18,9 +18,15 @@ import {
   Image,
   MessageCircle,
 } from "lucide-react";
-import logo from "../assets/uedc.png";
+// import logo from "../assets/uedc.png";
 import { useContext } from "react";
 import { NumberContext } from "../context/NumberContext";
+import io from "socket.io-client";
+
+const socket = io.connect(import.meta.env.VITE_APP_WEBSOCKET_API, {
+  transports: ["websocket"],
+  secure: true,
+});
 
 function Navbar() {
   const username = JSON.parse(localStorage.getItem("uedc-user"))?.name;
@@ -63,13 +69,6 @@ function Navbar() {
       role: "delivery",
       secondaryRole: "customer-support",
     },
-    // {
-    //   path: "/chat",
-    //   icon: MessageCircle,
-    //   label: "Chat",
-    //   role: "customer-support",
-    //   secondaryRole: "admin",
-    // },
     {
       path: "/sales-report",
       icon: BarChart3,
@@ -91,6 +90,13 @@ function Navbar() {
       role: "admin",
       secondaryRole: "admin",
     },
+    // {
+    //   path: "/chat",
+    //   icon: MessageCircle,
+    //   label: "Chat",
+    //   role: "customer-support",
+    //   secondaryRole: "admin",
+    // },
   ];
 
   // Show all nav items to all users
@@ -105,28 +111,34 @@ function Navbar() {
     window.location.href = "/login";
   };
 
-  // useEffect(() => {
-  //   getNewOrderCount();
-  //   getMessageCount();
+  useEffect(() => {
+    socket.connect();
+    socket.emit('admin:join', 'admin');
 
-  //   if (role !== "inventory" && role !== "delivery") {
-  //     socket.on("orderFinalized", (data) => {
-  //       // console.log("data", data);
-  //       if (data.snapshotData.deliveryStatus === "pending") {
-  //         setNewOrderCount((prev) => prev + 1);
-  //       }
-  //     });
-  //   }
+    console.log("socket connected", socket.connected);
 
-  //   if (role === "customer-support" || role === "admin") {
-  //     socket.on("newCustomerSupportTicket", (data) => {
-  //       // console.log("messageCount", messageCount);
-  //       setMessageCount((prev) => prev + 1);
-  //     });
-  //   }
-  // }, []);
+    socket.on("admin:new_message", (data) => {
+      console.log("New chat message received:", data);
 
-  // console.log("messageCount", messageCount);
+
+      if (!location.pathname.includes("/chat")) {
+        setMessageCount((prev) => prev + 1);
+      }
+    });
+
+    return () => {
+      socket.off("admin:new_message");
+    };
+  }, []);
+
+  console.log("messageCount", messageCount);
+
+  useEffect(() => {
+    // Clear message count when visiting chat page
+    if (location.pathname.includes("/chat")) {
+      setMessageCount(0);
+    }
+  }, [location.pathname]);
 
   return (
     <>
@@ -149,7 +161,7 @@ function Navbar() {
       {/* Mobile Sidebar */}
       <div
         className={`
-        lg:hidden fixed left-0 top-0 h-full w-64 bg-white border-r border-gray-200 z-40 transform transition-transform duration-300 ease-in-out
+        lg:hidden fixed left-0 top-0 h-[calc(100vh-55px)] w-64 bg-white border-r border-gray-200 z-40 transform transition-transform duration-300 ease-in-out
         ${isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"}
       `}
       >
@@ -174,15 +186,34 @@ function Navbar() {
                     onClick={() => setIsMobileMenuOpen(false)}
                     className={`
                         flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200
-                        ${
-                          isActive(item.path)
-                            ? "bg-primary text-white shadow-lg"
-                            : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
-                        }
+                        ${isActive(item.path)
+                        ? "bg-primary text-white shadow-lg"
+                        : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+                      }
                     `}
                   >
                     <Icon size={20} />
                     <span className="font-medium">{item.label}</span>
+                    {item.path === "/orders" && newOrderCount > 0 && (
+                      <span
+                        className={`ml-auto px-2 py-0.5 rounded-full text-[10px] font-bold ${isActive(item.path)
+                          ? "bg-white text-primary"
+                          : "bg-primary text-white"
+                          }`}
+                      >
+                        {newOrderCount > 9 ? "9+" : newOrderCount}
+                      </span>
+                    )}
+                    {item.path === "/chat" && messageCount > 0 && (
+                      <span
+                        className={`ml-auto px-2 py-0.5 rounded-full text-[10px] font-bold ${isActive(item.path)
+                          ? "bg-white text-primary"
+                          : "bg-primary text-white"
+                          }`}
+                      >
+                        {messageCount > 9 ? "9+" : messageCount}
+                      </span>
+                    )}
                   </Link>
                 </li>
               );
@@ -255,10 +286,9 @@ function Navbar() {
                       to={item.path}
                       className={`
                         flex items-center px-3 py-3 rounded-lg transition-all duration-300 relative group
-                        ${
-                          isActive(item.path, item.secondaryPath)
-                            ? "bg-primary text-white shadow-lg "
-                            : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+                        ${isActive(item.path, item.secondaryPath)
+                          ? "bg-primary text-white shadow-lg "
+                          : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
                         }
  
                       `}
@@ -278,50 +308,30 @@ function Navbar() {
                       )}
                     </Link>
 
-                    {!isDesktopExpanded && (
-                      <div
-                        className={`${
-                          item.path === "/new-order" ? "" : "hidden"
-                        }`}
+                    {/* Order Count Badge */}
+                    {item.path === "/orders" && newOrderCount > 0 && (
+                      <span
+                        className={`absolute ${isDesktopExpanded ? "right-4" : "-top-1 -right-1"
+                          } flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-bold shadow-sm transition-all duration-300 ${isActive(item.path, item.secondaryPath)
+                            ? "bg-white text-primary"
+                            : "bg-primary text-white"
+                          }`}
                       >
-                        {item.newOrderCount > 0 && item.newOrderCount <= 9 && (
-                          <span
-                            className={`absolute bottom-7 right-0 left-8 inline-flex items-center justify-center  px-[12px] py-[3px] text-xs font-medium  rounded-full ${
-                              location.pathname === "/new-order"
-                                ? "bg-white text-primary"
-                                : "bg-primary text-white"
-                            }`}
-                          >
-                            {item.newOrderCount}
-                          </span>
-                        )}
-                        {item.newOrderCount > 9 && (
-                          <span className="absolute bottom-7 right-0 left-8 inline-flex items-center justify-center  px-[12px] py-[3px] text-xs font-medium bg-white text-primary rounded-full">
-                            9+
-                          </span>
-                        )}
-                      </div>
+                        {newOrderCount > 9 ? "9+" : newOrderCount}
+                      </span>
                     )}
 
-                    {!isDesktopExpanded && (
-                      <div>
-                        {item.messageCount > 0 && item.messageCount <= 9 && (
-                          <span
-                            className={`absolute bottom-7 right-0 left-8 inline-flex items-center justify-center  px-[12px] py-[3px] text-xs font-medium  rounded-full ${
-                              location.pathname === "/support"
-                                ? "bg-white text-primary"
-                                : "bg-primary text-white"
-                            }`}
-                          >
-                            {item.messageCount}
-                          </span>
-                        )}
-                        {item.messageCount > 9 && (
-                          <span className="absolute bottom-7 right-0 left-8 inline-flex items-center justify-center  px-[12px] py-[3px] text-xs font-medium bg-white text-primary rounded-full">
-                            9+
-                          </span>
-                        )}
-                      </div>
+                    {/* Chat Message Count Badge */}
+                    {item.path === "/chat" && messageCount > 0 && (
+                      <span
+                        className={`absolute ${isDesktopExpanded ? "right-4" : "-top-1 -right-1"
+                          } flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-bold shadow-sm transition-all duration-300 ${isActive(item.path, item.secondaryPath)
+                            ? "bg-white text-primary"
+                            : "bg-primary text-white"
+                          }`}
+                      >
+                        {messageCount > 9 ? "9+" : messageCount}
+                      </span>
                     )}
                   </li>
                 );
